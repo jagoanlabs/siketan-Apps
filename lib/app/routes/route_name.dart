@@ -1,8 +1,8 @@
 class RoutesName {
   static const String splashScreen = "/";
-  static const String onBoarding = "/OnBoarding";
-  static const String login = "/Login";
-  static const String homeExample = "/HomeExample";
+  static const String onBoarding = "/on-boarding";
+  static const String login = "/login";
+  static const String home = "/home";
 
-  static const String notFound = "/NotFound";
+  static const String notFound = "/not-found";
 }

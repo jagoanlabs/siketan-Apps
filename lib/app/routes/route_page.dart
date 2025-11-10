@@ -1,15 +1,15 @@
 
-import 'package:flutter/material.dart';
-import 'package:siketan/shared/view/not_found.dart';
-import 'package:siketan/shared/view/splash_screen.dart';
-import 'package:siketan/app/routes/route_name.dart';
-
+part of 'import.dart';
 class MyRoute {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case RoutesName.splashScreen:
         return MaterialPageRoute(
           builder: (context) => const SplashScreen(),
+        );
+      case RoutesName.home:
+        return MaterialPageRoute(
+          builder: (context) => const HomePage(),
         );
       default:
         return MaterialPageRoute(

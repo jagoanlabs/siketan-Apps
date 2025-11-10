@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:siketan/app/theme/theme.dart';
 import 'package:siketan/app/routes/route_name.dart';
-import 'package:siketan/app/routes/route_page.dart';
+import 'package:siketan/app/routes/import.dart';
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 

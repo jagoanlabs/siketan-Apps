@@ -1,0 +1,51 @@
+
+part of 'import.dart';
+
+final getIt = GetIt.instance;
+
+Future<void> setupDependencies() async {
+  // Shared Preferences
+  final sharedPreferences = await SharedPreferences.getInstance();
+  getIt.registerSingleton<SharedPreferences>(sharedPreferences);
+
+  // Secure Storage
+  final secureStorageService = SecureStorageService();
+  getIt.registerSingleton<SecureStorageService>(secureStorageService);
+
+  // Token Interceptor
+  final tokenInterceptor = TokenInterceptor(
+    secureStorageService: getIt<SecureStorageService>(),
+  );
+  getIt.registerSingleton<TokenInterceptor>(tokenInterceptor);
+
+  // API Clients
+  getIt.registerSingleton<PublicApiClient>(PublicApiClient());
+  getIt.registerSingleton<AuthApiClient>(
+    AuthApiClient(tokenInterceptor: getIt<TokenInterceptor>()),
+  );
+
+  // Network Service - updated to not use shared preferences for token handling
+  getIt.registerSingleton<NetworkService>(
+    NetworkService.initializeWithDependencies(
+      tokenInterceptor: getIt<TokenInterceptor>(),
+      apiClient: getIt<AuthApiClient>(),
+      sharedPrefs: getIt<SharedPreferences>(),
+    ),
+  );
+
+  // Base Services
+  getIt.registerFactory<PublicBaseService>(
+    () => PublicBaseService(getIt<PublicApiClient>()),
+  );
+  getIt.registerFactory<AuthBaseService>(
+    () => AuthBaseService(getIt<AuthApiClient>()),
+  );
+
+  // Specific Services
+  getIt.registerFactory<AuthService>(
+    () => AuthService(getIt<AuthBaseService>()),
+  );
+  getIt.registerFactory<PublicService>(
+    () => PublicService(getIt<PublicBaseService>()),
+  );
+}
