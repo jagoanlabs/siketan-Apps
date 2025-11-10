@@ -10,6 +10,7 @@ A modern, modular, and clean-architected **Flutter application** for the *Dinas 
 
 Proyek ini menggunakan pola **Clean Architecture** dengan pendekatan **Feature-based Modularization** untuk menjaga skalabilitas, keterpisahan tanggung jawab, dan kemudahan testing.
 
+```bash
 lib/
 ├─ app/ # Konfigurasi global aplikasi
 │ ├─ routes/ # Routing global
@@ -44,11 +45,13 @@ lib/
 ├─ dashboard/
 ├─ user/
 └─ ...
-
+```
 
 ---
 
 ## 🧠 Clean Architecture Layering
+
+```bash
 Domain Layer
 │ ├─ Model → representasi entity
 │ └─ Repository → abstraksi operasi data
@@ -60,7 +63,7 @@ Data Layer
 Presentation Layer
 │ ├─ View → widget layar / halaman
 │ └─ Widget → komponen UI reusable
-
+```
 
 ---
 
@@ -75,7 +78,9 @@ Script ini berada di:
 #### 🔸 Generate folder kosong (empty)
 ```bash
 dart run tool/generate_feature.dart nama_fitur
+```
 
+```bash
 lib/features/nama_fitur/
  ├─ data/
  │   ├─ datasources/
@@ -86,10 +91,14 @@ lib/features/nama_fitur/
  └─ presentation/
      ├─ view/
      └─ widget/
+```
 
-
+#### 🔹 Generate folder dengan isi (with-content)
+```bash
 dart run tool/generate_feature.dart nama_fitur --with-content
+```
 
+```bash
 lib/features/nama_fitur/
  ├─ data/
  │   ├─ datasources/nama_fitur_remote_datasource.dart
@@ -100,6 +109,7 @@ lib/features/nama_fitur/
  └─ presentation/
      ├─ view/nama_fitur_page.dart
      └─ widget/nama_fitur_widget.dart
+```
 
 🎨 Design System
 
@@ -122,17 +132,26 @@ shared/styles/text_styles.dart → gaya tipografi (Poppins)
 
 
 # Clone project
+
+```bash
 git clone https://github.com/your-username/siketan-apps.git
 cd siketan-apps
+```
 
 # Install dependencies
+```bash
 flutter pub get
+```
 
 # Generate feature (optional)
+```bash
 dart run tool/generate_feature.dart dashboard --with-content
+```
 
 # Run app
+```bash
 flutter run
+```
 
 
 🧾 License
