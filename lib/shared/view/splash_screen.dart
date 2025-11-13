@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Center(
             child: Image.asset(
               ImageConfig.logoSiketan,
-              width: 125,
+              width: 300,
             ),
           ),
         ],

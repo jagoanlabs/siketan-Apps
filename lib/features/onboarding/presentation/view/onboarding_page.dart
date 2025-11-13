@@ -92,7 +92,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           ),
                         )
                       ),
-                      SizedBox(height: 32.h),
+                      SizedBox(height: 60.h),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 24.w),
                         child: Text(

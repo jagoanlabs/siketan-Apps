@@ -15,6 +15,7 @@ class ImageConfig {
   static String imageVegetables = "assets/images/image_vegetables.png";
   static String imageFruitVegetables = "assets/images/image_fruit_vegetables.png";
   static String imageSignalPlant = "assets/images/image_signal_plant.png";
+  static String imageCekNik = "assets/images/image_cek_nik_petani.png";
 
 
   // onboarding

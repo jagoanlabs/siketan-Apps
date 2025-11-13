@@ -1,6 +1,5 @@
 part of 'import.dart';
 
-
 class MyRoute {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -42,6 +41,13 @@ class MyRoute {
           type: PageTransitionType.fade, // 🌈 efek fade khusus register
           settings: settings,
           duration: const Duration(milliseconds: 100),
+        );
+      case RoutesName.cekNIK:
+        return PageTransition(
+          child: const CekNIK(),
+          type: PageTransitionType.fade, // efek halus untuk splash
+          settings: settings,
+          duration: const Duration(milliseconds: 300),
         );
 
       default:

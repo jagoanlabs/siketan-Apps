@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
+import 'package:siketan/features/home/presentation/widget/activity_card.dart';
 import 'package:siketan/features/home/presentation/widget/horizontal_menu_widget.dart';
+import 'package:siketan/features/home/presentation/widget/new_card.dart';
+import 'package:siketan/features/home/presentation/widget/product_card.dart';
 import 'package:siketan/features/home/presentation/widget/search_widget.dart';
 import 'package:siketan/features/home/presentation/widget/welcome_card.dart';
 import 'package:siketan/shared/style/color.dart';
@@ -39,22 +42,34 @@ class _HomePageViewState extends State<HomePageView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.gray100,
       resizeToAvoidBottomInset: true,
-      body: Stack(
-        children: [
-          /// ✅ Background image dengan full width dan fit cover
-          Image.asset(ImageConfig.homeBackground, fit: BoxFit.cover),
-
-          /// ✅ Konten utama
-          SafeArea(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// 🔹 Header Section
-                  Row(
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Stack(
+          children: [
+            // Gambar background di dalam scroll, jadi akan discroll juga
+            Container(
+              width: double.infinity,
+              height: 300.h, // Sesuaikan tinggi background jika perlu
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(ImageConfig.homeBackground),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+      
+            // Konten utama
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// 🔹 Header Section
+                SizedBox(height: 48.h),
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: 24.w, right: 24.w, top: 16.h),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -64,7 +79,7 @@ class _HomePageViewState extends State<HomePageView> {
                         width: 170.w,
                         fit: BoxFit.contain,
                       ),
-
+                  
                       /// 🔹 Percabangan Komponen (Login / Non-Login)
                       isLogin
                           ? GestureDetector(
@@ -99,24 +114,41 @@ class _HomePageViewState extends State<HomePageView> {
                             ),
                     ],
                   ),
-
-                  SizedBox(height: 16.h),
-
-                  /// 🔍 Search bar
-                  SearchBarWidget(
+                ),
+      
+                SizedBox(height: 16.h),
+      
+                /// 🔍 Search bar
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: SearchBarWidget(
                     onSearchTap: () {
                       // aksi ketika icon search ditekan
                       debugPrint('Search clicked!');
                     },
                   ),
-                  SizedBox(height: 16.h),
-                  WelcomeCard(),
-                  HorizontalMenuWidget(),
-                ],
-              ),
+                ),
+                SizedBox(height: 16.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: WelcomeCard(),
+                ),
+                SizedBox(height: 16.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: HorizontalMenuWidget(onNavigateToTab: widget.onNavigateToTab),
+                ),
+                SizedBox(height: 16.h),
+                ActivityCard(onNavigateToTab: widget.onNavigateToTab),
+                SizedBox(height: 16.h),
+                NewCard(onNavigateToTab: widget.onNavigateToTab),
+                SizedBox(height: 16.h),
+                ProductCard(onNavigateToTab: widget.onNavigateToTab),
+                SizedBox(height: 16.h),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

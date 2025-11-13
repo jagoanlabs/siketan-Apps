@@ -9,6 +9,7 @@ import 'package:siketan/features/home/presentation/view/home_page.dart';
 import 'package:siketan/features/data/presentation/view/data_page.dart';
 import 'package:siketan/features/informasi/presentation/view/informasi_page.dart';
 import 'package:siketan/features/toko/presentation/view/toko_page.dart';
+import 'package:siketan/shared/style/shadow.dart';
 
 class HomeWrapper extends StatefulWidget {
   const HomeWrapper({super.key});
@@ -54,17 +55,7 @@ class _HomeWrapperState extends State<HomeWrapper> {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24.r),
-            topRight: Radius.circular(24.r),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
+          boxShadow: shadowSm,
         ),
         child: SafeArea(
           top: false,
