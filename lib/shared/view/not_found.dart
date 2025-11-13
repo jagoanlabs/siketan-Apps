@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
-import 'package:iconify_flutter/icons/mdi.dart'; // contoh: paket ikon Material Design
+import 'package:iconify_flutter/icons/mdi.dart';
+import 'package:siketan/shared/style/color.dart'; // contoh: paket ikon Material Design
 // kamu juga bisa ganti ke set lain seperti "carbon", "ri", "twemoji", dll.
 
 class NotFoundPage extends StatelessWidget {
@@ -21,7 +22,7 @@ class NotFoundPage extends StatelessWidget {
                 const Iconify(
                   Mdi.emoticon_sad_outline,
                   size: 120,
-                  color: Colors.grey,
+                  color: AppColors.blue4,
                 ),
                 const SizedBox(height: 32),
 
@@ -66,10 +67,10 @@ class NotFoundPage extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop(); // atau pushNamed('/home')
                   },
-                  icon: const Iconify(Mdi.arrow_left),
+                  icon: const Iconify(Mdi.arrow_left, color: Colors.white),
                   label: const Text('Kembali'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueAccent,
+                    backgroundColor: AppColors.blue4,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,

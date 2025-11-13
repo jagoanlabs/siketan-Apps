@@ -1,19 +1,55 @@
-
 part of 'import.dart';
+
+
 class MyRoute {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case RoutesName.splashScreen:
-        return MaterialPageRoute(
-          builder: (context) => const SplashScreen(),
+        return PageTransition(
+          child: const SplashScreen(),
+          type: PageTransitionType.fade, // efek halus untuk splash
+          settings: settings,
+          duration: const Duration(milliseconds: 300),
         );
+
+      case RoutesName.onBoarding:
+        return PageTransition(
+          child: const OnboardingPage(),
+          type: PageTransitionType.fade, // efek halus untuk splash
+          settings: settings,
+          duration: const Duration(milliseconds: 300),
+        );
+
       case RoutesName.home:
-        return MaterialPageRoute(
-          builder: (context) => const HomePage(),
+        return PageTransition(
+          child: const HomeWrapper(),
+          type: PageTransitionType.sharedAxisScale, // geser dari kanan
+          settings: settings,
+          duration: const Duration(milliseconds: 100),
         );
+
+      case RoutesName.login:
+        return PageTransition(
+          child: const LoginPage(),
+          type: PageTransitionType.fade, // balik ke kiri
+          settings: settings,
+          duration: const Duration(milliseconds: 100),
+        );
+
+      case RoutesName.register:
+        return PageTransition(
+          child: const RegisterPage(),
+          type: PageTransitionType.fade, // 🌈 efek fade khusus register
+          settings: settings,
+          duration: const Duration(milliseconds: 100),
+        );
+
       default:
-        return MaterialPageRoute(
-          builder: (context) => const NotFoundPage(),
+        return PageTransition(
+          child: const NotFoundPage(),
+          type: PageTransitionType.fade,
+          settings: settings,
+          duration: const Duration(milliseconds: 300),
         );
     }
   }

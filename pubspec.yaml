@@ -42,18 +42,21 @@ dependencies:
   flutter_bloc: ^9.1.0
   flutter_localizations:
     sdk: flutter
-  flutter_native_splash: ^2.4.1
+  flutter_native_splash: ^2.4.1 
+  flutter_screenutil: ^5.9.3
   flutter_secure_storage: ^9.2.4
   flutter_spinkit: ^5.2.1
+  form_builder_validators: ^11.2.0
   get_it: ^9.0.5
   iconify_flutter: ^0.0.7
   icons_launcher: ^3.0.3
-  image_picker: ^1.1.2
+  image_picker: ^1.2.1
   intl: 0.20.2
   logger: ^2.5.0
-  page_transition: ^2.1.0
+  page_transition: ^2.2.1
   path_provider: ^2.1.5
   permission_handler: ^12.0.1
+  responsive_framework: ^1.5.1
   shared_preferences: ^2.5.3
 
 dev_dependencies:
@@ -75,6 +78,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/images/logo/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
   # For details regarding adding assets from package dependencies, see
@@ -122,13 +126,13 @@ flutter:
 
 
 icons_launcher:
-  image_path: "assets/images/logo/logo-kabupaten-ngawi-icon.png"
+  image_path: "assets/images/logo/logo_icon_siketan.png"
   platforms:
     android:
       enable: true
       adaptive_background_color: "#FFFFFF"
-      adaptive_foreground_image: "assets/images/logo/logo-kabupaten-ngawi-icon.png"
+      adaptive_foreground_image: "assets/images/logo/logo_icon_siketan.png"
       resize_mode: contain
     ios:
       enable: true
-      image_path: "assets/images/logo/logo-kabupaten-ngawi-icon.png"
+      image_path: "assets/images/logo/logo_icon_siketan.png"
