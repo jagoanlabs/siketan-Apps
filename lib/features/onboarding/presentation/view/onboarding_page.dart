@@ -21,21 +21,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final List<Map<String, dynamic>> _onboardingData = [
     {
       'image': ImageConfig.onboarding1,
-      'title': 'Tingkatkan Produktivitas Bersama Penyuluh',
+      'title': 'Data Akurat, Kebijakan Tepat',
       'description':
-          'Dapatkan informasi dan bimbingan pertanian langsung dari penyuluh untuk hasil panen yang lebih baik.',
+          'Mengumpulkan data pangan secara cepat, akurat, dan terintegrasi.',
     },
     {
       'image': ImageConfig.onboarding2,
-      'title': 'Akses Informasi Terkini Setiap Saat',
+      'title': 'Monitoring Lebih Mudah',
       'description':
-          'Temukan tips, cuaca, harga pasar, dan update teknologi pertanian terbaru hanya dalam genggaman.',
+          'Pantau produksi, distribusi, dan stok pangan dalam satu aplikasi.',
     },
     {
       'image': ImageConfig.onboarding3,
-      'title': 'Gabung Komunitas Petani',
+      'title': 'Mendukung Ketahanan Pangan Daerah',
       'description':
-          'Bersama-sama belajar, bertukar pengalaman, dan bangun jaringan petani untuk kemajuan bersama.',
+          'Menyiapkan informasi real-time untuk pengambilan keputusan yang lebih baik.',
     },
   ];
 
@@ -75,19 +75,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   return Column(
                     children: [
                       Center(
-                        child: Transform.scale(
-                          scale: 1.5,
-                          child: Container(
-                            margin: EdgeInsets.only(top: 24.w),
-                            width: 500.w,
-                            height: 300.h,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(
-                                  _onboardingData[index]['image'],
-                                ),
-                                fit: BoxFit.contain,
+                        child: Container(
+                          margin: EdgeInsets.only(top: 60.h),
+                          width: 300.w,
+                          height: 300.h,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage(
+                                _onboardingData[index]['image'],
                               ),
+                              fit: BoxFit.contain,
                             ),
                           ),
                         )

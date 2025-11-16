@@ -50,6 +50,13 @@ class MyRoute {
           duration: const Duration(milliseconds: 300),
         );
 
+      case RoutesName.detailBerita:
+        return PageTransition(
+          child: const DetailBeritaPage(),
+          type: PageTransitionType.fade, // efek halus untuk splash
+          settings: settings,
+          duration: const Duration(milliseconds: 300),
+        );
       default:
         return PageTransition(
           child: const NotFoundPage(),
