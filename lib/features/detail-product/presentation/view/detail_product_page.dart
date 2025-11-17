@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ic.dart';
+import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
+import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/widget/primary_button_widget.dart';
 import 'package:colorful_iconify_flutter/icons/logos.dart';
@@ -34,6 +36,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    logger.d("_scroll.offset ${_scroll.offset}");
     _scroll.addListener(() {
       if (_scroll.offset > 80 && !isScrolled) {
         setState(() => isScrolled = true);
@@ -58,28 +61,39 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
       backgroundColor:
           Colors.white, // agar background di bawah appbar menjadi putih
 
-      appBar: AppBar(
-        backgroundColor: isScrolled
-            ? Colors.white
-            : Colors.transparent, // transparan
-        elevation: isScrolled ? 1 : 0,
-        leadingWidth: 30,
-        leading: IconButton(
-          iconSize: 36,
-          icon: const Icon(Icons.chevron_left, color: AppColors.gray900),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          "Detail Product",
-          style: TextStyle(
-            fontSize: 20.sp,
-            fontWeight: FontWeight.w600,
-            color: Colors.black, // karena background putih
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: AnimatedTheme(
+          data: Theme.of(context).copyWith(
+            appBarTheme: AppBarTheme(
+              backgroundColor: isScrolled ? Colors.white : Colors.transparent,
+              elevation: isScrolled ? 1 : 0,
+              iconTheme: IconThemeData(
+                color: AppColors.gray900,
+              ),
+            ),
+          ),
+          child: AppBar(
+            leadingWidth: 30,
+            leading: IconButton(
+              iconSize: 36,
+              icon: const Icon(Icons.chevron_left),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            title: AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 300),
+              style: TextStyle(
+                fontSize: 20.sp,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gray900,
+              ),
+              child: const Text("Detail Product"),
+            ),
+            centerTitle: false,
           ),
         ),
-        centerTitle: false,
       ),
 
       bottomNavigationBar: Container(
@@ -164,6 +178,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
 
           // 🔵 Konten scroll
           SingleChildScrollView(
+            controller: _scroll,
             physics: const BouncingScrollPhysics(),
             child: Padding(
               padding: EdgeInsets.only(top: kToolbarHeight + 24.h),
@@ -297,25 +312,163 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 24.w),
                     child: SizedBox(
-                      height: 200.h, // Atur tinggi konten tab
+                      height: 300.h, // Atur tinggi konten tab
                       child: TabBarView(
                         controller: _tabController,
                         children: [
                           // Tab Detail Produk
                           _buildTabContent(
-                            content: '''
-                              Beras pulen varietas Inpari 32 ini memiliki tekstur yang lembut dan aroma yang khas saat dimasak. Cocok digunakan untuk konsumsi harian maupun kebutuhan usaha kuliner. Dikemas dalam karung bersih dan rapi, beras ini berasal langsung dari petani lokal Kabupaten Ngawi sehingga kualitas dan kesegarannya terjamin.
-                            ''',
+                            child: Text(
+                              'Beras pulen varietas Inpari 32 ini memiliki tekstur yang lembut dan aroma yang khas saat dimasak. Cocok digunakan untuk konsumsi harian maupun kebutuhan usaha kuliner. Dikemas dalam karung bersih dan rapi, beras ini berasal langsung dari petani lokal Kabupaten Ngawi sehingga kualitas dan kesegarannya terjamin.',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
                           ),
 
                           // Tab Penjual
                           _buildTabContent(
-                            content: '''
-                              Penjual: Pak Agus
-                              Alamat: Jl. Raya Ngawi No. 123
-                              Kontak: 0812-3456-7890
-                              Rating: ★★★★☆ (4.5)
-                            ''',
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  spacing: 8.w,
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 24.r,
+                                      backgroundColor: AppColors.blue1,
+                                      child: Icon(
+                                        Icons.person,
+                                        color: AppColors.blue4,
+                                      ),
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      spacing: 2.h,
+                                      children: [
+                                        Text(
+                                          'AGNES DYAN PARAMITA, S.P.',
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 8.w,
+                                            vertical: 4.h,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              12.r,
+                                            ),
+                                            color: AppColors.green0,
+                                          ),
+                                          child: Text(
+                                            "Penyuluh",
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              color: AppColors.green4,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 16.h),
+                                _buildMenuProfile(
+                                  icon: MaterialSymbols.location_on,
+                                  value: "Ngawi, Jawa Timur",
+                                ),
+                                SizedBox(height: 16.h),
+                                _buildMenuProfile(
+                                  icon: MaterialSymbols.alternate_email_rounded,
+                                  value: "agnesdyanparamita@gmail.com",
+                                ),
+                                SizedBox(height: 16.h),
+                                _buildMenuProfile(
+                                  icon: MaterialSymbols
+                                      .phone_android_outline_rounded,
+                                  value: "08123456789",
+                                ),
+                                SizedBox(height: 24.h),
+                                Text(
+                                  "Lokasi",
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: AppColors.gray900,
+                                  ),
+                                ),
+                                SizedBox(height: 16.h),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        spacing: 8.h,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Kecamatan:",
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w500,
+                                              color: AppColors.gray400,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Jogorogo",
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w500,
+                                              color: AppColors.gray900,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        spacing: 8.h,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Kabupaten:",
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w500,
+                                              color: AppColors.gray400,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Macanan",
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w500,
+                                              color: AppColors.gray900,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -332,29 +485,40 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
     );
   }
 
+  Row _buildMenuProfile({required String icon, required String value}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
+      spacing: 4.w,
+      children: [
+        Iconify(icon, size: 20.sp, color: AppColors.blue4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w500,
+            color: AppColors.gray900,
+          ),
+        ),
+      ],
+    );
+  }
+
   // Widget reusable untuk konten tab
-  Widget _buildTabContent({required String content}) {
+  Widget _buildTabContent({required Widget child}) {
     return Container(
-      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
         boxShadow: [
           BoxShadow(
-            color: AppColors.gray200.withOpacity(0.2),
+            color: AppColors.gray200.withValues(alpha: 0.2),
             blurRadius: 8.r,
             offset: Offset(0, 2),
           ),
         ],
       ),
-      child: Text(
-        content,
-        style: TextStyle(
-          fontSize: 14.sp,
-          color: AppColors.gray900,
-          height: 1.5,
-        ),
-      ),
+      child: child,
     );
   }
 }
