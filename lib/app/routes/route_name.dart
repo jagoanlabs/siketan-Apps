@@ -7,5 +7,6 @@ class RoutesName {
   static const String cekNIK = "/cek-nik";
   static const String detailBerita = "/detail-berita";
   static const String notFound = "/not-found";
+  static const String detailProduct = "/detail-product";
 
 }

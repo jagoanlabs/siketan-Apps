@@ -9,5 +9,5 @@ import 'package:siketan/shared/view/splash_screen.dart';
 import 'package:siketan/features/cek-nik/presentation/view/cek_nik.dart';
 import 'package:siketan/app/routes/route_name.dart';
 import 'package:page_transition/page_transition.dart';
-
+import 'package:siketan/features/detail-product/presentation/view/detail_product_page.dart';
 part 'route_page.dart';
