@@ -34,18 +34,18 @@ flutter_native_splash:
 
   # general color for all platform (except android 12+):
   # see there only 2 lines in all parameters that marked as [required], so others
-  # remain optional. NOTE that if you specify the [required] color, then you cant 
+  # remain optional. NOTE that if you specify the [required] color, then you cant
   # use the [required] background_image in the next section. the reverse is true.
   # select one, they cant work together.
-  color: "#42a5f5"  ##====================================[REQUIRED]==========
-  #color_dark: "#042a49"
+  color: "#FFFFFF"  ##====================================[REQUIRED]==========
+  color_dark: "#FFFFFF"
   # platform-specific color. will override general color if active:
-  #color_android: "#42a5f5"
-  #color_dark_android: "#042a49"
-  #color_ios: "#42a5f5"
-  #color_dark_ios: "#042a49"
-  #color_web: "#42a5f5"
-  #color_dark_web: "#042a49"
+  #color_android: "#FFFFFF"
+  #color_dark_android: "#FFFFFF"
+  #color_ios: "#FFFFFF"
+  #color_dark_ios: "#FFFFFF"
+  #color_web: "#FFFFFF"
+  #color_dark_web: "#FFFFFF"
 
   # general background_image for all platform (except android 12+)
   # if you specify this [required] background_image, then you should comment the 
@@ -133,21 +133,21 @@ flutter_native_splash:
   #! ANDROID 12+ configuration:
   android_12:
     # background color
-    color: "#42a5f5"
-    # color_dark: "#042a49"
+    color: "#FFFFFF"
+    color_dark: "#FFFFFF"
 
     # center-logo
-    # If this parameter is not specified, the app's launcher icon will be used instead. 
-    # Please note that the splash screen will be clipped to a circle on the center of the screen. 
-    # with background: 960×960 px (fit within circle 640px in diameter)    
+    # If this parameter is not specified, the app's launcher icon will be used instead.
+    # Please note that the splash screen will be clipped to a circle on the center of the screen.
+    # with background: 960×960 px (fit within circle 640px in diameter)
     # without background: 1152×1152 px (fit within circle 768px in diameter)
-    # ensure that the most important design elements of your image are placed within a circular area 
-    image: assets/images/logo/logo_siketan.png    
-    # image_dark: assets/images/logo/logo-splash2.png  
+    # ensure that the most important design elements of your image are placed within a circular area
+    image: assets/images/logo/logo_siketan.png
+    # image_dark: assets/images/logo/logo-splash2.png
 
     # center-logo background color
-    icon_background_color: "#111111"
-    # icon_background_color_dark: "#eeeeee"
+    icon_background_color: "#FFFFFF"
+    icon_background_color_dark: "#FFFFFF"
 
     # branding:
     # The branding image dimensions must be 800x320 px.

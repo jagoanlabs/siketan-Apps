@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     FlutterNativeSplash.remove();
     Future.delayed(const Duration(seconds: 2)).then((value) {
-      Navigator.pushReplacementNamed(context, RoutesName.home);
+      Navigator.pushReplacementNamed(context, RoutesName.onBoarding);
     });
   }
 
