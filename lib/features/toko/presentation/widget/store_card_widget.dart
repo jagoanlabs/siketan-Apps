@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:siketan/shared/style/color.dart';
+import 'package:siketan/shared/style/shadow.dart';
 
 class StoreCardWidget extends StatelessWidget {
   final String imageUrl;
@@ -23,13 +24,7 @@ class StoreCardWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.gray200.withValues(alpha: 0.3),
-            blurRadius: 8.r,
-            offset: Offset(0, 2),
-          ),
-        ],
+        boxShadow: shadowMd
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

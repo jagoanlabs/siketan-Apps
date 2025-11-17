@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
-import 'package:iconify_flutter/icons/ic.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
-import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/shared/style/color.dart';
-import 'package:siketan/shared/widget/primary_button_widget.dart';
 import 'package:colorful_iconify_flutter/icons/logos.dart';
 
 class DetailProductPage extends StatelessWidget {
@@ -29,14 +26,13 @@ class DetailProductPageView extends StatefulWidget {
 class _DetailProductPageViewState extends State<DetailProductPageView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  ScrollController _scroll = ScrollController();
+  final ScrollController _scroll = ScrollController();
   bool isScrolled = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    logger.d("_scroll.offset ${_scroll.offset}");
     _scroll.addListener(() {
       if (_scroll.offset > 80 && !isScrolled) {
         setState(() => isScrolled = true);
@@ -49,8 +45,43 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
   @override
   void dispose() {
     _tabController.dispose();
+    _scroll.dispose();
     super.dispose();
   }
+
+
+  final List<Map<String, dynamic>> _StoreData = [
+    {
+      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
+      'location': 'Desa Sekarjati, Karanganyar',
+      'name': 'Toko Tani Maju',
+      'id': '1',
+    },
+    {
+      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
+      'location': 'Desa Sekarjati, Karanganyar',
+      'name': 'Toko Tani Maju',
+      'id': '2',
+    },
+    {
+      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
+      'location': 'Desa Sekarjati, Karanganyar',
+      'name': 'Toko Tani Maju',
+      'id': '3',
+    },
+    {
+      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
+      'location': 'Desa Sekarjati, Karanganyar',
+      'name': 'Toko Tani Maju',
+      'id': '4',
+    },
+    {
+      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
+      'location': 'Desa Sekarjati, Karanganyar',
+      'name': 'Toko Tani Maju',
+      'id': '5',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +137,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
               child: ElevatedButton(
                 onPressed: () {},
                 style: ElevatedButton.styleFrom(
+                  elevation: 0,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 16,
@@ -137,6 +169,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
             ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
+                elevation: 0,
                 padding: const EdgeInsets.all(16),
                 backgroundColor: Colors.white,
                 foregroundColor: AppColors.blue4,
@@ -372,7 +405,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                                             "Penyuluh",
                                             style: TextStyle(
                                               fontSize: 12.sp,
-                                              color: AppColors.green4,
+                                              color: AppColors.green5,
                                               fontWeight: FontWeight.w400,
                                             ),
                                           ),
@@ -383,7 +416,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                                 ),
                                 SizedBox(height: 16.h),
                                 _buildMenuProfile(
-                                  icon: MaterialSymbols.location_on,
+                                  icon: MaterialSymbols.location_on_outline_rounded,
                                   value: "Ngawi, Jawa Timur",
                                 ),
                                 SizedBox(height: 16.h),

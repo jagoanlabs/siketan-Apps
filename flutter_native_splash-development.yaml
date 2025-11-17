@@ -1,16 +1,16 @@
 # flutter_native_splash-development.yaml
 flutter_native_splash:
   color: "#ffffff"
-  image: assets/images/logo/logo_siketan.png
+  image: assets/images/logo/logo_icon.png
   # branding: assets/images/logo/logo-kabupaten-ngawi.png
-  color_dark: "#121212"
-  image_dark: assets/images/logo/logo_siketan.png
+  color_dark: "#ffffff"
+  image_dark: assets/images/logo/logo_icon.png
   # branding_dark: assets/images/logo/logo-kabupaten-ngawi.png
 
   android_12:
-    image: assets/images/logo/logo_siketan.png
+    image: assets/images/logo/logo_icon.png
     icon_background_color: "#ffffff"
-    image_dark: assets/images/logo/logo_siketan.png
-    icon_background_color_dark: "#121212"
+    image_dark: assets/images/logo/logo_icon.png
+    icon_background_color_dark: "#ffffff"
 
   web: false

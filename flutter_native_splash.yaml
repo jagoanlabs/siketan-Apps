@@ -34,18 +34,18 @@ flutter_native_splash:
 
   # general color for all platform (except android 12+):
   # see there only 2 lines in all parameters that marked as [required], so others
-  # remain optional. NOTE that if you specify the [required] color, then you cant
+  # remain optional. NOTE that if you specify the [required] color, then you cant 
   # use the [required] background_image in the next section. the reverse is true.
   # select one, they cant work together.
-  color: "#FFFFFF"  ##====================================[REQUIRED]==========
-  color_dark: "#FFFFFF"
+  color: "#ffffff"  ##====================================[REQUIRED]==========
+  color_dark: "#ffffff"
   # platform-specific color. will override general color if active:
-  #color_android: "#FFFFFF"
-  #color_dark_android: "#FFFFFF"
-  #color_ios: "#FFFFFF"
-  #color_dark_ios: "#FFFFFF"
-  #color_web: "#FFFFFF"
-  #color_dark_web: "#FFFFFF"
+  #color_android: "#ffffff"
+  #color_dark_android: "#042a49"
+  #color_ios: "#ffffff"
+  #color_dark_ios: "#042a49"
+  #color_web: "#ffffff"
+  #color_dark_web: "#042a49"
 
   # general background_image for all platform (except android 12+)
   # if you specify this [required] background_image, then you should comment the 
@@ -63,8 +63,8 @@ flutter_native_splash:
   # general image for all platform (except android 12+):
   # allows you to specify an image used in the splash screen. It must be a
   # png file and should be sized for 4x pixel density.
-  image:                assets/images/logo/logo_siketan.png
-  #image_dark:          assets/splash-invert.png
+  image:                assets/images/logo/logo_icon.png
+  image_dark:          assets/images/logo/logo_icon.png
   # platform-specific image. will override general image if active:
   #image_android:       assets/splash-android.png
   #image_dark_android:  assets/splash-invert-android.png
@@ -133,21 +133,21 @@ flutter_native_splash:
   #! ANDROID 12+ configuration:
   android_12:
     # background color
-    color: "#FFFFFF"
-    color_dark: "#FFFFFF"
+    color: "#ffffff"
+    color_dark: "#ffffff"
 
     # center-logo
-    # If this parameter is not specified, the app's launcher icon will be used instead.
-    # Please note that the splash screen will be clipped to a circle on the center of the screen.
-    # with background: 960×960 px (fit within circle 640px in diameter)
+    # If this parameter is not specified, the app's launcher icon will be used instead. 
+    # Please note that the splash screen will be clipped to a circle on the center of the screen. 
+    # with background: 960×960 px (fit within circle 640px in diameter)    
     # without background: 1152×1152 px (fit within circle 768px in diameter)
-    # ensure that the most important design elements of your image are placed within a circular area
-    image: assets/images/logo/logo_siketan.png
-    # image_dark: assets/images/logo/logo-splash2.png
+    # ensure that the most important design elements of your image are placed within a circular area 
+    image: null    
+    image_dark: null  
 
     # center-logo background color
-    icon_background_color: "#FFFFFF"
-    icon_background_color_dark: "#FFFFFF"
+    icon_background_color: "#ffffff"
+    icon_background_color_dark: "#ffffff"
 
     # branding:
     # The branding image dimensions must be 800x320 px.
