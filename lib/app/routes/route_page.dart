@@ -71,6 +71,13 @@ class MyRoute {
           settings: settings,
           duration: const Duration(milliseconds: 300),
         );
+      case RoutesName.searchGlobal:
+        return PageTransition(
+          child: const SearchGlobalPage(),
+          type: PageTransitionType.fade, // efek halus untuk splash
+          settings: settings,
+          duration: const Duration(milliseconds: 300),
+        );
       default:
         return PageTransition(
           child: const NotFoundPage(),

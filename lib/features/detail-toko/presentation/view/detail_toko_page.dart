@@ -131,32 +131,32 @@ class _DetailTokoViewState extends State<DetailTokoView> {
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          // 🔵 Background Gradient
-          Container(
-            width: double.infinity,
-            height: 300.h,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                stops: const [0.0, 0.8, 0.9, 1.0],
-                colors: [
-                  AppColors.blue2,
-                  AppColors.blue1.withValues(alpha: 0.5),
-                  AppColors.blue1.withValues(alpha: 0.2),
-                  AppColors.blue1.withValues(alpha: 0.0),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+      body: SingleChildScrollView(
+        controller: _scroll,
+        physics: const BouncingScrollPhysics(),
+        child: Stack(
+          children: [
+            // 🔵 Background Gradient
+            Container(
+              width: double.infinity,
+              height: 300.h,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  stops: const [0.0, 0.8, 0.9, 1.0],
+                  colors: [
+                    AppColors.blue2,
+                    AppColors.blue1.withValues(alpha: 0.5),
+                    AppColors.blue1.withValues(alpha: 0.2),
+                    AppColors.blue1.withValues(alpha: 0.0),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
             ),
-          ),
-
-          // 🔵 Konten scroll
-          SingleChildScrollView(
-            controller: _scroll,
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
+        
+            // 🔵 Konten scroll
+            Padding(
               padding: EdgeInsets.only(top: kToolbarHeight + 24.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,7 +261,7 @@ class _DetailTokoViewState extends State<DetailTokoView> {
                       ),
                     ),
                   ),
-
+                    
                   // list Product
                   Container(
                     margin: EdgeInsets.symmetric(
@@ -293,8 +293,8 @@ class _DetailTokoViewState extends State<DetailTokoView> {
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -188,32 +188,32 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
         ),
       ),
 
-      body: Stack(
-        children: [
-          // 🔵 Background Gradient
-          Container(
-            width: double.infinity,
-            height: 300.h,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                stops: const [0.0, 0.8, 0.9, 1.0],
-                colors: [
-                  AppColors.blue2,
-                  AppColors.blue1.withValues(alpha: 0.5),
-                  AppColors.blue1.withValues(alpha: 0.2),
-                  AppColors.blue1.withValues(alpha: 0.0),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        controller: _scroll,
+        child: Stack(
+          children: [
+            // 🔵 Background Gradient
+            Container(
+              width: double.infinity,
+              height: 300.h,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  stops: const [0.0, 0.8, 0.9, 1.0],
+                  colors: [
+                    AppColors.blue2,
+                    AppColors.blue1.withValues(alpha: 0.5),
+                    AppColors.blue1.withValues(alpha: 0.2),
+                    AppColors.blue1.withValues(alpha: 0.0),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
             ),
-          ),
-
-          // 🔵 Konten scroll
-          SingleChildScrollView(
-            controller: _scroll,
-            physics: const BouncingScrollPhysics(),
-            child: Padding(
+        
+            // 🔵 Konten scroll
+            Padding(
               padding: EdgeInsets.only(top: kToolbarHeight + 24.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,7 +286,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                       ],
                     ),
                   ),
-
+                    
                   // Tab Bar: Detail Produk & Penjual
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 24.w),
@@ -338,9 +338,9 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                       ],
                     ),
                   ),
-
+                    
                   SizedBox(height: 16.h),
-
+                    
                   // Tab Content
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: 24.w),
@@ -359,7 +359,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                               ),
                             ),
                           ),
-
+                    
                           // Tab Penjual
                           _buildTabContent(
                             child: Column(
@@ -507,13 +507,13 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                       ),
                     ),
                   ),
-
+                    
                   SizedBox(height: 32.h),
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

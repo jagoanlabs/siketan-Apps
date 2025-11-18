@@ -9,5 +9,5 @@ class RoutesName {
   static const String notFound = "/not-found";
   static const String detailProduct = "/detail-product";
   static const String detailToko = "/detail-toko";
-
+  static const String searchGlobal = "/search-global";
 }
