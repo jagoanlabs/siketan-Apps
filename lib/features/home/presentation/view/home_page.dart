@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iconify_flutter/icons/ph.dart';
+import 'package:iconify_flutter/icons/ri.dart';
+import 'package:siketan/app/routes/route_name.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/features/home/presentation/widget/activity_card.dart';
 import 'package:siketan/features/home/presentation/widget/horizontal_menu_widget.dart';
@@ -44,6 +47,17 @@ class _HomePageViewState extends State<HomePageView> {
     return Scaffold(
       backgroundColor: AppColors.gray100,
       resizeToAvoidBottomInset: true,
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Chat',
+        shape: const CircleBorder(),
+        backgroundColor: AppColors.green0,
+        onPressed: () {
+          // aksi ketika icon search ditekan
+          debugPrint('Search clicked!');
+          Navigator.pushNamed(context, RoutesName.twakto);
+        },
+        child: Iconify(Ph.chat_circle_dots_bold, color: AppColors.green4, size: 28.w),
+      ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Stack(

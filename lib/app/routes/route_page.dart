@@ -78,6 +78,13 @@ class MyRoute {
           settings: settings,
           duration: const Duration(milliseconds: 300),
         );
+      case RoutesName.twakto:
+        return PageTransition(
+          child: const TwaktoPage(),
+          type: PageTransitionType.fade, // efek halus untuk splash
+          settings: settings,
+          duration: const Duration(milliseconds: 300),
+        );
       default:
         return PageTransition(
           child: const NotFoundPage(),

@@ -10,4 +10,5 @@ class RoutesName {
   static const String detailProduct = "/detail-product";
   static const String detailToko = "/detail-toko";
   static const String searchGlobal = "/search-global";
+  static const String twakto = "/twakto";
 }
