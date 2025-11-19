@@ -55,9 +55,29 @@ Future<void> setupDependencies() async {
   getIt.registerFactory<LoginRemoteDataSource>(
     () => LoginRemoteDataSource(baseService: getIt<PublicBaseService>()),
   );
+  // Local DataSource
+  // Local DS
+  getIt.registerLazySingleton<LoginLocalDataSource>(
+    () => LoginLocalDataSource(getIt<SharedPreferences>()),
+  );
   // Repository
   getIt.registerFactory<LoginRepository>(
-    () => LoginRepositoryImpl(remoteDataSource: getIt<LoginRemoteDataSource>()),
+    () => LoginRepositoryImpl(remoteDataSource: getIt<LoginRemoteDataSource>(),localDataSource: getIt<LoginLocalDataSource>()),
   );
-  // BLoC
+  
+
+
+  // authentication
+  // auth local datasource
+  getIt.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSource(getIt<SharedPreferences>()),
+  );
+
+  // auth repository
+  getIt.registerFactory<AuthRepository>(
+    () => AuthRepositoryImpl(
+      networkService: getIt<NetworkService>(),
+      authLocalDataSource: getIt<AuthLocalDataSource>(),
+    ),
+  );
 }

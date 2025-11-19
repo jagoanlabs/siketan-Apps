@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:siketan/app/dependency_injector/import.dart';
+import 'package:siketan/core/network/network_service.dart';
 import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/features/login/domain/model/login_payload_model.dart';
 import 'package:siketan/features/login/domain/model/login_response_model.dart';
@@ -23,6 +25,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       logger.d("LoginProcessing ${event.payload}");
       final response = await loginRepository.login(event.payload);
+      final token = response.token;
+      final NetworkService networkService = getIt<NetworkService>();
+      networkService.setToken(token ?? "");
       emit(LoginSuccess(data: response));
     } catch (e) {
       logger.e(e);

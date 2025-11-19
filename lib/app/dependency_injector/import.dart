@@ -2,6 +2,10 @@
 // External packages
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:siketan/features/auth/data/datasources/auth_local_datasource.dart';
+import 'package:siketan/features/auth/data/repository_impl/auth_repository_impl.dart';
+import 'package:siketan/features/auth/domain/repository/auth_repository.dart';
+import 'package:siketan/features/login/data/datasources/login_local_datasource.dart';
 import 'package:siketan/features/login/data/datasources/login_remote_datasource.dart';
 import 'package:siketan/features/login/data/repository_impl/login_repository_impl.dart';
 import 'package:siketan/features/login/domain/repository/login_repository.dart';

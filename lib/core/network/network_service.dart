@@ -35,4 +35,6 @@ class NetworkService {
   Future<void> setToken(String token) => tokenInterceptor.setToken(token);
 
   Future<void> clearToken() => tokenInterceptor.clearToken();
+
+  Future<String?> getToken() => tokenInterceptor.getToken();
 }

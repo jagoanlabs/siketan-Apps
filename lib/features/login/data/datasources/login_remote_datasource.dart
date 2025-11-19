@@ -10,7 +10,10 @@ class LoginRemoteDataSource {
 
   Future<LoginResponseModel> login(LoginPayloadModel payload) async {
     try {
-      final response = await baseService.post(ApiEndpoints.login);
+      final response = await baseService.post(
+        ApiEndpoints.login,
+        data: payload.toJson(),
+      );
       return LoginResponseModel.fromJson(response.data);
     } catch (e) {
       logger.e(e);
