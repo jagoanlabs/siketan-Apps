@@ -14,3 +14,5 @@ class AppStartEvent extends AuthenticationEvent {}
 class OnBoardingDoneEvent extends AuthenticationEvent {}
 
 class LogoutEvent extends AuthenticationEvent {}
+
+class LoginSuccessEvent extends AuthenticationEvent {}

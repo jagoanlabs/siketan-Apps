@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:siketan/app/routes/route_name.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
+import 'package:siketan/features/auth/presentation/bloc/authentication_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -181,6 +183,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           curve: Curves.easeInOut,
                         );
                       } else {
+
+                        context.read<AuthenticationBloc>().add(OnBoardingDoneEvent());
                         // Halaman terakhir → arahkan ke halaman utama
                         Navigator.pushReplacementNamed(
                           context,

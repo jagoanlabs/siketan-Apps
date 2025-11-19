@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 import 'package:iconify_flutter/icons/ri.dart';
 import 'package:siketan/app/routes/route_name.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
+import 'package:siketan/core/utils/logger/logger.dart';
+import 'package:siketan/features/auth/presentation/bloc/authentication_bloc.dart';
 import 'package:siketan/features/home/presentation/widget/activity_card.dart';
 import 'package:siketan/features/home/presentation/widget/horizontal_menu_widget.dart';
 import 'package:siketan/features/home/presentation/widget/new_card.dart';
@@ -34,14 +37,6 @@ class HomePageView extends StatefulWidget {
 }
 
 class _HomePageViewState extends State<HomePageView> {
-  bool isLogin = true;
-
-  void _toggleLogin() {
-    setState(() {
-      isLogin = !isLogin;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +51,11 @@ class _HomePageViewState extends State<HomePageView> {
           debugPrint('Search clicked!');
           Navigator.pushNamed(context, RoutesName.twakto);
         },
-        child: Iconify(Ph.chat_circle_dots_bold, color: AppColors.green4, size: 28.w),
+        child: Iconify(
+          Ph.chat_circle_dots_bold,
+          color: AppColors.green4,
+          size: 28.w,
+        ),
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
@@ -73,7 +72,7 @@ class _HomePageViewState extends State<HomePageView> {
                 ),
               ),
             ),
-      
+
             // Konten utama
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,8 +80,7 @@ class _HomePageViewState extends State<HomePageView> {
                 /// 🔹 Header Section
                 SizedBox(height: 48.h),
                 Padding(
-                  padding: EdgeInsets.only(
-                      left: 24.w, right: 24.w, top: 16.h),
+                  padding: EdgeInsets.only(left: 24.w, right: 24.w, top: 16.h),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -93,11 +91,19 @@ class _HomePageViewState extends State<HomePageView> {
                         width: 170.w,
                         fit: BoxFit.contain,
                       ),
-                  
+
                       /// 🔹 Percabangan Komponen (Login / Non-Login)
-                      isLogin
-                          ? GestureDetector(
-                              onTap: _toggleLogin,
+                      BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                        builder: (context, state) {
+                          logger.d('state is  $state');
+                          if (state is AuthenticationTrue) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  RoutesName.profile,
+                                );
+                              },
                               child: CircleAvatar(
                                 radius: 20.r,
                                 backgroundColor: AppColors.gray50,
@@ -107,8 +113,9 @@ class _HomePageViewState extends State<HomePageView> {
                                   size: 20.w,
                                 ),
                               ),
-                            )
-                          : SizedBox(
+                            );
+                          } else {
+                            return SizedBox(
                               height: 36.h,
                               width: 100.w,
                               child: ButtonPrimary(
@@ -120,16 +127,24 @@ class _HomePageViewState extends State<HomePageView> {
                                 ),
                                 color: AppColors.blue4,
                                 mainButtonMessage: "Masuk",
-                                mainButton: _toggleLogin,
+                                mainButton: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    RoutesName.login,
+                                  );
+                                },
                                 isLoading: false,
                               ),
-                            ),
+                            );
+                          }
+                        },
+                      ),
                     ],
                   ),
                 ),
-      
+
                 SizedBox(height: 16.h),
-      
+
                 /// 🔍 Search bar
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -148,7 +163,9 @@ class _HomePageViewState extends State<HomePageView> {
                 SizedBox(height: 16.h),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: HorizontalMenuWidget(onNavigateToTab: widget.onNavigateToTab),
+                  child: HorizontalMenuWidget(
+                    onNavigateToTab: widget.onNavigateToTab,
+                  ),
                 ),
                 SizedBox(height: 16.h),
                 ActivityCard(onNavigateToTab: widget.onNavigateToTab),

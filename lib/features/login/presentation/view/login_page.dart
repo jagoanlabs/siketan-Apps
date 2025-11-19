@@ -6,6 +6,7 @@ import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:siketan/app/dependency_injector/import.dart';
 import 'package:siketan/app/routes/route_name.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
+import 'package:siketan/features/auth/presentation/bloc/authentication_bloc.dart';
 import 'package:siketan/features/login/domain/model/login_payload_model.dart';
 import 'package:siketan/features/login/domain/repository/login_repository.dart';
 import 'package:siketan/features/login/presentation/bloc/login_bloc.dart';
@@ -16,7 +17,6 @@ import 'package:siketan/shared/widget/text_field_widget.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
 class LoginPage extends StatelessWidget {
-
   const LoginPage({super.key});
 
   @override
@@ -46,10 +46,7 @@ class _LoginPageViewState extends State<LoginPageView> {
           SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.only(
-                left: 24.w,
-                right: 24.w,
-              ),
+              padding: EdgeInsets.only(left: 24.w, right: 24.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -128,11 +125,15 @@ class _BuildFormState extends State<_BuildForm> {
           setState(() {
             _isLoading = false;
           });
+          // add authentication true
+          // context.read<AuthenticationBloc>().add(AuthenticationTrue());
           // Navigate to home or handle successful login
+          context.read<AuthenticationBloc>().add(LoginSuccessEvent()); //set state authentication true
+
           Navigator.pushNamedAndRemoveUntil(
             context,
             RoutesName.home,
-            (route) => false
+            (route) => false,
           );
         } else if (state is LoginFailure) {
           setState(() {
@@ -183,7 +184,11 @@ class _BuildFormState extends State<_BuildForm> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        Container(width: 40.w, height: 3.w, color: AppColors.green4),
+                        Container(
+                          width: 40.w,
+                          height: 3.w,
+                          color: AppColors.green4,
+                        ),
                       ],
                     ),
                     Column(
@@ -191,7 +196,7 @@ class _BuildFormState extends State<_BuildForm> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, RoutesName.register,);
+                            Navigator.pushNamed(context, RoutesName.register);
                           },
                           child: Text(
                             "Daftar",
@@ -271,7 +276,7 @@ class _BuildFormState extends State<_BuildForm> {
                 // Password
                 TextFieldWidget(
                   label: "Password",
-                  obscureText: false,
+                  obscureText: true,
                   isPasswordField: true,
                   controller: passwordController,
                   hintText: "Password",
@@ -284,10 +289,7 @@ class _BuildFormState extends State<_BuildForm> {
                 ButtonPrimary(
                   isGradient: true,
                   gradient: const LinearGradient(
-                    colors: [
-                      AppColors.blue5,
-                      AppColors.blue4,
-                    ],
+                    colors: [AppColors.blue5, AppColors.blue4],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -299,7 +301,9 @@ class _BuildFormState extends State<_BuildForm> {
                         email: emailController.text,
                         password: passwordController.text,
                       );
-                      context.read<LoginBloc>().add(LoginProcessing(payload: payload));
+                      context.read<LoginBloc>().add(
+                        LoginProcessing(payload: payload),
+                      );
                     }
                   },
                   color: AppColors.blue4,

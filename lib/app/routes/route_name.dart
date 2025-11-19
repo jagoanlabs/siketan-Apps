@@ -11,4 +11,5 @@ class RoutesName {
   static const String detailToko = "/detail-toko";
   static const String searchGlobal = "/search-global";
   static const String twakto = "/twakto";
+  static const String profile = "/profile";
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:siketan/features/detail-berita/presentation/view/detail_berita_page.dart';
 import 'package:siketan/features/onboarding/presentation/view/onboarding_page.dart';
+import 'package:siketan/features/profile/presentation/view/profile_page.dart';
 import 'package:siketan/features/search_global/presentation/view/search_global_page.dart';
 import 'package:siketan/features/tawkto/presentation/view/twakto_page.dart';
 import 'package:siketan/shared/view/home_wrapper.dart';

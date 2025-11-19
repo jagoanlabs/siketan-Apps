@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:siketan/app/routes/route_name.dart';
+import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,6 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return BlocListener<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
+        logger.d('state is  $state');
         if (state is AuthenticationFirstTime) {
           Navigator.pushReplacementNamed(context, RoutesName.onBoarding);
         } else if (state is AuthenticationTrue) {
