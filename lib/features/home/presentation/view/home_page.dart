@@ -97,7 +97,6 @@ class _HomePageViewState extends State<HomePageView> {
                       /// 🔹 Percabangan Komponen (Login / Non-Login)
                       isLogin
                           ? GestureDetector(
-                              key: const ValueKey('logout_button'),
                               onTap: _toggleLogin,
                               child: CircleAvatar(
                                 radius: 20.r,
@@ -110,7 +109,6 @@ class _HomePageViewState extends State<HomePageView> {
                               ),
                             )
                           : SizedBox(
-                              key: const ValueKey('login_button'),
                               height: 36.h,
                               width: 100.w,
                               child: ButtonPrimary(

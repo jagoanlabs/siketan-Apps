@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:siketan/core/network/api_endpoints.dart';
 import 'base_service.dart';
 
 class PublicService {
@@ -6,15 +7,8 @@ class PublicService {
 
   PublicService(this._baseService);
 
-  Future<Response> getPublicData() async {
-    return await _baseService.get('/public/data');
-  }
-
-  Future<Response> getNews() async {
-    return await _baseService.get('/news');
-  }
-
-  Future<Response> getAnnouncements() async {
-    return await _baseService.get('/announcements');
+  // login
+  Future<Response> login() async {
+    return await _baseService.post(ApiEndpoints.login);
   }
 }

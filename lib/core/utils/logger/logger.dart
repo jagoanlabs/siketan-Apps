@@ -1,11 +1,11 @@
 import 'package:logger/logger.dart';
+import 'package:siketan/core/utils/logger/file_logger.dart';
 
 final logger = Logger(
-  printer: PrettyPrinter(
-  methodCount: 0,
-  errorMethodCount: 5,
-  lineLength: 50,
-  colors: true,
-  printEmojis: true,
-  dateTimeFormat:  DateTimeFormat.onlyTimeAndSinceStart,
-));
+  printer: PrettyFilePrinter(
+    methodCount: 0,
+    lineLength: 50,
+    printEmojis: true,
+    colors: true,
+  ),
+);

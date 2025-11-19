@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:siketan/core/constant/env.dart';
 import 'package:siketan/core/network/token_interceptor.dart';
 
 class ApiClient {
-  static const String baseUrl = 'https://api.example.com'; // Ganti dengan base URL Anda
+  static const String baseUrl = Env.backend; // Ganti dengan base URL Anda
   late Dio _dio;
 
   ApiClient({

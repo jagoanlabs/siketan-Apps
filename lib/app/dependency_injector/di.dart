@@ -41,11 +41,23 @@ Future<void> setupDependencies() async {
     () => AuthBaseService(getIt<AuthApiClient>()),
   );
 
-  // Specific Services
-  getIt.registerFactory<AuthService>(
-    () => AuthService(getIt<AuthBaseService>()),
+  // // Specific Services
+  // getIt.registerFactory<AuthService>(
+  //   () => AuthService(getIt<AuthBaseService>()),
+  // );
+  // getIt.registerFactory<PublicService>(
+  //   () => PublicService(getIt<PublicBaseService>()),
+  // );
+
+
+  // Login Repository
+  // Remote DataSource
+  getIt.registerFactory<LoginRemoteDataSource>(
+    () => LoginRemoteDataSource(baseService: getIt<PublicBaseService>()),
   );
-  getIt.registerFactory<PublicService>(
-    () => PublicService(getIt<PublicBaseService>()),
+  // Repository
+  getIt.registerFactory<LoginRepository>(
+    () => LoginRepositoryImpl(remoteDataSource: getIt<LoginRemoteDataSource>()),
   );
+  // BLoC
 }
