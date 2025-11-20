@@ -9,7 +9,9 @@ import 'package:siketan/features/login/data/datasources/login_local_datasource.d
 import 'package:siketan/features/login/data/datasources/login_remote_datasource.dart';
 import 'package:siketan/features/login/data/repository_impl/login_repository_impl.dart';
 import 'package:siketan/features/login/domain/repository/login_repository.dart';
-
+import 'package:siketan/features/register/data/datasources/register_remote_datasource.dart';
+import 'package:siketan/features/register/data/repository_impl/register_repository_impl.dart';
+import 'package:siketan/features/register/domain/repository/register_repository.dart';
 // Core dependencies
 import '../../core/network/api_clients.dart';
 import '../../core/network/network_service.dart';

@@ -1,9 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
+import 'package:siketan/app/dependency_injector/import.dart';
 import 'package:siketan/app/routes/route_name.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
+import 'package:siketan/features/register/domain/repository/register_repository.dart';
+import 'package:siketan/features/register/presentation/bloc/register_wilayah_binaan_bloc.dart';
+import 'package:siketan/features/register/presentation/bloc/register_wilayah_bloc.dart';
 import 'package:siketan/features/register/presentation/widget/biodata_form.dart';
 import 'package:siketan/features/register/presentation/widget/wilayah_binaan_form.dart';
 import 'package:siketan/features/register/presentation/widget/wilayah_form.dart';
@@ -11,13 +18,18 @@ import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/style/shadow.dart';
 import 'package:siketan/shared/widget/primary_button_widget.dart';
 
-
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const RegisterPageView();
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => RegisterWilayahBloc(registerRepository: getIt<RegisterRepository>())),
+        BlocProvider(create: (context) => RegisterWilayahBinaanBloc(registerRepository: getIt<RegisterRepository>())),
+      ],
+      child: const RegisterPageView(),
+    );
   }
 }
 
@@ -29,6 +41,23 @@ class RegisterPageView extends StatefulWidget {
 }
 
 class _RegisterPageViewState extends State<RegisterPageView> {
+  // FORM KEYS
+  final biodataKey = GlobalKey<FormState>();
+  final wilayahKey = GlobalKey<FormState>();
+  final binaanKey = GlobalKey<FormState>();
+  // BIODATA
+  final nik = TextEditingController();
+  final nama = TextEditingController();
+  final email = TextEditingController();
+  final hp = TextEditingController();
+  final pass = TextEditingController();
+  final confirmPass = TextEditingController();
+  final alamat = TextEditingController();
+  File? foto;
+  String? tipePenyuluh;
+
+  //  wilayah
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,10 +68,7 @@ class _RegisterPageViewState extends State<RegisterPageView> {
             Image.asset(ImageConfig.authBackground, width: double.infinity),
             SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.only(
-                left: 24.w,
-                right: 24.w,
-              ),
+              padding: EdgeInsets.only(left: 24.w, right: 24.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -208,10 +234,7 @@ class _BuildForm extends StatelessWidget {
           ButtonPrimary(
             isGradient: true,
             gradient: const LinearGradient(
-              colors: [
-                AppColors.blue5,
-                AppColors.blue4,
-              ],
+              colors: [AppColors.blue5, AppColors.blue4],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -225,5 +248,3 @@ class _BuildForm extends StatelessWidget {
     );
   }
 }
-
-

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
+import 'package:siketan/core/utils/logger/logger.dart';
+import 'package:siketan/features/register/presentation/bloc/register_wilayah_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:siketan/shared/widget/text_field_widget.dart';
@@ -16,8 +19,14 @@ class WilayahForm extends StatefulWidget {
 class _WilayahFormState extends State<WilayahForm> {
   bool _isExpanded = false;
 
-  final _kecamatan = TextEditingController();
-  final _desa = TextEditingController();
+  int? selectedKecamatanId;
+  int? selectedDesaId;
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<RegisterWilayahBloc>().add(GetAllKecamatanEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,27 +68,77 @@ class _WilayahFormState extends State<WilayahForm> {
             child: Column(
               spacing: 8.h,
               children: [
-                TextFieldWidget(
-                  controller: _kecamatan,
-                  label: "Kecamatan",
-                  hintText: "Kecamatan",
-                  keyboardType: TextInputType.name,
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(errorText: 'Wajib diisi'),
-                  ]),
-                  obscureText: false,
-                  isPasswordField: false,
+                BlocBuilder<RegisterWilayahBloc, RegisterWilayahState>(
+                  buildWhen: (prev, curr) =>
+                      prev.loadingKecamatan != curr.loadingKecamatan ||
+                      prev.kecamatanList != curr.kecamatanList,
+                  builder: (context, state) {
+                    if (state.loadingKecamatan) {
+                      return CircularProgressIndicator();
+                    }
+
+                    return DropdownButtonFormField<int>(
+                      value: selectedKecamatanId,
+                      items: state.kecamatanList?.data?.map((e) {
+                        return DropdownMenuItem(
+                          value: e.id,
+                          child: Text(e.nama!),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedKecamatanId = value;
+                          selectedDesaId = null;
+                        });
+
+                        context.read<RegisterWilayahBloc>().add(
+                          GetDesaByKecamatanEvent(value!),
+                        );
+                      },
+                    );
+                  },
                 ),
-                TextFieldWidget(
-                  controller: _desa,
-                  label: "Desa",
-                  hintText: "Desa",
-                  keyboardType: TextInputType.name,
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(errorText: 'Wajib diisi'),
-                  ]),
-                  obscureText: false,
-                  isPasswordField: false,
+
+                /// ============================
+                /// DROPDOWN DESA
+                /// ============================
+                BlocBuilder<RegisterWilayahBloc, RegisterWilayahState>(
+                  buildWhen: (prev, curr) =>
+                      prev.loadingDesa != curr.loadingDesa ||
+                      prev.desaList != curr.desaList,
+                  builder: (context, state) {
+                    if (state.loadingDesa) {
+                      return const CircularProgressIndicator();
+                    }
+
+                    if (state.desaList != null) {
+                      return DropdownButtonFormField<int>(
+                        value: selectedDesaId,
+                        decoration: InputDecoration(
+                          labelText: "Desa",
+                          border: OutlineInputBorder(),
+                        ),
+                        items: state.desaList?.data?.map((desa) {
+                          return DropdownMenuItem(
+                            value: desa.id,
+                            child: Text(desa.nama ?? ''),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() => selectedDesaId = value);
+                        },
+                      );
+                    }
+
+                    return DropdownButtonFormField<int>(
+                      decoration: InputDecoration(
+                        labelText: "Desa",
+                        border: OutlineInputBorder(),
+                      ),
+                      items: const [],
+                      onChanged: null, // disabled until kecamatan dipilih
+                    );
+                  },
                 ),
               ],
             ),

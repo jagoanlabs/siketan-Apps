@@ -231,7 +231,7 @@ class _BiodataFormState extends State<BiodataForm> {
                   label: "Tipe Penyuluh",
                   hintText: "Pilih tipe penyuluh",
                   value: _selectedTipePenyuluh,
-                  items: const ["Lapangan", "Swasta", "PNS"],
+                  items: const ["Reguler", "Swadaya"],
                   validator: FormBuilderValidators.required(
                     errorText: "Wajib dipilih",
                   ),

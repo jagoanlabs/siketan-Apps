@@ -1,7 +1,9 @@
 
+import 'package:siketan/app/dependency_injector/import.dart';
 import 'package:siketan/core/network/network_service.dart';
 import 'package:siketan/features/auth/data/datasources/auth_local_datasource.dart';
 import 'package:siketan/features/auth/domain/repository/auth_repository.dart';
+import 'package:siketan/features/login/data/datasources/login_local_datasource.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthLocalDataSource authLocalDataSource;
@@ -28,7 +30,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> logout() {
-    networkService.clearToken();
-    return authLocalDataSource.clearOnboardingStatus();
+    networkService.clearToken(); //clear token
+    return getIt<LoginLocalDataSource>().clearAuthData(); // clear user data from shared preferences
   }
 }

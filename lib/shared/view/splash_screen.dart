@@ -36,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
         } else if (state is AuthenticationTrue) {
           Navigator.pushReplacementNamed(context, RoutesName.home);
         } else if (state is AuthenticationFalse) {
-          Navigator.pushReplacementNamed(context, RoutesName.login);
+          Navigator.pushReplacementNamed(context, RoutesName.home);
         }
       },
       child: Scaffold(

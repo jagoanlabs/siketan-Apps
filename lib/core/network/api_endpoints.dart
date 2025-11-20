@@ -14,4 +14,11 @@ class ApiEndpoints {
   static const String logout = '/auth/logout';
   static const String refreshToken = '/auth/refresh-token';
   static const String verifyToken = '/auth/verify-token';
+
+
+  // register
+  static const String kecamatan = "/wilayah/kecamatan";
+  static const String kelompok = "/kelompok-all";
+  static const String desa = "/wilayah/desa";
+
 }

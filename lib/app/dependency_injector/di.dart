@@ -80,4 +80,18 @@ Future<void> setupDependencies() async {
       authLocalDataSource: getIt<AuthLocalDataSource>(),
     ),
   );
+
+
+  // register
+  // register remote datasource
+  getIt.registerFactory<RegisterRemoteDataSource>(
+    () => RegisterRemoteDataSource(baseService: getIt<PublicBaseService>()),
+  );
+
+  // register repository
+  getIt.registerFactory<RegisterRepository>(
+    () => RegisterRepositoryImpl(remoteDataSource: getIt<RegisterRemoteDataSource>()),
+  );
+
+
 }
