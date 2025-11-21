@@ -34,17 +34,23 @@ class RegisterWilayahBinaanBloc
   ) async {
     emit(state.copyWith(loadingKecamatan: true, loadingKelompok: true));
 
-    final kecamatan = await registerRepository.getAllKecamatan();
-    final kelompok = await registerRepository.getAllKelompok();
+    try {
+      final kecamatan = await registerRepository.getAllKecamatan();
+      final kelompok = await registerRepository.getAllKelompok();
 
-    emit(
-      state.copyWith(
-        loadingKecamatan: false,
-        loadingKelompok: false,
-        kecamatanList: kecamatan,
-        kelompokList: kelompok,
-      ),
-    );
+      emit(
+        state.copyWith(
+          loadingKecamatan: false,
+          loadingKelompok: false,
+          kecamatanList: kecamatan,
+          allKelompokList: kelompok,
+          kelompokList: kelompok, // tampilkan semua di awal (opsional)
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(loadingKecamatan: false, loadingKelompok: false));
+      // Bisa tambahkan error handling
+    }
   }
 
   Future<void> _selectKecamatan(
@@ -61,28 +67,41 @@ class RegisterWilayahBinaanBloc
       ),
     );
 
-    /// 1. Ambil desa berdasarkan kecamatan
-    final desa = await registerRepository.getDesaByKecamatanId(
-      event.kecamatanId,
-    );
+    try {
+      // Fetch desa
+      final desa = await registerRepository.getDesaByKecamatanId(
+        event.kecamatanId,
+      );
 
-    /// 2. Filter kelompok berdasarkan kecamatanId (lebih aman dari nama)
-    final allKelompok = state.kelompokList?.dataKelompok?.values.toList() ?? [];
+      // Ambil SEMUA kelompok dari allKelompokList
+      final allKelompok = state.allKelompokList?.toList() ?? [];
 
-    final filteredKelompok = allKelompok
-        .where((k) => k.kecamatanId == event.kecamatanId)
-        .toList();
+      // Filter berdasarkan kecamatanId (int?)
+      final filteredKelompok = allKelompok
+          .where((k) => k.kecamatanId == event.kecamatanId)
+          .toList();
 
-    emit(
-      state.copyWith(
-        desaList: desa,
-        loadingDesa: false,
-        loadingKelompok: false,
-        kelompokList: KelompokAllResponseModel(
-          dataKelompok: {for (var k in filteredKelompok) k.id!.toString(): k},
+      // Bangun ulang dataKelompok sebagai Map<String, DataKelompok>
+      final filteredMap = <String, DataKelompok>{
+        for (var k in filteredKelompok) k.id.toString(): k,
+      };
+
+      emit(
+        state.copyWith(
+          desaList: desa,
+          loadingDesa: false,
+          loadingKelompok: false,
+          kelompokList: KelompokAllResponseModel(
+            // message bisa diisi null atau dari state lama
+            message: state.allKelompokList?.message,
+            dataKelompok: filteredMap,
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      emit(state.copyWith(loadingDesa: false, loadingKelompok: false));
+      // Opsional: tambahkan error toast
+    }
   }
 
   void _selectDesa(
@@ -92,14 +111,10 @@ class RegisterWilayahBinaanBloc
     emit(state.copyWith(selectedDesaIds: event.desaIds));
   }
 
-  Future<void> _selectKelompok(
+  void _selectKelompok(
     SelectKelompokEvent event,
     Emitter<RegisterWilayahBinaanState> emit,
-  ) async {
-    emit(
-      state.copyWith(
-        selectedKelompokIds: event.kelompokIds, // langsung overwrite
-      ),
-    );
+  ) {
+    emit(state.copyWith(selectedKelompokIds: event.kelompokIds));
   }
 }

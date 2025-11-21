@@ -7,7 +7,8 @@ class RegisterWilayahBinaanState extends Equatable {
 
   final KecamatanResponseModel? kecamatanList;
   final DesaResponseModel? desaList;
-  final KelompokAllResponseModel? kelompokList;
+  final KelompokAllResponseModel? kelompokList; // untuk tampilan saat ini
+  final KelompokAllResponseModel? allKelompokList; // data asli semua kelompok
 
   final int? selectedKecamatanId;
   final List<int> selectedDesaIds;
@@ -20,6 +21,7 @@ class RegisterWilayahBinaanState extends Equatable {
     this.kecamatanList,
     this.desaList,
     this.kelompokList,
+    this.allKelompokList,
     this.selectedKecamatanId,
     this.selectedDesaIds = const [],
     this.selectedKelompokIds = const [],
@@ -32,6 +34,7 @@ class RegisterWilayahBinaanState extends Equatable {
     KecamatanResponseModel? kecamatanList,
     DesaResponseModel? desaList,
     KelompokAllResponseModel? kelompokList,
+    KelompokAllResponseModel? allKelompokList,
     int? selectedKecamatanId,
     List<int>? selectedDesaIds,
     List<int>? selectedKelompokIds,
@@ -43,6 +46,7 @@ class RegisterWilayahBinaanState extends Equatable {
       kecamatanList: kecamatanList ?? this.kecamatanList,
       desaList: desaList ?? this.desaList,
       kelompokList: kelompokList ?? this.kelompokList,
+      allKelompokList: allKelompokList ?? this.allKelompokList,
       selectedKecamatanId: selectedKecamatanId ?? this.selectedKecamatanId,
       selectedDesaIds: selectedDesaIds ?? this.selectedDesaIds,
       selectedKelompokIds: selectedKelompokIds ?? this.selectedKelompokIds,
@@ -57,6 +61,7 @@ class RegisterWilayahBinaanState extends Equatable {
         kecamatanList,
         desaList,
         kelompokList,
+        allKelompokList,
         selectedKecamatanId,
         selectedDesaIds,
         selectedKelompokIds,

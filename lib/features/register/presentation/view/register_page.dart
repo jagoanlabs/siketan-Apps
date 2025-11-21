@@ -160,10 +160,13 @@ class _BuildFormState extends State<_BuildForm> {
       child: BlocListener<RegisterBloc, RegisterState>(
         listener: (context, state) {
           if (state is RegisterFailed) {
-            Toast.show(message: state.message,type: ToastType.error);
+            Toast.show(message: state.message, type: ToastType.error);
           }
           if (state is RegisterSuccess) {
-            Toast.show(message: state.data.message?? "Berhasil Mendaftar Penyuluh",type: ToastType.success);
+            Toast.show(
+              message: state.data.message ?? "Berhasil Mendaftar Penyuluh",
+              type: ToastType.success,
+            );
             Navigator.pushNamed(context, RoutesName.login);
           }
         },
@@ -315,21 +318,27 @@ class _BuildFormState extends State<_BuildForm> {
     final selectedKelompok = wilayahBinaanBloc.state.selectedKelompokIds;
     final selectedDesa = wilayahBinaanBloc.state.selectedDesaIds;
 
-    if (selectedKelompok.isEmpty || selectedDesa.isEmpty) {
-      isWilayahBinaanValid = false;
-      // Show snackbar or dialog to inform user about the missing selection
-      String errorMessage = '';
-      if (selectedKelompok.isEmpty && selectedDesa.isEmpty) {
-        errorMessage =
-            'Silakan pilih Kelompok Binaan dan Desa Binaan terlebih dahulu';
-      } else if (selectedKelompok.isEmpty) {
-        errorMessage = 'Silakan pilih Kelompok Binaan terlebih dahulu';
-      } else if (selectedDesa.isEmpty) {
-        errorMessage = 'Silakan pilih Desa Binaan terlebih dahulu';
-      }
+    // Check if kecamatan has been selected first
+    bool kecamatanBinaanSelected =
+        wilayahBinaanBloc.state.selectedKecamatanId != null;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+    if (!kecamatanBinaanSelected) {
+      isWilayahBinaanValid = false;
+      Toast.show(
+        message: 'Silakan pilih Kecamatan Binaan terlebih dahulu',
+        type: ToastType.error,
+      );
+    } else if (selectedDesa.isEmpty) {
+      isWilayahBinaanValid = false;
+      Toast.show(
+        message: 'Silakan pilih Desa Binaan terlebih dahulu',
+        type: ToastType.error,
+      );
+    } else if (selectedKelompok.isEmpty) {
+      isWilayahBinaanValid = false;
+      Toast.show(
+        message: 'Silakan pilih Kelompok Binaan terlebih dahulu',
+        type: ToastType.error,
       );
     }
 

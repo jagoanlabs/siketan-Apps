@@ -23,7 +23,9 @@ class WilayahBinaanFormState extends State<WilayahBinaanForm> {
       final wilayahBinaanBloc = context.read<RegisterWilayahBinaanBloc>();
       widget.onCollectData!({
         'kecamatanBinaanId': wilayahBinaanBloc.state.selectedKecamatanId,
-        'desaBinaanId': wilayahBinaanBloc.state.selectedDesaIds.isNotEmpty ? wilayahBinaanBloc.state.selectedDesaIds.first : null,
+        'desaBinaanId': wilayahBinaanBloc.state.selectedDesaIds.isNotEmpty
+            ? wilayahBinaanBloc.state.selectedDesaIds.first
+            : null,
         'kelompokBinaanIds': wilayahBinaanBloc.state.selectedKelompokIds,
       });
     }
@@ -167,20 +169,23 @@ class WilayahBinaanFormState extends State<WilayahBinaanForm> {
                         /// MULTI SELECT DESA
                         /// ===========================
                         Text(
-                          'Desa',
-                          style: TextStyle(fontSize: 13.sp, color: AppColors.gray900),
+                          'Desa Binaan',
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: AppColors.gray900,
+                          ),
                         ),
                         MultiSelectDialogField(
+                          checkColor: Colors.white,
+                          selectedColor: AppColors.green4,
+
                           title: const Text("Pilih Desa Binaan"),
-                          items:
-                              (state.desaList?.data ?? [])
-                                  .map(
-                                    (desa) => MultiSelectItem(
-                                      desa.id!,
-                                      desa.nama ?? "",
-                                    ),
-                                  )
-                                  .toList(),
+                          items: (state.desaList?.data ?? [])
+                              .map(
+                                (desa) =>
+                                    MultiSelectItem(desa.id!, desa.nama ?? ""),
+                              )
+                              .toList(),
                           decoration: BoxDecoration(
                             color: AppColors.gray100,
                             border: Border.all(
@@ -203,9 +208,13 @@ class WilayahBinaanFormState extends State<WilayahBinaanForm> {
                         /// ===========================
                         Text(
                           'Kelompok Binaan',
-                          style: TextStyle(fontSize: 13.sp, color: AppColors.gray900),
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: AppColors.gray900,
+                          ),
                         ),
                         MultiSelectDialogField(
+                          selectedColor: AppColors.green4,
                           title: const Text("Pilih Kelompok"),
                           items:
                               (state.kelompokList?.dataKelompok?.values ?? [])
