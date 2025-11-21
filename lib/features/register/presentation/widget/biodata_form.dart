@@ -228,6 +228,12 @@ class BiodataFormState extends State<BiodataForm> {
                   obscureText: true,
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(errorText: 'Wajib diisi'),
+                    (val) {
+                      if (val != confirmPassController.text) {
+                        return 'Password tidak sama dengan konfirmasi password';
+                      }
+                      return null;
+                    },
                   ]),
                   isPasswordField: true,
                   keyboardType: TextInputType.visiblePassword,
@@ -239,6 +245,12 @@ class BiodataFormState extends State<BiodataForm> {
                   obscureText: true,
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(errorText: 'Wajib diisi'),
+                    (val) {
+                      if (val != passController.text) {
+                        return 'Password tidak sama dengan konfirmasi password';
+                      }
+                      return null;
+                    },
                   ]),
                   isPasswordField: true,
                   keyboardType: TextInputType.visiblePassword,
