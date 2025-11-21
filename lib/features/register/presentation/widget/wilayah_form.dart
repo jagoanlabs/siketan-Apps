@@ -10,17 +10,27 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:siketan/shared/widget/text_field_widget.dart';
 
 class WilayahForm extends StatefulWidget {
-  const WilayahForm({super.key});
+  final Function(Map<String, dynamic>)? onCollectData;
+  const WilayahForm({super.key, this.onCollectData});
 
   @override
-  State<WilayahForm> createState() => _WilayahFormState();
+  State<WilayahForm> createState() => WilayahFormState();
 }
 
-class _WilayahFormState extends State<WilayahForm> {
+class WilayahFormState extends State<WilayahForm> {
   bool _isExpanded = false;
 
   int? selectedKecamatanId;
   int? selectedDesaId;
+
+  void collectFormData() {
+    if (widget.onCollectData != null) {
+      widget.onCollectData!({
+        'kecamatanId': selectedKecamatanId,
+        'desaId': selectedDesaId,
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -83,7 +93,7 @@ class _WilayahFormState extends State<WilayahForm> {
                     }
 
                     return DropdownButtonFormField<int>(
-                      initialValue: selectedKecamatanId,
+                      value: selectedKecamatanId,
                       decoration: InputDecoration(
                         contentPadding: EdgeInsets.symmetric(
                           vertical: 12.h,
@@ -125,6 +135,12 @@ class _WilayahFormState extends State<WilayahForm> {
                           borderSide: BorderSide(width: 1.w, color: Colors.red),
                         ),
                       ),
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Wajib dipilih';
+                        }
+                        return null;
+                      },
                       items: state.kecamatanList?.data?.map((e) {
                         return DropdownMenuItem(
                           value: e.id,
@@ -163,7 +179,7 @@ class _WilayahFormState extends State<WilayahForm> {
 
                     if (state.desaList != null) {
                       return DropdownButtonFormField<int>(
-                        initialValue: selectedDesaId,
+                        value: selectedDesaId,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(
                             vertical: 12.h,
@@ -211,6 +227,12 @@ class _WilayahFormState extends State<WilayahForm> {
                             ),
                           ),
                         ),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Wajib dipilih';
+                          }
+                          return null;
+                        },
                         items: state.desaList?.data?.map((desa) {
                           return DropdownMenuItem(
                             value: desa.id,
@@ -265,6 +287,12 @@ class _WilayahFormState extends State<WilayahForm> {
                           borderSide: BorderSide(width: 1.w, color: Colors.red),
                         ),
                       ),
+                      validator: (value) {
+                        if (selectedKecamatanId != null && value == null) {
+                          return 'Wajib dipilih';
+                        }
+                        return null;
+                      },
                       items: const [],
                       onChanged: null, // disabled until kecamatan dipilih
                     );

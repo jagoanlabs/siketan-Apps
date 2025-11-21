@@ -10,27 +10,28 @@ import 'package:image_picker/image_picker.dart'; // Tambahkan ini
 import 'dart:io' show File; // Untuk handle file lokal
 
 class BiodataForm extends StatefulWidget {
-  const BiodataForm({super.key});
+  final Function(Map<String, dynamic>)? onCollectData;
+  const BiodataForm({super.key, this.onCollectData});
 
   @override
-  State<BiodataForm> createState() => _BiodataFormState();
+  State<BiodataForm> createState() => BiodataFormState();
 }
 
-class _BiodataFormState extends State<BiodataForm> {
+class BiodataFormState extends State<BiodataForm> {
   bool _isExpanded = false;
 
-  final _nik = TextEditingController();
-  final _nama = TextEditingController();
-  final _email = TextEditingController();
-  final _hp = TextEditingController();
-  final _pass = TextEditingController();
-  final _confirmPass = TextEditingController();
-  final _alamat = TextEditingController();
+  final TextEditingController nikController = TextEditingController();
+  final TextEditingController namaController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController hpController = TextEditingController();
+  final TextEditingController passController = TextEditingController();
+  final TextEditingController confirmPassController = TextEditingController();
+  final TextEditingController alamatController = TextEditingController();
 
-  String? _selectedTipePenyuluh;
+  String? selectedTipePenyuluh;
 
   // Variabel untuk menyimpan file gambar yang dipilih
-  File? _selectedImage;
+  File? selectedImage;
 
   // Fungsi untuk memilih gambar dari galeri
   Future<void> _pickImage() async {
@@ -44,11 +45,27 @@ class _BiodataFormState extends State<BiodataForm> {
 
     if (pickedFile != null) {
       setState(() {
-        _selectedImage = File(pickedFile.path);
+        selectedImage = File(pickedFile.path);
       });
     }
   }
 
+
+  void collectFormData() {
+    if (widget.onCollectData != null) {
+      widget.onCollectData!({
+        'nik': nikController.text,
+        'nama': namaController.text,
+        'email': emailController.text,
+        'hp': hpController.text,
+        'password': passController.text,
+        'confirmPassword': confirmPassController.text,
+        'tipePenyuluh': selectedTipePenyuluh,
+        'alamat': alamatController.text,
+        'foto': selectedImage?.path,
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,10 +112,10 @@ class _BiodataFormState extends State<BiodataForm> {
                 CircleAvatar(
                   radius: 50.r,
                   backgroundColor: AppColors.gray100,
-                  backgroundImage: _selectedImage != null
-                      ? FileImage(_selectedImage!)
+                  backgroundImage: selectedImage != null
+                      ? FileImage(selectedImage!)
                       : null, // Jika belum ada gambar, tampilkan background abu-abu
-                  child: _selectedImage == null
+                  child: selectedImage == null
                       ? Iconify(
                           MaterialSymbols.person_outline_rounded,
                           color: AppColors.gray400,
@@ -161,7 +178,7 @@ class _BiodataFormState extends State<BiodataForm> {
 
                 SizedBox(height: 4.h),
                 TextFieldWidget(
-                  controller: _nik,
+                  controller: nikController,
                   label: "NIK",
                   hintText: "NIK",
                   keyboardType: TextInputType.number,
@@ -172,7 +189,7 @@ class _BiodataFormState extends State<BiodataForm> {
                   isPasswordField: false,
                 ),
                 TextFieldWidget(
-                  controller: _nama,
+                  controller: namaController,
                   label: "Nama",
                   hintText: "Nama",
                   keyboardType: TextInputType.name,
@@ -183,7 +200,7 @@ class _BiodataFormState extends State<BiodataForm> {
                   isPasswordField: false,
                 ),
                 TextFieldWidget(
-                  controller: _email,
+                  controller: emailController,
                   label: "Email",
                   hintText: "Email",
                   keyboardType: TextInputType.emailAddress,
@@ -194,7 +211,7 @@ class _BiodataFormState extends State<BiodataForm> {
                   isPasswordField: false,
                 ),
                 TextFieldWidget(
-                  controller: _hp,
+                  controller: hpController,
                   label: "No HP",
                   hintText: "No HP",
                   keyboardType: TextInputType.phone,
@@ -205,7 +222,7 @@ class _BiodataFormState extends State<BiodataForm> {
                   isPasswordField: false,
                 ),
                 TextFieldWidget(
-                  controller: _pass,
+                  controller: passController,
                   label: "Password",
                   hintText: "Password",
                   obscureText: true,
@@ -216,7 +233,7 @@ class _BiodataFormState extends State<BiodataForm> {
                   keyboardType: TextInputType.visiblePassword,
                 ),
                 TextFieldWidget(
-                  controller: _confirmPass,
+                  controller: confirmPassController,
                   label: "Konfirmasi Password",
                   hintText: "Konfirmasi Password",
                   obscureText: true,
@@ -230,17 +247,17 @@ class _BiodataFormState extends State<BiodataForm> {
                 SelectFieldWidget(
                   label: "Tipe Penyuluh",
                   hintText: "Pilih tipe penyuluh",
-                  value: _selectedTipePenyuluh,
+                  value: selectedTipePenyuluh,
                   items: const ["Reguler", "Swadaya"],
                   validator: FormBuilderValidators.required(
                     errorText: "Wajib dipilih",
                   ),
                   onChanged: (value) =>
-                      setState(() => _selectedTipePenyuluh = value),
+                      setState(() => selectedTipePenyuluh = value),
                 ),
 
                 TextFieldWidget(
-                  controller: _alamat,
+                  controller: alamatController,
                   label: "Alamat",
                   hintText: "Alamat Lengkap",
                   keyboardType: TextInputType.streetAddress,

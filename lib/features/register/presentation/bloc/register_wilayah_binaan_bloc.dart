@@ -89,15 +89,7 @@ class RegisterWilayahBinaanBloc
     SelectDesaEvent event,
     Emitter<RegisterWilayahBinaanState> emit,
   ) {
-    final updatedList = List<int>.from(state.selectedDesaIds);
-
-    if (updatedList.contains(event.desaId)) {
-      updatedList.remove(event.desaId);
-    } else {
-      updatedList.add(event.desaId);
-    }
-
-    emit(state.copyWith(selectedDesaIds: updatedList));
+    emit(state.copyWith(selectedDesaIds: event.desaIds));
   }
 
   Future<void> _selectKelompok(

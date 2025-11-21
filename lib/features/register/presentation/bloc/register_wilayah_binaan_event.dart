@@ -16,12 +16,12 @@ class SelectKecamatanEvent extends RegisterWilayahBinaanEvent {
 }
 
 class SelectDesaEvent extends RegisterWilayahBinaanEvent {
-  final int desaId;
+  final List<int> desaIds;
 
-  SelectDesaEvent(this.desaId);
+  SelectDesaEvent(this.desaIds);
 
   @override
-  List<Object> get props => [desaId];
+  List<Object> get props => [desaIds];
 }
 
 class SelectKelompokEvent extends RegisterWilayahBinaanEvent {

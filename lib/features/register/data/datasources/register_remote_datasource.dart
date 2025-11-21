@@ -4,6 +4,8 @@ import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/features/register/domain/model/desa_response_model.dart';
 import 'package:siketan/features/register/domain/model/kelompok_all_response_model.dart';
 import 'package:siketan/features/register/domain/model/kecamatan_response_model.dart';
+import 'package:siketan/features/register/domain/model/register_payload_model.dart';
+import 'package:siketan/features/register/domain/model/register_response_model.dart';
 
 class RegisterRemoteDataSource {
   final PublicBaseService baseService;
@@ -48,6 +50,17 @@ class RegisterRemoteDataSource {
       final response = await baseService.get(ApiEndpoints.desa, queryParameters: {'kecamatanId': kecamatanId});
       logger.d(response.data);
       return DesaResponseModel.fromJson(response.data);
+    } catch (e) {
+      logger.e(e);
+      rethrow;
+    }
+  }
+
+  Future<RegisterResponseModel> register(RegisterPaylaodModel payload) async {
+    try {
+      final response = await baseService.post(ApiEndpoints.register, data: payload.toJson());
+      logger.d(response.data);
+      return RegisterResponseModel.fromJson(response.data);
     } catch (e) {
       logger.e(e);
       rethrow;

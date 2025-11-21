@@ -8,14 +8,26 @@ import 'package:siketan/features/register/presentation/bloc/register_wilayah_bin
 import 'package:siketan/shared/style/color.dart';
 
 class WilayahBinaanForm extends StatefulWidget {
-  const WilayahBinaanForm({super.key});
+  final Function(Map<String, dynamic>)? onCollectData;
+  const WilayahBinaanForm({super.key, this.onCollectData});
 
   @override
-  State<WilayahBinaanForm> createState() => _WilayahBinaanFormState();
+  State<WilayahBinaanForm> createState() => WilayahBinaanFormState();
 }
 
-class _WilayahBinaanFormState extends State<WilayahBinaanForm> {
+class WilayahBinaanFormState extends State<WilayahBinaanForm> {
   bool _isExpanded = false;
+
+  void collectFormData() {
+    if (widget.onCollectData != null) {
+      final wilayahBinaanBloc = context.read<RegisterWilayahBinaanBloc>();
+      widget.onCollectData!({
+        'kecamatanBinaanId': wilayahBinaanBloc.state.selectedKecamatanId,
+        'desaBinaanId': wilayahBinaanBloc.state.selectedDesaIds.isNotEmpty ? wilayahBinaanBloc.state.selectedDesaIds.first : null,
+        'kelompokBinaanIds': wilayahBinaanBloc.state.selectedKelompokIds,
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -80,6 +92,7 @@ class _WilayahBinaanFormState extends State<WilayahBinaanForm> {
                           ),
                         ),
                         DropdownButtonFormField<int>(
+                          value: state.selectedKecamatanId,
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.symmetric(
                               vertical: 12.h,
@@ -127,7 +140,12 @@ class _WilayahBinaanFormState extends State<WilayahBinaanForm> {
                               ),
                             ),
                           ),
-                          initialValue: state.selectedKecamatanId,
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Wajib dipilih';
+                            }
+                            return null;
+                          },
                           items: (state.kecamatanList?.data ?? [])
                               .map(
                                 (kec) => DropdownMenuItem(
@@ -146,80 +164,37 @@ class _WilayahBinaanFormState extends State<WilayahBinaanForm> {
                         ),
 
                         /// ===========================
-                        /// DROPDOWN DESA (SINGLE SELECT)
+                        /// MULTI SELECT DESA
                         /// ===========================
                         Text(
                           'Desa',
-                          style: TextStyle(
-                            fontSize: 13.sp,
-                            color: AppColors.gray900,
-                          ),
+                          style: TextStyle(fontSize: 13.sp, color: AppColors.gray900),
                         ),
-                        DropdownButtonFormField<int>(
-                          value: state.selectedDesaIds.isNotEmpty
-                              ? state.selectedDesaIds.first
-                              : null,
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical: 12.h,
-                              horizontal: 14.w,
+                        MultiSelectDialogField(
+                          title: const Text("Pilih Desa Binaan"),
+                          items:
+                              (state.desaList?.data ?? [])
+                                  .map(
+                                    (desa) => MultiSelectItem(
+                                      desa.id!,
+                                      desa.nama ?? "",
+                                    ),
+                                  )
+                                  .toList(),
+                          decoration: BoxDecoration(
+                            color: AppColors.gray100,
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 1.5.w,
                             ),
-                            hintText: "Desa",
-                            hintStyle: Theme.of(context).textTheme.bodySmall!
-                                .copyWith(fontSize: 12.sp, color: Colors.grey),
-                            filled: true,
-                            fillColor: AppColors.gray100,
-
-                            focusedErrorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide: BorderSide(
-                                width: 1.w,
-                                color: Colors.red,
-                              ),
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide: BorderSide(
-                                width: 1.w,
-                                color: AppColors.green4,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide: BorderSide(
-                                width: 1.w,
-                                color: AppColors.gray400,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide: BorderSide(
-                                width: 1.w,
-                                color: AppColors.blue4,
-                              ),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.r),
-                              borderSide: BorderSide(
-                                width: 1.w,
-                                color: Colors.red,
-                              ),
-                            ),
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
-                          items: (state.desaList?.data ?? [])
-                              .map(
-                                (desa) => DropdownMenuItem(
-                                  value: desa.id,
-                                  child: Text(desa.nama ?? ''),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              context.read<RegisterWilayahBinaanBloc>().add(
-                                SelectDesaEvent(value),
-                              );
-                            }
+                          buttonText: const Text("Pilih Desa Binaan"),
+                          initialValue: state.selectedDesaIds,
+                          onConfirm: (values) {
+                            context.read<RegisterWilayahBinaanBloc>().add(
+                              SelectDesaEvent(values.cast<int>().toList()),
+                            );
                           },
                         ),
 
@@ -236,7 +211,7 @@ class _WilayahBinaanFormState extends State<WilayahBinaanForm> {
                               (state.kelompokList?.dataKelompok?.values ?? [])
                                   .map(
                                     (kel) => MultiSelectItem(
-                                      kel.id,
+                                      kel.id!,
                                       kel.namaKelompok ?? "",
                                     ),
                                   )

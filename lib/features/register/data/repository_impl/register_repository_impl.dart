@@ -2,6 +2,8 @@ import 'package:siketan/features/register/data/datasources/register_remote_datas
 import 'package:siketan/features/register/domain/model/kelompok_all_response_model.dart';
 import 'package:siketan/features/register/domain/model/desa_response_model.dart';
 import 'package:siketan/features/register/domain/model/kecamatan_response_model.dart';
+import 'package:siketan/features/register/domain/model/register_payload_model.dart';
+import 'package:siketan/features/register/domain/model/register_response_model.dart';
 import 'package:siketan/features/register/domain/repository/register_repository.dart';
 
 class RegisterRepositoryImpl implements RegisterRepository {
@@ -44,4 +46,9 @@ class RegisterRepositoryImpl implements RegisterRepository {
     return dataDesa;
   }
   
+  @override
+  Future<RegisterResponseModel> register(RegisterPaylaodModel payload) {
+    final dataRegister = remoteDataSource.register(payload);
+    return dataRegister;
+  }
 }
