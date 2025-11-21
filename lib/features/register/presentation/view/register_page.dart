@@ -160,13 +160,10 @@ class _BuildFormState extends State<_BuildForm> {
       child: BlocListener<RegisterBloc, RegisterState>(
         listener: (context, state) {
           if (state is RegisterFailed) {
-            Toast.show(message: state.message, type: ToastType.error);
+            AppToast.show(context, state.message, type: ToastType.error, position: ToastPosition.top,duration: const Duration(seconds: 2));
           }
           if (state is RegisterSuccess) {
-            Toast.show(
-              message: state.data.message ?? "Berhasil Mendaftar Penyuluh",
-              type: ToastType.success,
-            );
+            AppToast.showSuccess(context,"Berhasil Mendaftar Penyuluh");
             Navigator.pushNamed(context, RoutesName.login);
           }
         },
@@ -324,22 +321,13 @@ class _BuildFormState extends State<_BuildForm> {
 
     if (!kecamatanBinaanSelected) {
       isWilayahBinaanValid = false;
-      Toast.show(
-        message: 'Silakan pilih Kecamatan Binaan terlebih dahulu',
-        type: ToastType.error,
-      );
+      AppToast.showError(context, 'Silakan pilih Kecamatan Binaan terlebih dahulu');
     } else if (selectedDesa.isEmpty) {
       isWilayahBinaanValid = false;
-      Toast.show(
-        message: 'Silakan pilih Desa Binaan terlebih dahulu',
-        type: ToastType.error,
-      );
+      AppToast.showError(context, 'Silakan pilih Desa Binaan terlebih dahulu');
     } else if (selectedKelompok.isEmpty) {
       isWilayahBinaanValid = false;
-      Toast.show(
-        message: 'Silakan pilih Kelompok Binaan terlebih dahulu',
-        type: ToastType.error,
-      );
+      AppToast.showError(context, 'Silakan pilih Kelompok Binaan terlebih dahulu');
     }
 
     if (isBiodataValid && isWilayahValid && isWilayahBinaanValid) {
@@ -372,8 +360,8 @@ class _BuildFormState extends State<_BuildForm> {
       ),
       desaBinaan: wilayahBinaanBloc.state.selectedDesaIds
           .map((id) => _getNamaDesa(id))
-          .toList(),
-      selectedKelompokIds: wilayahBinaanBloc.state.selectedKelompokIds,
+          .join(','),
+      selectedKelompokIds: wilayahBinaanBloc.state.selectedKelompokIds.join(','),
       tipe: biodataState?.selectedTipePenyuluh,
       pekerjaan: 'Penyuluh Pertanian',
     );

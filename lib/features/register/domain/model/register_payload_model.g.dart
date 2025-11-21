@@ -21,12 +21,8 @@ RegisterPaylaodModel _$RegisterPaylaodModelFromJson(
   desaId: (json['desaId'] as num?)?.toInt(),
   desa: json['desa'] as String?,
   kecamatanBinaan: json['kecamatanBinaan'] as String?,
-  desaBinaan: (json['desaBinaan'] as List<dynamic>?)
-      ?.map((e) => e as String)
-      .toList(),
-  selectedKelompokIds: (json['selectedKelompokIds'] as List<dynamic>?)
-      ?.map((e) => (e as num).toInt())
-      .toList(),
+  desaBinaan: json['desaBinaan'] as String?,
+  selectedKelompokIds: json['selectedKelompokIds'] as String?,
   pekerjaan: json['pekerjaan'] as String?,
 );
 

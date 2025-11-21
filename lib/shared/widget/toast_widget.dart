@@ -1,191 +1,275 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 enum ToastType { info, success, error, warning }
+enum ToastPosition { top, centerTop, center, bottom }
 
-class Toast {
-  static OverlayEntry? _currentToast;
+class AppToast {
+  AppToast._();
 
-  static void show({
-    required String message,
+  static final _queue = <_ToastRequest>[];
+  static bool _isShowing = false;
+
+  static void showSuccess(BuildContext context, String message,
+          {Duration duration = const Duration(seconds: 3)}) =>
+      show(context, message, type: ToastType.success, duration: duration);
+
+  static void showError(BuildContext context, String message,
+          {Duration duration = const Duration(seconds: 3)}) =>
+      show(context, message, type: ToastType.error, duration: duration);
+
+  static void showInfo(BuildContext context, String message,
+          {Duration duration = const Duration(seconds: 3)}) =>
+      show(context, message, type: ToastType.info, duration: duration);
+
+  static void showWarning(BuildContext context, String message,
+          {Duration duration = const Duration(seconds: 3)}) =>
+      show(context, message, type: ToastType.warning, duration: duration);
+
+  /// DEFAULT POSITION = centerTop
+  static void show(
+    BuildContext context,
+    String message, {
     ToastType type = ToastType.info,
     Duration duration = const Duration(seconds: 3),
+    bool dismissible = true,
+    double horizontalPadding = 24,
+    double widthFactor = 0.92,
+    ToastPosition position = ToastPosition.top, // DEFAULT POSITION
   }) {
-    // Tutup toast sebelumnya jika ada
-    _currentToast?.remove();
-    _currentToast = null;
-
-    final overlayEntry = OverlayEntry(
-      builder: (context) => ToastWidget(
-        message: message,
-        type: type,
-        duration: duration,
-        onRemove: () {
-          _currentToast?.remove();
-          _currentToast = null;
-        },
-      ),
+    final req = _ToastRequest(
+      context: context,
+      message: message,
+      type: type,
+      duration: duration,
+      dismissible: dismissible,
+      horizontalPadding: horizontalPadding,
+      widthFactor: widthFactor,
+      position: position,
     );
 
-    _currentToast = overlayEntry;
+    _queue.add(req);
+    if (!_isShowing) _showNext();
+  }
 
-    // Tambahkan ke overlay
-    Overlay.of(navigatorKey.currentContext!)!.insert(overlayEntry);
+  static void dismissAll() {
+    for (final req in List<_ToastRequest>.from(_queue)) {
+      req.entry?.remove();
+      req._completer?.complete();
+    }
+    _queue.clear();
+    _isShowing = false;
+  }
 
-    // Auto-dismiss
-    Future.delayed(duration, () {
-      if (_currentToast != null) {
-        _currentToast!.remove();
-        _currentToast = null;
-      }
-    });
+  static Future<void> _showNext() async {
+    if (_queue.isEmpty) {
+      _isShowing = false;
+      return;
+    }
+
+    _isShowing = true;
+    final req = _queue.removeAt(0);
+    final overlay = Overlay.of(req.context);
+
+    final entry = OverlayEntry(builder: (ctx) => _ToastView(request: req));
+
+    req.entry = entry;
+    overlay.insert(entry);
+
+    await req._completer?.future;
+    req.entry?.remove();
+
+    Future.microtask(() => _showNext());
   }
 }
 
-// GlobalKey untuk mengakses navigator dari mana saja
-final navigatorKey = GlobalKey<NavigatorState>();
-
-class ToastWidget extends StatefulWidget {
+class _ToastRequest {
+  final BuildContext context;
   final String message;
   final ToastType type;
   final Duration duration;
-  final VoidCallback onRemove;
+  final bool dismissible;
+  final double horizontalPadding;
+  final double widthFactor;
+  final ToastPosition position;
 
-  const ToastWidget({
-    super.key,
+  OverlayEntry? entry;
+  Completer<void>? _completer;
+
+  _ToastRequest({
+    required this.context,
     required this.message,
     required this.type,
     required this.duration,
-    required this.onRemove,
-  });
-
-  @override
-  State<ToastWidget> createState() => _ToastWidgetState();
+    required this.dismissible,
+    required this.horizontalPadding,
+    required this.widthFactor,
+    required this.position,
+  }) {
+    _completer = Completer<void>();
+  }
 }
 
-class _ToastWidgetState extends State<ToastWidget>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _opacityAnimation;
-  late Animation<double> _slideAnimation;
+class _ToastView extends StatefulWidget {
+  final _ToastRequest request;
+  const _ToastView({required this.request});
 
-  Color _getBackgroundColor() {
-    switch (widget.type) {
-      case ToastType.success:
-        return Colors.green.shade500;
-      case ToastType.error:
-        return Colors.red.shade500;
-      case ToastType.warning:
-        return Colors.orange.shade500;
-      case ToastType.info:
-      default:
-        return Colors.blue.shade500;
-    }
-  }
+  @override
+  State<_ToastView> createState() => _ToastViewState();
+}
+
+class _ToastViewState extends State<_ToastView>
+    with TickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _offsetAnim;
+  late Animation<double> _opacityAnim;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
 
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
       vsync: this,
+      duration: const Duration(milliseconds: 150),
     );
 
-    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    final beginOffset = const Offset(0, -0.50); // slide dari atas dikit
+    _offsetAnim = Tween(begin: beginOffset, end: Offset.zero).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
     );
 
-    _slideAnimation = Tween<double>(begin: 30.0, end: 0.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
+    _opacityAnim =
+        CurvedAnimation(parent: _controller, curve: Curves.easeIn);
 
     _controller.forward();
+
+    _timer = Timer(widget.request.duration, _hide);
+  }
+
+  void _hide() {
+    _timer?.cancel();
+    _controller.reverse().then((_) {
+      if (!(widget.request._completer?.isCompleted ?? true)) {
+        widget.request._completer?.complete();
+      }
+    });
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final width = media.size.width * widget.request.widthFactor;
+
+    double? top;
+    double? bottom;
+
+    switch (widget.request.position) {
+      case ToastPosition.top:
+        top = media.padding.top + 16;
+        break;
+
+      case ToastPosition.centerTop:
+        top = media.size.height * 0.20; // ⇦ DEFAULT
+        break;
+
+      case ToastPosition.center:
+        top = media.size.height * 0.40;
+        break;
+
+      case ToastPosition.bottom:
+        bottom = 24 + media.viewInsets.bottom;
+        break;
+    }
+
     return Positioned(
-      top: MediaQuery.of(context).padding.top + 40,
-      left: 16,
-      right: 16,
-      child: GestureDetector(
-        onTap: widget.onRemove,
-        child: FadeTransition(
-          opacity: _opacityAnimation,
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, -0.5),
-              end: Offset.zero,
-            ).animate(CurvedAnimation(
-              parent: _controller,
-              curve: Curves.easeOut,
-            )),
-            child: Material(
-              color: Colors.transparent,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: _getBackgroundColor(),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      _getIcon(),
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        widget.message,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+      top: top,
+      bottom: bottom,
+      left: (media.size.width - width) / 2,
+      child: Material(
+        color: Colors.transparent,
+        child: SlideTransition(
+          position: _offsetAnim,
+          child: FadeTransition(
+            opacity: _opacityAnim,
+            child: _buildCard(width),
           ),
         ),
       ),
     );
   }
 
-  IconData _getIcon() {
-    switch (widget.type) {
+  Widget _buildCard(double width) {
+    final bg = _bgColorForType();
+
+    return GestureDetector(
+      onTap: widget.request.dismissible ? _hide : null,
+      child: Container(
+        width: width,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: const [
+            BoxShadow(
+                color: Colors.black26, blurRadius: 16, offset: Offset(0, 6))
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(_iconForType(), color: Colors.white, size: 20),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                widget.request.message,
+                style: const TextStyle(
+                    color: Colors.white, fontSize: 14, height: 1.2),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (widget.request.dismissible)
+              InkWell(
+                onTap: _hide,
+                child:
+                    const Icon(Icons.close, color: Colors.white, size: 18),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _bgColorForType() {
+    switch (widget.request.type) {
       case ToastType.success:
-        return Icons.check_circle;
+        return const Color(0xFF1E8E3E);
       case ToastType.error:
-        return Icons.error;
+        return const Color(0xFFB00020);
       case ToastType.warning:
-        return Icons.warning;
-      case ToastType.info:
+        return const Color(0xFFE08A00);
       default:
-        return Icons.info;
+        return const Color(0xFF1967D2);
+    }
+  }
+
+  IconData _iconForType() {
+    switch (widget.request.type) {
+      case ToastType.success:
+        return Icons.check_circle_outline;
+      case ToastType.error:
+        return Icons.error_outline;
+      case ToastType.warning:
+        return Icons.warning_amber_outlined;
+      default:
+        return Icons.info_outline;
     }
   }
 }

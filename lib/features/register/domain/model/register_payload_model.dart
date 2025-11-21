@@ -28,9 +28,9 @@ class RegisterPaylaodModel {
     @JsonKey(name: "kecamatanBinaan")
     String? kecamatanBinaan;
     @JsonKey(name: "desaBinaan")
-    List<String>? desaBinaan;
+    String? desaBinaan;
     @JsonKey(name: "selectedKelompokIds")
-    List<int>? selectedKelompokIds;
+    String? selectedKelompokIds;
     @JsonKey(name: "pekerjaan")
     String? pekerjaan;
 
