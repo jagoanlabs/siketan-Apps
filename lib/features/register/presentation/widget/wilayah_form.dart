@@ -66,8 +66,13 @@ class _WilayahFormState extends State<WilayahForm> {
           body: Padding(
             padding: EdgeInsets.all(16.w),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               spacing: 8.h,
               children: [
+                Text(
+                  'Kecamatan',
+                  style: TextStyle(fontSize: 13.sp, color: AppColors.gray900),
+                ),
                 BlocBuilder<RegisterWilayahBloc, RegisterWilayahState>(
                   buildWhen: (prev, curr) =>
                       prev.loadingKecamatan != curr.loadingKecamatan ||
@@ -78,7 +83,48 @@ class _WilayahFormState extends State<WilayahForm> {
                     }
 
                     return DropdownButtonFormField<int>(
-                      value: selectedKecamatanId,
+                      initialValue: selectedKecamatanId,
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 12.h,
+                          horizontal: 14.w,
+                        ),
+                        hintText: "Kecamatan",
+                        hintStyle: Theme.of(context).textTheme.bodySmall!
+                            .copyWith(fontSize: 12.sp, color: Colors.grey),
+                        filled: true,
+                        fillColor: AppColors.gray100,
+
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.r),
+                          borderSide: BorderSide(width: 1.w, color: Colors.red),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.r),
+                          borderSide: BorderSide(
+                            width: 1.w,
+                            color: AppColors.green4,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.r),
+                          borderSide: BorderSide(
+                            width: 1.w,
+                            color: AppColors.gray400,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.r),
+                          borderSide: BorderSide(
+                            width: 1.w,
+                            color: AppColors.blue4,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.r),
+                          borderSide: BorderSide(width: 1.w, color: Colors.red),
+                        ),
+                      ),
                       items: state.kecamatanList?.data?.map((e) {
                         return DropdownMenuItem(
                           value: e.id,
@@ -102,6 +148,10 @@ class _WilayahFormState extends State<WilayahForm> {
                 /// ============================
                 /// DROPDOWN DESA
                 /// ============================
+                Text(
+                  'Desa',
+                  style: TextStyle(fontSize: 13.sp, color: AppColors.gray900),
+                ),
                 BlocBuilder<RegisterWilayahBloc, RegisterWilayahState>(
                   buildWhen: (prev, curr) =>
                       prev.loadingDesa != curr.loadingDesa ||
@@ -113,10 +163,53 @@ class _WilayahFormState extends State<WilayahForm> {
 
                     if (state.desaList != null) {
                       return DropdownButtonFormField<int>(
-                        value: selectedDesaId,
+                        initialValue: selectedDesaId,
                         decoration: InputDecoration(
-                          labelText: "Desa",
-                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 12.h,
+                            horizontal: 14.w,
+                          ),
+                          hintText: "Desa",
+                          hintStyle: Theme.of(context).textTheme.bodySmall!
+                              .copyWith(fontSize: 12.sp, color: Colors.grey),
+                          filled: true,
+                          fillColor: AppColors.gray100,
+
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.r),
+                            borderSide: BorderSide(
+                              width: 1.w,
+                              color: Colors.red,
+                            ),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.r),
+                            borderSide: BorderSide(
+                              width: 1.w,
+                              color: AppColors.green4,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.r),
+                            borderSide: BorderSide(
+                              width: 1.w,
+                              color: AppColors.gray400,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.r),
+                            borderSide: BorderSide(
+                              width: 1.w,
+                              color: AppColors.blue4,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.r),
+                            borderSide: BorderSide(
+                              width: 1.w,
+                              color: Colors.red,
+                            ),
+                          ),
                         ),
                         items: state.desaList?.data?.map((desa) {
                           return DropdownMenuItem(
@@ -132,8 +225,45 @@ class _WilayahFormState extends State<WilayahForm> {
 
                     return DropdownButtonFormField<int>(
                       decoration: InputDecoration(
-                        labelText: "Desa",
-                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(
+                          vertical: 12.h,
+                          horizontal: 14.w,
+                        ),
+                        hintText: "Desa",
+                        hintStyle: Theme.of(context).textTheme.bodySmall!
+                            .copyWith(fontSize: 12.sp, color: Colors.grey),
+                        filled: true,
+                        fillColor: AppColors.gray100,
+
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.r),
+                          borderSide: BorderSide(width: 1.w, color: Colors.red),
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.r),
+                          borderSide: BorderSide(
+                            width: 1.w,
+                            color: AppColors.green4,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.r),
+                          borderSide: BorderSide(
+                            width: 1.w,
+                            color: AppColors.gray400,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.r),
+                          borderSide: BorderSide(
+                            width: 1.w,
+                            color: AppColors.blue4,
+                          ),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.r),
+                          borderSide: BorderSide(width: 1.w, color: Colors.red),
+                        ),
                       ),
                       items: const [],
                       onChanged: null, // disabled until kecamatan dipilih

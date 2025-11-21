@@ -25,10 +25,6 @@ class SelectDesaEvent extends RegisterWilayahBinaanEvent {
 }
 
 class SelectKelompokEvent extends RegisterWilayahBinaanEvent {
-  final int kelompokId;
-
-  SelectKelompokEvent(this.kelompokId);
-
-  @override
-  List<Object> get props => [kelompokId];
+  final List<int> kelompokIds;
+  SelectKelompokEvent(this.kelompokIds);
 }

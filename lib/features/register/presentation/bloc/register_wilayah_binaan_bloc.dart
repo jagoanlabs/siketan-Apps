@@ -100,18 +100,14 @@ class RegisterWilayahBinaanBloc
     emit(state.copyWith(selectedDesaIds: updatedList));
   }
 
-  void _selectKelompok(
+  Future<void> _selectKelompok(
     SelectKelompokEvent event,
     Emitter<RegisterWilayahBinaanState> emit,
-  ) {
-    final updatedList = List<int>.from(state.selectedKelompokIds);
-
-    if (updatedList.contains(event.kelompokId)) {
-      updatedList.remove(event.kelompokId);
-    } else {
-      updatedList.add(event.kelompokId);
-    }
-
-    emit(state.copyWith(selectedKelompokIds: updatedList));
+  ) async {
+    emit(
+      state.copyWith(
+        selectedKelompokIds: event.kelompokIds, // langsung overwrite
+      ),
+    );
   }
 }

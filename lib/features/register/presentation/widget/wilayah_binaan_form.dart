@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/bx.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:siketan/features/register/presentation/bloc/register_wilayah_binaan_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
 
@@ -17,10 +18,18 @@ class _WilayahBinaanFormState extends State<WilayahBinaanForm> {
   bool _isExpanded = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<RegisterWilayahBinaanBloc>().add(LoadInitialWilayah());
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ExpansionPanelList(
-      elevation: 0, // hilangkan shadow jika mau flat
-      dividerColor: Colors.transparent, // hilangkan garis antar panel
+      elevation: 0,
+      dividerColor: Colors.transparent,
       expandedHeaderPadding: EdgeInsets.zero,
       expansionCallback: (_, isExpanded) {
         setState(() => _isExpanded = !_isExpanded);
@@ -37,7 +46,6 @@ class _WilayahBinaanFormState extends State<WilayahBinaanForm> {
               spacing: 16.w,
               children: [
                 Iconify(Bx.group, color: AppColors.green4),
-
                 Text(
                   "Wilayah Binaan",
                   style: TextStyle(
@@ -64,121 +72,190 @@ class _WilayahBinaanFormState extends State<WilayahBinaanForm> {
                         /// ===========================
                         /// DROPDOWN KECAMATAN
                         /// ===========================
-                        BlocBuilder<
-                          RegisterWilayahBinaanBloc,
-                          RegisterWilayahBinaanState
-                        >(
-                          builder: (context, state) {
-                            if (state.loadingKecamatan) {
-                              return const CircularProgressIndicator();
-                            }
+                        Text(
+                          'Kecamatan',
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: AppColors.gray900,
+                          ),
+                        ),
+                        DropdownButtonFormField<int>(
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 12.h,
+                              horizontal: 14.w,
+                            ),
+                            hintText: "Kecamatan",
+                            hintStyle: Theme.of(context).textTheme.bodySmall!
+                                .copyWith(fontSize: 12.sp, color: Colors.grey),
+                            filled: true,
+                            fillColor: AppColors.gray100,
 
-                            final items = state.kecamatanList?.data ?? [];
-
-                            return DropdownButtonFormField<int>(
-                              value: state.selectedKecamatanId,
-                              decoration: const InputDecoration(
-                                labelText: "Kecamatan",
-                                border: OutlineInputBorder(),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: BorderSide(
+                                width: 1.w,
+                                color: Colors.red,
                               ),
-                              items: items.map((kec) {
-                                return DropdownMenuItem(
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: BorderSide(
+                                width: 1.w,
+                                color: AppColors.green4,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: BorderSide(
+                                width: 1.w,
+                                color: AppColors.gray400,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: BorderSide(
+                                width: 1.w,
+                                color: AppColors.blue4,
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: BorderSide(
+                                width: 1.w,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ),
+                          initialValue: state.selectedKecamatanId,
+                          items: (state.kecamatanList?.data ?? [])
+                              .map(
+                                (kec) => DropdownMenuItem(
                                   value: kec.id,
                                   child: Text(kec.nama ?? ''),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                if (value != null) {
-                                  context.read<RegisterWilayahBinaanBloc>().add(
-                                    SelectKecamatanEvent(value),
-                                  );
-                                }
-                              },
-                            );
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              context.read<RegisterWilayahBinaanBloc>().add(
+                                SelectKecamatanEvent(value),
+                              );
+                            }
                           },
                         ),
 
                         /// ===========================
-                        /// DROPDOWN DESA (MULTI SELECT)
+                        /// DROPDOWN DESA (SINGLE SELECT)
                         /// ===========================
-                        IgnorePointer(
-                          ignoring: state.selectedKecamatanId == null,
-                          child: InputDecorator(
-                            decoration: InputDecoration(
-                              labelText: 'Desa',
-                              border: OutlineInputBorder(),
-                            ),
-                            child: state.loadingDesa
-                                ? Center(child: CircularProgressIndicator())
-                                : Wrap(
-                                    spacing: 8.w,
-                                    children: (state.desaList?.data ?? [])
-                                        .map(
-                                          (desa) => FilterChip(
-                                            label: Text(desa.nama ?? ''),
-                                            selected: state.selectedDesaIds
-                                                .contains(desa.id),
-                                            onSelected: (selected) {
-                                              context
-                                                  .read<
-                                                    RegisterWilayahBinaanBloc
-                                                  >()
-                                                  .add(
-                                                    SelectDesaEvent(desa.id!),
-                                                  );
-                                            },
-                                          ),
-                                        )
-                                        .toList(),
-                                  ),
+                        Text(
+                          'Desa',
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: AppColors.gray900,
                           ),
+                        ),
+                        DropdownButtonFormField<int>(
+                          value: state.selectedDesaIds.isNotEmpty
+                              ? state.selectedDesaIds.first
+                              : null,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                              vertical: 12.h,
+                              horizontal: 14.w,
+                            ),
+                            hintText: "Desa",
+                            hintStyle: Theme.of(context).textTheme.bodySmall!
+                                .copyWith(fontSize: 12.sp, color: Colors.grey),
+                            filled: true,
+                            fillColor: AppColors.gray100,
+
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: BorderSide(
+                                width: 1.w,
+                                color: Colors.red,
+                              ),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: BorderSide(
+                                width: 1.w,
+                                color: AppColors.green4,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: BorderSide(
+                                width: 1.w,
+                                color: AppColors.gray400,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: BorderSide(
+                                width: 1.w,
+                                color: AppColors.blue4,
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.r),
+                              borderSide: BorderSide(
+                                width: 1.w,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ),
+                          items: (state.desaList?.data ?? [])
+                              .map(
+                                (desa) => DropdownMenuItem(
+                                  value: desa.id,
+                                  child: Text(desa.nama ?? ''),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            if (value != null) {
+                              context.read<RegisterWilayahBinaanBloc>().add(
+                                SelectDesaEvent(value),
+                              );
+                            }
+                          },
                         ),
 
                         /// ===========================
-                        /// DROPDOWN KELOMPOK (MULTI SELECT)
+                        /// MULTI SELECT KELOMPOK
                         /// ===========================
-                        IgnorePointer(
-                          ignoring: state.selectedKecamatanId == null,
-                          child: InputDecorator(
-                            decoration: InputDecoration(
-                              labelText: 'Kelompok',
-                              border: OutlineInputBorder(),
+                        Text(
+                          'Kelompok Binaan',
+                          style: TextStyle(fontSize: 13.sp, color: AppColors.gray900),
+                        ),
+                        MultiSelectDialogField(
+                          title: const Text("Pilih Kelompok"),
+                          items:
+                              (state.kelompokList?.dataKelompok?.values ?? [])
+                                  .map(
+                                    (kel) => MultiSelectItem(
+                                      kel.id,
+                                      kel.namaKelompok ?? "",
+                                    ),
+                                  )
+                                  .toList(),
+                          decoration: BoxDecoration(
+                            color: AppColors.gray100,
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 1.5.w,
                             ),
-                            child: state.loadingKelompok
-                                ? Center(child: CircularProgressIndicator())
-                                : Wrap(
-                                    spacing: 8.w,
-                                    children:
-                                        (state
-                                                    .kelompokList
-                                                    ?.dataKelompok
-                                                    ?.entries ??
-                                                [])
-                                            .map(
-                                              (entry) => FilterChip(
-                                                label: Text(
-                                                  entry.value.namaKelompok ??
-                                                      '',
-                                                ),
-                                                selected: state
-                                                    .selectedKelompokIds
-                                                    .contains(entry.value.id),
-                                                onSelected: (selected) {
-                                                  context
-                                                      .read<
-                                                        RegisterWilayahBinaanBloc
-                                                      >()
-                                                      .add(
-                                                        SelectKelompokEvent(
-                                                          entry.value.id!,
-                                                        ),
-                                                      );
-                                                },
-                                              ),
-                                            )
-                                            .toList(),
-                                  ),
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
+                          buttonText: const Text("Kelompok Binaan"),
+                          initialValue: state.selectedKelompokIds,
+                          onConfirm: (values) {
+                            context.read<RegisterWilayahBinaanBloc>().add(
+                              SelectKelompokEvent(values.cast<int>().toList()),
+                            );
+                          },
                         ),
                       ],
                     );
