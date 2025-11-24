@@ -92,7 +92,7 @@ class _ActivityCardViewState extends State<ActivityCardView> {
               if (state is KegiatanError) {
                 return Center(child: Text(state.message));
               }
-              if (state is KegiatanLoaded) {
+              if (state is KegiatanLoading) {
                 return ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: 5,
