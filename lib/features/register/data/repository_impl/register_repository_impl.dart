@@ -1,4 +1,4 @@
-import 'package:siketan/features/register/data/datasources/register_remote_datasource.dart';
+import 'package:siketan/features/register/data/datasources/register_remote_data_source.dart';
 import 'package:siketan/features/register/domain/model/kelompok_all_response_model.dart';
 import 'package:siketan/features/register/domain/model/desa_response_model.dart';
 import 'package:siketan/features/register/domain/model/kecamatan_response_model.dart';

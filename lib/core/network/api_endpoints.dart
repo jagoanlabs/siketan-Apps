@@ -21,4 +21,11 @@ class ApiEndpoints {
   static const String kelompok = "/kelompok-all";
   static const String desa = "/wilayah/desa";
 
+
+  //home
+  static const String productHome = "/product-petani-no-auth";
+  static const String beritaHome = "/info-tani";
+  static const String kegiatanHome = "/event-tani";
+
+
 }

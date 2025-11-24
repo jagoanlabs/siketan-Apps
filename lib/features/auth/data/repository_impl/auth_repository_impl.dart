@@ -3,7 +3,7 @@ import 'package:siketan/app/dependency_injector/import.dart';
 import 'package:siketan/core/network/network_service.dart';
 import 'package:siketan/features/auth/data/datasources/auth_local_datasource.dart';
 import 'package:siketan/features/auth/domain/repository/auth_repository.dart';
-import 'package:siketan/features/login/data/datasources/login_local_datasource.dart';
+import 'package:siketan/features/login/data/datasources/login_local_data_source.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthLocalDataSource authLocalDataSource;

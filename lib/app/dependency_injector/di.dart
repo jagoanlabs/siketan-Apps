@@ -94,4 +94,16 @@ Future<void> setupDependencies() async {
   );
 
 
+
+  // home
+  // home remote datasource
+  getIt.registerFactory<HomeRemoteDataSources>(
+    () => HomeRemoteDataSources(baseService: getIt<PublicBaseService>()),
+  );
+
+  // home repository
+  getIt.registerFactory<HomeRepository>(
+    () => HomeRepositoryImpl(remoteDataSources: getIt<HomeRemoteDataSources>()),
+  );
+
 }
