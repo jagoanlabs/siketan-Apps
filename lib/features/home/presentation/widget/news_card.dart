@@ -4,12 +4,14 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:siketan/app/helper/date_format_helper.dart';
 import 'package:siketan/app/helper/html_to_text_helper.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/features/home/presentation/bloc/berita_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
+import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class NewsCard extends StatelessWidget {
   final void Function(int index)? onNavigateToTab;
@@ -95,7 +97,25 @@ class _NewsCardViewState extends State<NewsCardView> {
           child: BlocBuilder<BeritaBloc, BeritaState>(
             builder: (context, state) {
               if (state is BeritaLoading) {
-                return const Center(child: CircularProgressIndicator());
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 5,
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: index == 0
+                          ? EdgeInsets.only(left: 24.w, right: 12.w)
+                          : index == 5
+                          ? EdgeInsets.only(right: 24.w)
+                          : EdgeInsets.only(right: 12.w),
+                      child: ShimmerContainerWidget(
+                        width: 280.w,
+                        height: 320.h,
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                    );
+                  },
+                );
               } else if (state is BeritaError) {
                 return Center(
                   child: Text(

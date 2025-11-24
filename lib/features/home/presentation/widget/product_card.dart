@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:siketan/app/helper/format_currency_helper.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/features/home/presentation/bloc/product_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
+import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class ProductCard extends StatelessWidget {
   final void Function(int index)? onNavigateToTab;
@@ -96,7 +98,24 @@ class _ProductCardViewState extends State<ProductCardView> {
                 return Center(child: Text(state.message));
               }
               if (state is ProductLoading) {
-                return Center(child: CircularProgressIndicator());
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 5,
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: index == 0
+                          ? EdgeInsets.only(left: 24.w, right: 12.w)
+                          : index == 5
+                          ? EdgeInsets.only(right: 24.w)
+                          : EdgeInsets.only(right: 12.w),
+                      child: ShimmerContainerWidget(
+                        width: 200.w,
+                        height: 310.h,
+                      ),
+                    );
+                  },
+                );
               }
               if (state is ProductLoaded) {
                 return ListView.builder(

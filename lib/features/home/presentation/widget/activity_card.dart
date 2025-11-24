@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import 'package:siketan/app/helper/date_format_helper.dart';
 import 'package:siketan/app/helper/kegiatan_status_helper.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/features/home/presentation/bloc/kegiatan_bloc.dart';
+import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class ActivityCard extends StatelessWidget {
   final void Function(int index)? onNavigateToTab;
@@ -92,8 +92,26 @@ class _ActivityCardViewState extends State<ActivityCardView> {
               if (state is KegiatanError) {
                 return Center(child: Text(state.message));
               }
-              if (state is KegiatanLoading) {
-                return const Center(child: CircularProgressIndicator());
+              if (state is KegiatanLoaded) {
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 5,
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: index == 0
+                          ? EdgeInsets.only(left: 24.w, right: 12.w)
+                          : index == 5
+                          ? EdgeInsets.only(right: 24.w)
+                          : EdgeInsets.only(right: 12.w),
+                      child: ShimmerContainerWidget(
+                        width: 280.w,
+                        height: 200.h,
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                    );
+                  },
+                );
               }
               if (state is KegiatanLoaded) {
                 return ListView.builder(
