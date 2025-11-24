@@ -15,6 +15,7 @@ import 'package:siketan/shared/style/shadow.dart';
 import 'package:siketan/shared/widget/primary_button_widget.dart';
 import 'package:siketan/shared/widget/text_field_widget.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:siketan/shared/widget/toast_widget.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -125,10 +126,13 @@ class _BuildFormState extends State<_BuildForm> {
           setState(() {
             _isLoading = false;
           });
+          AppToast.showSuccess(context, "Login Berhasil");
           // add authentication true
           // context.read<AuthenticationBloc>().add(AuthenticationTrue());
           // Navigate to home or handle successful login
-          context.read<AuthenticationBloc>().add(LoginSuccessEvent()); //set state authentication true
+          context.read<AuthenticationBloc>().add(
+            LoginSuccessEvent(),
+          ); //set state authentication true
 
           Navigator.pushNamedAndRemoveUntil(
             context,
@@ -139,13 +143,7 @@ class _BuildFormState extends State<_BuildForm> {
           setState(() {
             _isLoading = false;
           });
-          // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.red4,
-            ),
-          );
+          AppToast.showError(context, state.message);
         }
       },
       builder: (context, state) {

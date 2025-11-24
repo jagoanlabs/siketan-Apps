@@ -156,7 +156,7 @@ class _HomePageViewState extends State<HomePageView> {
                                     },
                                     child: CircleAvatar(
                                       radius: 20.r,
-                                      backgroundColor: AppColors.gray50,
+                                      backgroundColor: AppColors.gray200,
                                       child: Iconify(
                                         MaterialSymbols.person_2_outline,
                                         color: AppColors.gray900,

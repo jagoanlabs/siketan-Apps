@@ -6,6 +6,7 @@ import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/features/login/domain/model/login_payload_model.dart';
 import 'package:siketan/features/login/domain/model/login_response_model.dart';
 import 'package:siketan/features/login/domain/repository/login_repository.dart';
+import 'package:siketan/features/profile/domain/model/profile_model.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
@@ -28,6 +29,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       final token = response.token;
       final NetworkService networkService = getIt<NetworkService>();
       networkService.setToken(token ?? "");
+      await loginRepository.storeUserDataFromResponse(response);
       emit(LoginSuccess(data: response));
     } catch (e) {
       logger.e(e);

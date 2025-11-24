@@ -1,4 +1,3 @@
-
 part of 'import.dart';
 
 final getIt = GetIt.instance;
@@ -49,7 +48,6 @@ Future<void> setupDependencies() async {
   //   () => PublicService(getIt<PublicBaseService>()),
   // );
 
-
   // Login Repository
   // Remote DataSource
   getIt.registerFactory<LoginRemoteDataSource>(
@@ -62,10 +60,11 @@ Future<void> setupDependencies() async {
   );
   // Repository
   getIt.registerFactory<LoginRepository>(
-    () => LoginRepositoryImpl(remoteDataSource: getIt<LoginRemoteDataSource>(),localDataSource: getIt<LoginLocalDataSource>()),
+    () => LoginRepositoryImpl(
+      remoteDataSource: getIt<LoginRemoteDataSource>(),
+      localDataSource: getIt<LoginLocalDataSource>(),
+    ),
   );
-  
-
 
   // authentication
   // auth local datasource
@@ -81,7 +80,6 @@ Future<void> setupDependencies() async {
     ),
   );
 
-
   // register
   // register remote datasource
   getIt.registerFactory<RegisterRemoteDataSource>(
@@ -90,10 +88,10 @@ Future<void> setupDependencies() async {
 
   // register repository
   getIt.registerFactory<RegisterRepository>(
-    () => RegisterRepositoryImpl(remoteDataSource: getIt<RegisterRemoteDataSource>()),
+    () => RegisterRepositoryImpl(
+      remoteDataSource: getIt<RegisterRemoteDataSource>(),
+    ),
   );
-
-
 
   // home
   // home remote datasource
@@ -106,4 +104,15 @@ Future<void> setupDependencies() async {
     () => HomeRepositoryImpl(remoteDataSources: getIt<HomeRemoteDataSources>()),
   );
 
+  // Profile Repository
+  // Local DataSource
+  getIt.registerLazySingleton<ProfileLocalDataSource>(
+    () => ProfileLocalDataSource(getIt<SharedPreferences>()),
+  );
+  // Repository
+  getIt.registerFactory<ProfileRepository>(
+    () => ProfileRepositoryImpl(
+      profileLocalDataSource: getIt<ProfileLocalDataSource>(),
+    ),
+  );
 }
