@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
+import 'package:siketan/app/helper/date_format_helper.dart';
+import 'package:siketan/app/helper/kegiatan_status_helper.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/shared/style/color.dart';
+import 'package:siketan/features/home/presentation/bloc/kegiatan_bloc.dart';
 
 class ActivityCard extends StatelessWidget {
   final void Function(int index)? onNavigateToTab;
@@ -22,29 +27,12 @@ class ActivityCardView extends StatefulWidget {
 }
 
 class _ActivityCardViewState extends State<ActivityCardView> {
-  final List<Map<String, dynamic>> _activities = [
-    {
-      'image': ImageConfig.homeBackground, // Ganti dengan path gambar Anda
-      'title': 'Pendampingan Lomba Cipta Menu',
-      'date': '16 Agustus 2024',
-      'status': 'Sudah berakhir',
-      'statusColor': AppColors.red4,
-    },
-    {
-      'image': ImageConfig.welcomeCard,
-      'title': 'Pelatihan Pertanian Organik',
-      'date': '20 Agustus 2024',
-      'status': 'Sedang Berlangsung',
-      'statusColor': AppColors.green4,
-    },
-    {
-      'image': ImageConfig.authBackground,
-      'title': 'Sosialisasi Pupuk Subsidi',
-      'date': '5 September 2024',
-      'status': 'Akan Datang',
-      'statusColor': AppColors.blue4,
-    }
-  ];
+  @override
+  void initState() {
+    context.read<KegiatanBloc>().add(KegiatanEventFetch());
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -78,7 +66,10 @@ class _ActivityCardViewState extends State<ActivityCardView> {
                   ),
                   disabledBackgroundColor: AppColors.red1,
                   disabledForegroundColor: AppColors.red1,
-                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 10.w,
+                    vertical: 8.h,
+                  ),
                 ),
                 child: Text(
                   "Selengkapnya",
@@ -96,124 +87,160 @@ class _ActivityCardViewState extends State<ActivityCardView> {
         // berita card horizontal scroll
         SizedBox(
           height: 200.h, // Tinggi card
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: _activities.length,
-            padding: EdgeInsets.zero,
-            itemBuilder: (context, index) {
-              final activity = _activities[index];
-              return Padding(
-                padding: index == 0 ? EdgeInsets.only(left: 24.w,right: 12.w) : index == _activities.length - 1 ? EdgeInsets.only(right: 24.w) : EdgeInsets.only(right: 12.w),
-                child: Container(
-                  width: 280.w,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.r),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.gray200.withValues(alpha: 0.3),
-                        blurRadius: 8.r,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      // Gambar
-                      ClipRRect(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(12.r),
-                          bottom: Radius.circular(12.r),
+          child: BlocBuilder<KegiatanBloc, KegiatanState>(
+            builder: (context, state) {
+              if (state is KegiatanError) {
+                return Center(child: Text(state.message));
+              }
+              if (state is KegiatanLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is KegiatanLoaded) {
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: (state.kegiatan.infotani?.length ?? 0) > 5
+                      ? 5
+                      : (state.kegiatan.infotani?.length ?? 0),
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (context, index) {
+                    final activity = state.kegiatan.infotani?[index];
+                    final status = getEventStatus(activity?.tanggalAcara);
+                    final statusText = getEventStatusText(status);
+                    final statusColor = getEventStatusColor(status);
+
+                    return Padding(
+                      padding: index == 0
+                          ? EdgeInsets.only(left: 24.w, right: 12.w)
+                          : index == state.kegiatan.infotani!.length - 1
+                          ? EdgeInsets.only(right: 24.w)
+                          : EdgeInsets.only(right: 12.w),
+                      child: Container(
+                        width: 280.w,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12.r),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.gray200.withValues(alpha: 0.3),
+                              blurRadius: 8.r,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
                         ),
-                        child: Image.asset(
-                          activity['image'],
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                
-                      // Overlay semi-transparent hijau di bagian bawah
-                      Positioned.fill(
-                        child: Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            height: 100.h,
-                            decoration: BoxDecoration(
+                        child: Stack(
+                          children: [
+                            // Gambar
+                            ClipRRect(
                               borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(12.r),
                                 bottom: Radius.circular(12.r),
                               ),
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.transparent,
-                                  AppColors.green4.withValues(alpha: 0.4),
-                                  AppColors.green7.withValues(alpha: 0.7),
+                              child: Image.network(
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Transform.scale(
+                                    scale: 0.7,
+                                    child: Image.asset(
+                                      ImageConfig.imagePlaceholder,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                },
+                                activity?.fotoKegiatan ?? '',
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+
+                            // Overlay semi-transparent hijau di bagian bawah
+                            Positioned.fill(
+                              child: Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  height: 100.h,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.vertical(
+                                      bottom: Radius.circular(12.r),
+                                    ),
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.transparent,
+                                        AppColors.green4.withValues(alpha: 0.4),
+                                        AppColors.green7.withValues(alpha: 0.7),
+                                      ],
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            // Status badge
+                            Positioned(
+                              top: 8.h,
+                              left: 8.w,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8.w,
+                                  vertical: 4.h,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: statusColor,
+                                  borderRadius: BorderRadius.circular(16.r),
+                                ),
+                                child: Text(
+                                  statusText,
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                            // Judul & Tanggal
+                            Positioned(
+                              bottom: 12.h,
+                              left: 12.w,
+                              right: 12.w,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    activity?.namaKegiatan ?? "",
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4.h),
+                                  Text(
+                                    formatDateNullable(activity?.tanggalAcara),
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      color: Colors.white.withValues(
+                                        alpha: 0.8,
+                                      ),
+                                    ),
+                                  ),
                                 ],
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                
-                      // Status badge
-                      Positioned(
-                        top: 8.h,
-                        left: 8.w,
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8.w,
-                            vertical: 4.h,
-                          ),
-                          decoration: BoxDecoration(
-                            color: activity['statusColor'],
-                            borderRadius: BorderRadius.circular(16.r),
-                          ),
-                          child: Text(
-                            activity['status'],
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                
-                      // Judul & Tanggal
-                      Positioned(
-                        bottom: 12.h,
-                        left: 12.w,
-                        right: 12.w,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              activity['title'],
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(height: 4.h),
-                            Text(
-                              activity['date'],
-                              style: TextStyle(
-                                fontSize: 12.sp,
-                                color: Colors.white.withValues(alpha: 0.8),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              );
+                    );
+                  },
+                );
+              }
+              return Container();
             },
           ),
         ),

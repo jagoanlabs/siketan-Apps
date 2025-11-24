@@ -6,3 +6,7 @@ sealed class KegiatanEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+final class KegiatanEventFetch extends KegiatanEvent {
+  const KegiatanEventFetch();
+}

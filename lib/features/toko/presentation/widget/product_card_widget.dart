@@ -10,15 +10,21 @@ class ProductCardWidget extends StatelessWidget {
   final String name;
   final String price;
   final String id;
-  const ProductCardWidget({super.key, required this.imageUrl, required this.name, required this.price, required this.id});
+  const ProductCardWidget({
+    super.key,
+    required this.imageUrl,
+    required this.name,
+    required this.price,
+    required this.id,
+  });
 
   @override
   Widget build(BuildContext context) {
-     return Container(
+    return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        boxShadow: shadowMd
+        boxShadow: shadowMd,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +45,7 @@ class ProductCardWidget extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.all(16.w),
               child: SizedBox(
-                height: 100.h,
+                height: 120.h,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -54,7 +60,7 @@ class ProductCardWidget extends StatelessWidget {
                         color: AppColors.gray900,
                       ),
                     ),
-                
+
                     // Harga
                     Text(
                       price,
@@ -64,9 +70,9 @@ class ProductCardWidget extends StatelessWidget {
                         color: AppColors.green4,
                       ),
                     ),
-                
+
                     // Tombol Beli Sekarang
-                    Spacer(),    // tombol selalu turun ke bawah
+                    Spacer(), // tombol selalu turun ke bawah
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
