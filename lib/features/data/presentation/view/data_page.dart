@@ -1,6 +1,15 @@
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:siketan/app/dependency_injector/import.dart';
+import 'package:siketan/app/helper/format_currency_helper.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
+import 'package:siketan/core/utils/logger/logger.dart';
+import 'package:siketan/features/data/domain/model/landing_statistik_response_model.dart';
+import 'package:siketan/features/data/domain/repository/data_repository.dart';
+import 'package:siketan/features/data/presentation/bloc/komoditas_table_bloc.dart';
+import 'package:siketan/features/data/presentation/bloc/landing_statistik_bloc.dart';
 import 'package:siketan/features/data/presentation/widget/statistic_widget.dart';
 import 'package:siketan/features/data/presentation/widget/table_widget.dart';
 import 'package:siketan/shared/style/color.dart';
@@ -9,6 +18,7 @@ import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:siketan/shared/style/shadow.dart';
 import 'package:siketan/shared/widget/banner_home_widget.dart';
 import 'package:siketan/shared/widget/select_field_widget.dart';
+import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class DataPage extends StatelessWidget {
@@ -16,7 +26,19 @@ class DataPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DataPageView();
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              LandingStatistikBloc(dataRepository: getIt<DataRepository>()),
+        ),
+        BlocProvider(
+          create: (context) =>
+              KomoditasTableBloc(dataRepository: getIt<DataRepository>()),
+        ),
+      ],
+      child: const DataPageView(),
+    );
   }
 }
 
@@ -28,68 +50,116 @@ class DataPageView extends StatefulWidget {
 }
 
 class _DataPageViewState extends State<DataPageView> {
-  
+  @override
+  void initState() {
+    context.read<LandingStatistikBloc>().add(LandingStatistikFetchEvent());
+    context.read<KomoditasTableBloc>().add(FetchKomoditasTable(1, 10, 'asc'));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.gray50,
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Stack(
-          children: [
-            // Gradient Background (scrollable)
-            Container(
-              width: double.infinity,
-              height: 300.h,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  stops: const [0.0, 0.8, 0.9, 1.0],
-                  colors: [
-                    AppColors.blue2,
-                    AppColors.blue1.withValues(alpha: 0.5),
-                    AppColors.blue1.withValues(alpha: 0.2),
-                    AppColors.blue1.withValues(alpha: 0.0),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 72.h),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: Text(
-                    "Data Pertanian",
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.gray900,
-                    ),
+      body: EasyRefresh(
+        header: const ClassicHeader(
+          showMessage: false,
+          armedText: 'Lepaskan',
+          dragText: 'Tarik ke bawah untuk refresh',
+          failedText: 'Refresh gagal',
+          readyText: 'Merefresh...',
+          processingText: "Merefresh...",
+          processedText: "Refresh berhasil",
+        ),
+        triggerAxis: Axis.vertical,
+        onRefresh: () {
+          logger.d('refresh');
+          context.read<LandingStatistikBloc>().add(
+            LandingStatistikFetchEvent(),
+          );
+          context.read<KomoditasTableBloc>().add(
+            FetchKomoditasTable(1, 10, 'asc'),
+          );
+        },
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Stack(
+            children: [
+              // Gradient Background (scrollable)
+              Container(
+                width: double.infinity,
+                height: 300.h,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    stops: const [0.0, 0.8, 0.9, 1.0],
+                    colors: [
+                      AppColors.blue2,
+                      AppColors.blue1.withValues(alpha: 0.5),
+                      AppColors.blue1.withValues(alpha: 0.2),
+                      AppColors.blue1.withValues(alpha: 0.0),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                   ),
                 ),
-                SizedBox(height: 16.h),
-                BannerHomeWidget(title: 'Data Pertanian', subtitle: 'Informasi Statistik Data Pertanian di Kab. Ngawi'),
-                SizedBox(height: 16.h),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 72.h),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
+                    child: Text(
+                      "Data Pertanian",
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.gray900,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+                  BannerHomeWidget(
+                    title: 'Data Pertanian',
+                    subtitle:
+                        'Informasi Statistik Data Pertanian di Kab. Ngawi',
+                  ),
+                  SizedBox(height: 16.h),
 
-                // Statistik Cards (Layout 2 kolom + 1 full)
-                SizedBox(height: 16.h),
-                _buildStatistic(),
-                SizedBox(height: 16.h),
-                StatisticWidget(),
-                SizedBox(height: 16.h),
-                TableWidget(),
-              ],
-            ),
-          ],
+                  // Statistik Cards (Layout 2 kolom + 1 full)
+                  SizedBox(height: 16.h),
+                  BlocBuilder<LandingStatistikBloc, LandingStatistikState>(
+                    builder: (context, state) {
+                      if (state is LandingStatistikLoading) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 24.w),
+                          child: ShimmerContainerWidget(
+                            width: double.infinity,
+                            height: 200.h,
+                          ),
+                        );
+                      }
+                      if (state is LandingStatistikLoaded) {
+                        return _buildStatistic(state.data);
+                      }
+                      if (state is LandingStatistikError) {
+                        return Center(child: Text(state.message));
+                      }
+                      return const SizedBox();
+                    },
+                  ),
+                  SizedBox(height: 16.h),
+                  StatisticWidget(),
+                  SizedBox(height: 16.h),
+                  TableWidget(),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-
-  
 
   // Widget Reusable untuk Statistik Card
   Widget _buildStatCard({
@@ -138,9 +208,8 @@ class _DataPageViewState extends State<DataPageView> {
   }
 
   // Banner Sawah
-  
 
-  Widget _buildStatistic() {
+  Widget _buildStatistic(LandingStatstikResponseModel response) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24.w),
       child: Container(
@@ -158,7 +227,8 @@ class _DataPageViewState extends State<DataPageView> {
                 Expanded(
                   child: _buildStatCard(
                     title: 'Jumlah Petani',
-                    value: '2.192',
+                    value: (response.data?.ringkasan?.jumlahPetani ?? 0)
+                        .toString(),
                     color: AppColors.green4,
                     backgroundColor: AppColors.green0,
                   ),
@@ -167,7 +237,8 @@ class _DataPageViewState extends State<DataPageView> {
                 Expanded(
                   child: _buildStatCard(
                     title: 'Kelompok Petani',
-                    value: '1.121',
+                    value: (response.data?.ringkasan?.jumlahGapoktan ?? 0)
+                        .toString(),
                     color: AppColors.blue4,
                     backgroundColor: AppColors.blue0,
                   ),
@@ -182,7 +253,8 @@ class _DataPageViewState extends State<DataPageView> {
                 Expanded(
                   child: _buildStatCard(
                     title: 'Penyuluh',
-                    value: '165',
+                    value: (response.data?.ringkasan?.jumlahPenyuluh ?? 0)
+                        .toString(),
                     color: AppColors.red4,
                     backgroundColor: AppColors.red05,
                   ),
@@ -191,7 +263,8 @@ class _DataPageViewState extends State<DataPageView> {
                 Expanded(
                   child: _buildStatCard(
                     title: 'Komoditas',
-                    value: '39',
+                    value: (response.data?.ringkasan?.jumlahKomoditas ?? 0)
+                        .toString(),
                     color: AppColors.red2,
                     backgroundColor: AppColors.red05,
                   ),
@@ -203,7 +276,9 @@ class _DataPageViewState extends State<DataPageView> {
             // Baris 3: Area Pertanian (full width)
             _buildStatCard(
               title: 'Area Pertanian',
-              value: '2 juta ha',
+              value: FormatCurrencyHelper.formatLargeNumber(
+                response.data?.ringkasan?.areaPertanian ?? 0,
+              ),
               color: AppColors.yellow4,
               backgroundColor: AppColors.yellow05,
               isFullWidth: true,
@@ -213,6 +288,4 @@ class _DataPageViewState extends State<DataPageView> {
       ),
     );
   }
-
-  
 }

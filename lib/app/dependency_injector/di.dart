@@ -115,4 +115,15 @@ Future<void> setupDependencies() async {
       profileLocalDataSource: getIt<ProfileLocalDataSource>(),
     ),
   );
+
+  //data
+  //data remote datasource
+  getIt.registerFactory<DataRemoteDataSource>(
+    () => DataRemoteDataSource(baseService: getIt<PublicBaseService>()),
+  );
+
+  //data repository
+  getIt.registerFactory<DataRepository>(
+    () => DataRepositoryImpl(dataSource: getIt<DataRemoteDataSource>()),
+  );
 }
