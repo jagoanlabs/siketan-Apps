@@ -1,5 +1,6 @@
 import 'package:siketan/core/network/api_endpoints.dart';
 import 'package:siketan/core/network/base_service.dart';
+import 'package:siketan/features/data/domain/model/chart_statistik_response_model.dart';
 import 'package:siketan/features/data/domain/model/komoditas_statistik_response_model.dart';
 import 'package:siketan/features/data/domain/model/landing_statistik_response_model.dart';
 import 'package:siketan/core/utils/logger/logger.dart';
@@ -33,6 +34,27 @@ class DataRemoteDataSource {
         queryParameters: {'page': page, 'limit': limit, 'sortOrder': sortOrder},
       );
       return KomoditasStatistikResponseModel.fromJson(response.data);
+    } catch (e) {
+      logger.e(e);
+      rethrow;
+    }
+  }
+
+  Future<ChartStatistikResponseModel> getChartKomoditas({
+    int? month,
+    int? year,
+  }) async {
+    try {
+      final response = await baseService.get(
+        ApiEndpoints.chartStatistik,
+        queryParameters: {
+          'month': month,
+          'year': year,
+          'lineType': 'komoditas',
+          'pieType': 'kategori',
+        },
+      );
+      return ChartStatistikResponseModel.fromJson(response.data);
     } catch (e) {
       logger.e(e);
       rethrow;

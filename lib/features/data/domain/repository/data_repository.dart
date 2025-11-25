@@ -14,10 +14,5 @@ abstract class DataRepository {
   );
 
   // gett all chart statistik response model
-  Future<ChartStatistikResponseModel> getChartStatistik(
-    int month,
-    int year,
-    String lineType,
-    String pieType,
-  );
+  Future<ChartStatistikResponseModel> getChartStatistik(int month, int year);
 }

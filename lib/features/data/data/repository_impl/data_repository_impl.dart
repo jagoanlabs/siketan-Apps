@@ -10,14 +10,8 @@ class DataRepositoryImpl implements DataRepository {
   DataRepositoryImpl({required this.dataSource});
 
   @override
-  Future<ChartStatistikResponseModel> getChartStatistik(
-    int month,
-    int year,
-    String lineType,
-    String pieType,
-  ) {
-    // TODO: implement getChartStatistik
-    throw UnimplementedError();
+  Future<ChartStatistikResponseModel> getChartStatistik(int month, int year) {
+    return dataSource.getChartKomoditas(month: month, year: year);
   }
 
   @override

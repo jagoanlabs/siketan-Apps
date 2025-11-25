@@ -8,6 +8,7 @@ import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/features/data/domain/model/landing_statistik_response_model.dart';
 import 'package:siketan/features/data/domain/repository/data_repository.dart';
+import 'package:siketan/features/data/presentation/bloc/chart_komoditas_bloc.dart';
 import 'package:siketan/features/data/presentation/bloc/komoditas_table_bloc.dart';
 import 'package:siketan/features/data/presentation/bloc/landing_statistik_bloc.dart';
 import 'package:siketan/features/data/presentation/widget/statistic_widget.dart';
@@ -36,6 +37,10 @@ class DataPage extends StatelessWidget {
           create: (context) =>
               KomoditasTableBloc(dataRepository: getIt<DataRepository>()),
         ),
+        BlocProvider(
+          create: (context) =>
+              ChartKomoditasBloc(dataRepository: getIt<DataRepository>()),
+        ),
       ],
       child: const DataPageView(),
     );
@@ -54,8 +59,11 @@ class _DataPageViewState extends State<DataPageView> {
   void initState() {
     context.read<LandingStatistikBloc>().add(LandingStatistikFetchEvent());
     context.read<KomoditasTableBloc>().add(FetchKomoditasTable(1, 10, 'asc'));
+    context.read<ChartKomoditasBloc>().add(FetchChartYearEvent(2025));
     super.initState();
   }
+
+  double _scrollOffset = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -73,93 +81,119 @@ class _DataPageViewState extends State<DataPageView> {
         ),
         triggerAxis: Axis.vertical,
         onRefresh: () {
-          logger.d('refresh');
-          context.read<LandingStatistikBloc>().add(
-            LandingStatistikFetchEvent(),
-          );
-          context.read<KomoditasTableBloc>().add(
-            FetchKomoditasTable(1, 10, 'asc'),
-          );
+          logger.d('refresh scroll offset ${_scrollOffset}');
+          if (_scrollOffset > 50) {
+            // Jika sudah scroll jauh ke bawah, batalkan refresh
+            logger.d('❌ Skip refresh karena scroll offset = $_scrollOffset');
+            return;
+          } else {
+            logger.d('✅ Jalankan refresh ${DateTime.now().toString()}');
+            context.read<LandingStatistikBloc>().add(
+              LandingStatistikFetchEvent(),
+            );
+            context.read<KomoditasTableBloc>().add(
+              FetchKomoditasTable(1, 10, 'asc'),
+            );
+          }
         },
-        child: SingleChildScrollView(
-          child: Stack(
-            children: [
-              // Gradient Background (scrollable)
-              Container(
-                width: double.infinity,
-                height: 300.h,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    stops: const [0.0, 0.8, 0.9, 1.0],
-                    colors: [
-                      AppColors.blue2,
-                      AppColors.blue1.withValues(alpha: 0.5),
-                      AppColors.blue1.withValues(alpha: 0.2),
-                      AppColors.blue1.withValues(alpha: 0.0),
-                    ],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Stack(
                 children: [
-                  SizedBox(height: 72.h),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: Text(
-                      "Data Pertanian",
-                      style: TextStyle(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.gray900,
+                  // Gradient Background (scrollable)
+                  Container(
+                    width: double.infinity,
+                    height: 300.h,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        stops: const [0.0, 0.8, 0.9, 1.0],
+                        colors: [
+                          AppColors.blue2,
+                          AppColors.blue1.withValues(alpha: 0.5),
+                          AppColors.blue1.withValues(alpha: 0.2),
+                          AppColors.blue1.withValues(alpha: 0.0),
+                        ],
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
                       ),
                     ),
                   ),
-                  SizedBox(height: 16.h),
-                  BannerHomeWidget(
-                    title: 'Data Pertanian',
-                    subtitle:
-                        'Informasi Statistik Data Pertanian di Kab. Ngawi',
-                  ),
-                  SizedBox(height: 16.h),
-
-                  // Statistik Cards (Layout 2 kolom + 1 full)
-                  SizedBox(height: 16.h),
-                  BlocBuilder<LandingStatistikBloc, LandingStatistikState>(
-                    builder: (context, state) {
-                      if (state is LandingStatistikLoading) {
-                        return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24.w),
-                          child: ShimmerContainerWidget(
-                            width: double.infinity,
-                            height: 200.h,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 72.h),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24.w),
+                        child: Text(
+                          "Data Pertanian",
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.gray900,
                           ),
-                        );
-                      }
-                      if (state is LandingStatistikLoaded) {
-                        return _buildStatistic(state.data);
-                      }
-                      if (state is LandingStatistikError) {
-                        return Center(child: Text(state.message));
-                      }
-                      return const SizedBox();
-                    },
-                  ),
-                  SizedBox(height: 16.h),
-                  StatisticWidget(),
-                  SizedBox(height: 16.h),
-                  GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onVerticalDragUpdate:
-                        (_) {}, // menonaktifkan gesture refresh
-                    child: TableWidget(),
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
+                      BannerHomeWidget(
+                        title: 'Data Pertanian',
+                        subtitle:
+                            'Informasi Statistik Data Pertanian di Kab. Ngawi',
+                      ),
+                      SizedBox(height: 16.h),
+
+                      // Statistik Cards (Layout 2 kolom + 1 full)
+                      SizedBox(height: 16.h),
+                      BlocBuilder<LandingStatistikBloc, LandingStatistikState>(
+                        builder: (context, state) {
+                          if (state is LandingStatistikLoading) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 24.w),
+                              child: ShimmerContainerWidget(
+                                width: double.infinity,
+                                height: 200.h,
+                              ),
+                            );
+                          }
+                          if (state is LandingStatistikLoaded) {
+                            return _buildStatistic(state.data);
+                          }
+                          if (state is LandingStatistikError) {
+                            return Center(child: Text(state.message));
+                          }
+                          return const SizedBox();
+                        },
+                      ),
+                      SizedBox(height: 16.h),
+                      StatisticWidget(),
+                      SizedBox(height: 16.h),
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onVerticalDragUpdate: (_) {},
+                        onVerticalDragDown: (_) {},
+                        onVerticalDragCancel: () {},
+                        onVerticalDragEnd: (details) {
+                          _scrollOffset = details.primaryVelocity ?? 0;
+                        },
+                        child: NotificationListener<ScrollNotification>(
+                          onNotification: (notification) {
+                            // Block pull-to-refresh ketika scroll di tabel
+                            if (notification is ScrollStartNotification ||
+                                notification is ScrollUpdateNotification) {
+                              return true; // Consume the notification
+                            }
+                            return false;
+                          },
+                          child: TableWidget(),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

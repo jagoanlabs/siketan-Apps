@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -126,47 +128,57 @@ class _TableWidgetState extends State<TableWidget> {
       child: Card(
         color: Colors.white,
         margin: EdgeInsets.zero,
-        child: SizedBox(
-          height: 600, // wajib fixed
-          child: AsyncPaginatedDataTable2(
-            loading: CircularProgressIndicator(),
-            wrapInCard: false,
-            minWidth: 1200,
-            // minWidth: 1200, // sangat penting untuk table banyak kolom
-            horizontalMargin: 12,
-            columnSpacing: 16,
-            showFirstLastButtons: true,
-            availableRowsPerPage: [10], // Fixed to 10 rows only
-
-            columns: const [
-              DataColumn2(
-                size: ColumnSize.S, // Smaller width for No column
-                label: Padding(
-                  padding: EdgeInsets.only(left: 12),
-                  child: Text("No"),
+        child: ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(
+            dragDevices: {
+              // 👈 nonaktifkan drag untuk mouse/pointer di tabel
+              PointerDeviceKind.touch,
+              PointerDeviceKind.mouse,
+            },
+          ),
+          child: SizedBox(
+            height: 600, // wajib fixed
+            child: AsyncPaginatedDataTable2(
+              empty: Center(child: Text("Data Tidak Ditemukan")),
+              isVerticalScrollBarVisible: false,
+              wrapInCard: false,
+              minWidth: 1200,
+              // minWidth: 1200, // sangat penting untuk table banyak kolom
+              horizontalMargin: 12,
+              columnSpacing: 16,
+              showFirstLastButtons: true,
+              availableRowsPerPage: [10], // Fixed to 10 rows only
+              // physics: const NeverScrollableScrollPhysics(), // Disable table's scroll to prevent pull-to-refresh conflict
+              columns: const [
+                DataColumn2(
+                  size: ColumnSize.S, // Smaller width for No column
+                  label: Padding(
+                    padding: EdgeInsets.only(left: 12),
+                    child: Text("No"),
+                  ),
                 ),
-              ),
 
-              DataColumn(label: Text("Kategori")),
-              DataColumn(label: Text("Komoditas")),
-              DataColumn(label: Text("Bulan Tanam")),
-              DataColumn(label: Text("Prakiraan Bulan Panen")),
-              DataColumn(label: Text("Prakiraan Luas Panen")),
-              DataColumn(label: Text("Prakiraan Produksi Panen")),
-              DataColumn(label: Text("Kelompok Tani")),
-              DataColumn(label: Text("Kecamatan")),
-              DataColumn2(
-                size: ColumnSize.L, // More reasonable width for No WA column
-                label: Padding(
-                  padding: EdgeInsets.only(right: 12),
-                  child: Text("No WA"),
+                DataColumn(label: Text("Kategori")),
+                DataColumn(label: Text("Komoditas")),
+                DataColumn(label: Text("Bulan Tanam")),
+                DataColumn(label: Text("Prakiraan Bulan Panen")),
+                DataColumn(label: Text("Prakiraan Luas Panen")),
+                DataColumn(label: Text("Prakiraan Produksi Panen")),
+                DataColumn(label: Text("Kelompok Tani")),
+                DataColumn(label: Text("Kecamatan")),
+                DataColumn2(
+                  size: ColumnSize.L, // More reasonable width for No WA column
+                  label: Padding(
+                    padding: EdgeInsets.only(right: 12),
+                    child: Text("No WA"),
+                  ),
                 ),
-              ),
-            ],
+              ],
 
-            source: _source,
-            rowsPerPage: _rowsPerPage,
-            onRowsPerPageChanged: null, // Disable changing rows per page
+              source: _source,
+              rowsPerPage: _rowsPerPage,
+              onRowsPerPageChanged: null, // Disable changing rows per page
+            ),
           ),
         ),
       ),

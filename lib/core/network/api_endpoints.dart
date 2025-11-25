@@ -1,7 +1,8 @@
 class ApiEndpoints {
   // env dev
 
-  static const String base = 'http://10.0.0.1:3003/';
+  // static const String base = 'http://10.0.0.1:3003/';
+  // static const String base = 'https://backend_siketan.jagoansatudata.com/';
 
   // env prod
   // static const String base = 'https://backend_siketan.jagoansatudata.com/';
