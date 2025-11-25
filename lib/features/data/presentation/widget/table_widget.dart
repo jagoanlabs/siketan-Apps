@@ -2,14 +2,15 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:siketan/features/data/presentation/bloc/komoditas_table_bloc.dart';
-import 'package:siketan/shared/style/color.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:colorful_iconify_flutter/icons/logos.dart';
 
 class KomoditasDataTableSource extends AsyncDataTableSource {
   final KomoditasTableBloc bloc;
-  final BuildContext context;
 
-  KomoditasDataTableSource(this.context, this.bloc);
+  KomoditasDataTableSource(this.bloc);
 
   @override
   Future<AsyncRowsResponse> getRows(int start, int limit) async {
@@ -29,12 +30,59 @@ class KomoditasDataTableSource extends AsyncDataTableSource {
 
         return DataRow(
           cells: [
-            DataCell(Text((start + index + 1).toString())),
-            DataCell(Text(data.komoditas ?? "-")),
-            DataCell(Text("${data.prakiraanProduksiPanen ?? 0} Ton")),
-            DataCell(Text("${data.prakiraanLuasPanen ?? 0} Ha")),
-            DataCell(Text(data.dataPetani?.nama ?? "-")),
+            DataCell(
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 12),
+                  child: Text((start + index + 1).toString()),
+                ),
+              ),
+            ), //no
+            DataCell(Text(data.kategori ?? "-")), //kategori
+            DataCell(Text(data.komoditas ?? "-")), //komoditas
+            DataCell(Text(data.periodeBulanTanam ?? "-")), //bulan tanam
+            DataCell(
+              Text("${data.prakiraanBulanPanen ?? 0} Ton"),
+            ), //prakiraan bulan panen
+            DataCell(
+              Text("${data.prakiraanLuasPanen ?? 0} Ha"),
+            ), //prakiraan luas panen
+            DataCell(
+              Text("${data.prakiraanProduksiPanen ?? 0} Ton"),
+            ), //prakiraan produksi panen
+            DataCell(Text(data.dataPetani?.kelompok?.namaKelompok ?? "-")),
             DataCell(Text(data.dataPetani?.kecamatan ?? "-")),
+            DataCell(
+              onTap: () {
+                final noWa = data.dataPetani?.noTelp ?? "-";
+                if (noWa != "-" && noWa.isNotEmpty) {
+                  launchUrl(Uri.parse("https://wa.me/$noWa"));
+                }
+              },
+              Align(
+                alignment: Alignment.centerRight,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min, // ⭐ ADD THIS
+                  children: [
+                    Iconify(
+                      Logos.whatsapp_icon,
+                      size: 24, // kecilkan biar aman
+                    ),
+                    SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        data.dataPetani?.noTelp ?? "-",
+                        style: TextStyle(
+                          color: Colors.blue,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         );
       }).toList(),
@@ -65,32 +113,62 @@ class _TableWidgetState extends State<TableWidget> {
   @override
   void initState() {
     super.initState();
-
-    final bloc = context.read<KomoditasTableBloc>();
-    _source = KomoditasDataTableSource(context, bloc);
+    _source = KomoditasDataTableSource(context.read<KomoditasTableBloc>());
   }
 
   @override
   Widget build(BuildContext context) {
-    return AsyncPaginatedDataTable2(
-      wrapInCard: false,
-      showFirstLastButtons: true,
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: 24.w,
+        vertical: 8.h,
+      ), // Add padding around the table
+      child: Card(
+        color: Colors.white,
+        margin: EdgeInsets.zero,
+        child: SizedBox(
+          height: 600, // wajib fixed
+          child: AsyncPaginatedDataTable2(
+            wrapInCard: false,
+            minWidth: 1200,
+            // minWidth: 1200, // sangat penting untuk table banyak kolom
+            horizontalMargin: 12,
+            columnSpacing: 16,
+            showFirstLastButtons: true,
+            availableRowsPerPage: [10], // Fixed to 10 rows only
 
-      columns: const [
-        DataColumn(label: Text("No")),
-        DataColumn(label: Text("Komoditas")),
-        DataColumn(label: Text("Produksi")),
-        DataColumn(label: Text("Luas Panen")),
-        DataColumn(label: Text("Petani")),
-        DataColumn(label: Text("Kecamatan")),
-      ],
+            columns: const [
+              DataColumn2(
+                size: ColumnSize.S, // Smaller width for No column
+                label: Padding(
+                  padding: EdgeInsets.only(left: 12),
+                  child: Text("No"),
+                ),
+              ),
 
-      source: _source,
-      rowsPerPage: _rowsPerPage,
+              DataColumn(label: Text("Kategori")),
+              DataColumn(label: Text("Komoditas")),
+              DataColumn(label: Text("Bulan Tanam")),
+              DataColumn(label: Text("Prakiraan Bulan Panen")),
+              DataColumn(label: Text("Prakiraan Luas Panen")),
+              DataColumn(label: Text("Prakiraan Produksi Panen")),
+              DataColumn(label: Text("Kelompok Tani")),
+              DataColumn(label: Text("Kecamatan")),
+              DataColumn2(
+                size: ColumnSize.L, // More reasonable width for No WA column
+                label: Padding(
+                  padding: EdgeInsets.only(right: 12),
+                  child: Text("No WA"),
+                ),
+              ),
+            ],
 
-      onRowsPerPageChanged: (value) {
-        setState(() => _rowsPerPage = value ?? 10);
-      },
+            source: _source,
+            rowsPerPage: _rowsPerPage,
+            onRowsPerPageChanged: null, // Disable changing rows per page
+          ),
+        ),
+      ),
     );
   }
 }
