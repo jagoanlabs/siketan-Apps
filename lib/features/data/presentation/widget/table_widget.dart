@@ -129,6 +129,7 @@ class _TableWidgetState extends State<TableWidget> {
         child: SizedBox(
           height: 600, // wajib fixed
           child: AsyncPaginatedDataTable2(
+            loading: CircularProgressIndicator(),
             wrapInCard: false,
             minWidth: 1200,
             // minWidth: 1200, // sangat penting untuk table banyak kolom

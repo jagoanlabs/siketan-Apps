@@ -82,7 +82,6 @@ class _DataPageViewState extends State<DataPageView> {
           );
         },
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
           child: Stack(
             children: [
               // Gradient Background (scrollable)
@@ -151,7 +150,12 @@ class _DataPageViewState extends State<DataPageView> {
                   SizedBox(height: 16.h),
                   StatisticWidget(),
                   SizedBox(height: 16.h),
-                  TableWidget(),
+                  GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onVerticalDragUpdate:
+                        (_) {}, // menonaktifkan gesture refresh
+                    child: TableWidget(),
+                  ),
                 ],
               ),
             ],
