@@ -28,27 +28,17 @@ class StatisticWidgetView extends StatefulWidget {
 class _StatisticWidgetViewState extends State<StatisticWidgetView> {
   String selectedYear = DateTime.now().year.toString();
 
-  /// semua jenis komoditas (default list UI — tidak menjadi sumber kebenaran)
-  final List<String> uiCommodities = [
-    "Jagung",
-    "Kedelai",
-    "Padi",
-    "Sayur",
-    "Buah",
-    "Semua",
-  ];
-
   late List<String> years;
 
   @override
   void initState() {
     super.initState();
+
     years = List.generate(
       DateTime.now().year - 2021 + 1,
       (index) => (2021 + index).toString(),
     );
 
-    // initial fetch
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ChartKomoditasBloc>().add(
         FetchChartYearEvent(int.parse(selectedYear)),
@@ -60,9 +50,11 @@ class _StatisticWidgetViewState extends State<StatisticWidgetView> {
   Widget build(BuildContext context) {
     return BlocBuilder<ChartKomoditasBloc, ChartKomoditasState>(
       builder: (context, state) {
-        // show loading while fetching
         final isLoading = state.loading;
         final hasData = state.chartData.isNotEmpty;
+
+        /// Semua komoditas berasal dari data API (DYNAMIC)
+        final dynamicCommodities = state.chartData.keys.toList()..sort();
 
         return Container(
           decoration: BoxDecoration(
@@ -85,50 +77,26 @@ class _StatisticWidgetViewState extends State<StatisticWidgetView> {
 
               SizedBox(height: 16.h),
 
-              // ===== CHIP FILTER =====
+              // ==========================
+              // CHIP FILTER (DYNAMIC)
+              // ==========================
               SizedBox(
-                height: 32.h,
+                height: 34.h,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  itemCount: uiCommodities.length,
-                  separatorBuilder: (c, i) => SizedBox(width: 8.w),
+                  itemCount: dynamicCommodities.length,
+                  separatorBuilder: (_, __) => SizedBox(width: 8.w),
                   itemBuilder: (context, index) {
-                    final label = uiCommodities[index];
+                    final label = dynamicCommodities[index];
                     final isSelected = state.visibleCommodities.contains(label);
 
                     return _buildChip(
                       label: label,
                       isSelected: isSelected,
                       onPressed: () {
-                        if (label == "Semua") {
-                          // jika "Semua" ditekan -> make visible semua yang ada di chartData
-                          final allKeys = state.chartData.keys.toList();
-                          // jika semua sudah visible -> clear all; sebaliknya set all
-                          final allVisible = allKeys.every(
-                            (k) => state.visibleCommodities.contains(k),
-                          );
-                          if (allVisible) {
-                            // hide all
-                            for (final k in allKeys) {
-                              context.read<ChartKomoditasBloc>().add(
-                                ToggleCommodityEvent(k),
-                              );
-                            }
-                          } else {
-                            // show all (toggle those not visible)
-                            for (final k in allKeys) {
-                              if (!state.visibleCommodities.contains(k)) {
-                                context.read<ChartKomoditasBloc>().add(
-                                  ToggleCommodityEvent(k),
-                                );
-                              }
-                            }
-                          }
-                        } else {
-                          context.read<ChartKomoditasBloc>().add(
-                            ToggleCommodityEvent(label),
-                          );
-                        }
+                        context.read<ChartKomoditasBloc>().add(
+                          ToggleCommodityEvent(label),
+                        );
                       },
                     );
                   },
@@ -137,12 +105,12 @@ class _StatisticWidgetViewState extends State<StatisticWidgetView> {
 
               SizedBox(height: 12.h),
 
-              // ===== SELECT TAHUN =====
+              // Select Tahun
               SelectFieldWidget(
-                isEnable: true,
                 value: selectedYear,
                 hintText: 'Tahun',
                 items: years,
+                isEnable: true,
                 onChanged: (value) {
                   if (value == null) return;
                   setState(() => selectedYear = value);
@@ -154,38 +122,41 @@ class _StatisticWidgetViewState extends State<StatisticWidgetView> {
 
               SizedBox(height: 20.h),
 
-              // ===== CHART =====
+              // ==========================
+              // LINE CHART
+              // ==========================
               SizedBox(
                 height: 300.h,
                 child: isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : (!hasData)
+                    : !hasData
                     ? const Center(child: Text("Tidak ada data"))
                     : SfCartesianChart(
                         primaryXAxis: CategoryAxis(
                           interval: 1,
+                          labelStyle: TextStyle(fontSize: 12.sp),
                           majorGridLines: MajorGridLines(
                             width: 0.5,
                             color: AppColors.gray200,
                           ),
-                          labelStyle: TextStyle(fontSize: 12.sp),
-                          // gunakan label bulan dari state
                         ),
                         primaryYAxis: NumericAxis(
+                          labelStyle: TextStyle(fontSize: 12.sp),
                           majorGridLines: MajorGridLines(
                             width: 0.5,
                             color: AppColors.gray200,
                           ),
-                          labelStyle: TextStyle(fontSize: 12.sp),
                         ),
                         tooltipBehavior: TooltipBehavior(enable: true),
-                        series: _buildSeriesFromState(state),
+                        series: _buildSeries(state),
                       ),
               ),
 
               SizedBox(height: 12.h),
 
-              // ===== LEGEND (show only visible ones) =====
+              // ==========================
+              // LEGEND (DYNAMIC)
+              // ==========================
               Wrap(
                 spacing: 20.w,
                 children: state.visibleCommodities.map((label) {
@@ -199,28 +170,20 @@ class _StatisticWidgetViewState extends State<StatisticWidgetView> {
     );
   }
 
-  List<LineSeries<int, String>> _buildSeriesFromState(
-    ChartKomoditasState state,
-  ) {
-    final months = state.months; // ["Jan", "Feb", ...]
-    final List<LineSeries<int, String>> series = [];
+  /// ================================
+  /// BUILD SERIES FROM STATE
+  /// ================================
+  List<LineSeries<int, String>> _buildSeries(ChartKomoditasState state) {
+    final List<LineSeries<int, String>> list = [];
 
     for (final commodity in state.visibleCommodities) {
-      final values = state.chartData[commodity];
-      if (values == null) continue;
+      final data = state.chartData[commodity];
+      if (data == null) continue;
 
-      // ensure length 12
-      final ms = List<int>.from(values);
-      if (ms.length < 12) {
-        ms.addAll(List.filled(12 - ms.length, 0));
-      } else if (ms.length > 12) {
-        ms.removeRange(12, ms.length);
-      }
-
-      series.add(
+      list.add(
         LineSeries<int, String>(
-          dataSource: ms,
-          xValueMapper: (value, index) => months[index],
+          dataSource: data,
+          xValueMapper: (_, index) => state.months[index],
           yValueMapper: (value, _) => value,
           name: commodity,
           color: _colorForCommodity(commodity),
@@ -236,25 +199,51 @@ class _StatisticWidgetViewState extends State<StatisticWidgetView> {
       );
     }
 
-    return series;
+    return list;
   }
 
+  /// ================================
+  /// COLOR GENERATOR (CONSISTENT)
+  /// ================================
   Color _colorForCommodity(String c) {
-    switch (c.toLowerCase()) {
-      case "jagung":
-        return AppColors.green4;
-      case "kedelai":
-        return AppColors.red4;
-      case "padi":
-        return AppColors.blue4;
-      case "sayur":
-        return AppColors.yellow4;
-      case "buah":
-        return Colors.purple;
-      default:
-        // random-ish fallback (ke konsisten gunakan warna fixed)
-        return Colors.grey;
-    }
+    int hash = c.toLowerCase().hashCode;
+    return Color.fromARGB(
+      255,
+      (hash * 73) % 255,
+      (hash * 91) % 255,
+      (hash * 151) % 255,
+    );
+  }
+
+  /// ================================
+  /// CHIP UI
+  /// ================================
+  Widget _buildChip({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: isSelected ? AppColors.green4 : Colors.white,
+        foregroundColor: isSelected ? Colors.white : AppColors.green4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24.r),
+          side: BorderSide(color: AppColors.green4),
+        ),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+        elevation: 0,
+      ),
+      child: Row(
+        children: [
+          if (isSelected)
+            Iconify(MaterialSymbols.check, color: Colors.white, size: 12.w),
+          if (isSelected) SizedBox(width: 4.w),
+          Text(label, style: TextStyle(fontSize: 12.sp)),
+        ],
+      ),
+    );
   }
 
   Widget _buildLegendItem(Color color, String label) {
@@ -269,34 +258,6 @@ class _StatisticWidgetViewState extends State<StatisticWidgetView> {
         SizedBox(width: 8.w),
         Text(label, style: TextStyle(fontSize: 12.sp)),
       ],
-    );
-  }
-
-  Widget _buildChip({
-    required String label,
-    required bool isSelected,
-    required VoidCallback onPressed,
-  }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? AppColors.green4 : Colors.white,
-        foregroundColor: isSelected ? Colors.white : AppColors.green4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24.r),
-          side: BorderSide(color: AppColors.green4, width: 1.5),
-        ),
-        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-        elevation: 0,
-      ),
-      child: Row(
-        children: [
-          if (isSelected)
-            Iconify(MaterialSymbols.check, size: 12.w, color: Colors.white),
-          if (isSelected) SizedBox(width: 4.w),
-          Text(label, style: TextStyle(fontSize: 12.sp)),
-        ],
-      ),
     );
   }
 }
