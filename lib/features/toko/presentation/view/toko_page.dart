@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
+// Sesuaikan import di bawah ini dengan struktur project Anda
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/features/toko/presentation/widget/product_card_widget.dart';
 import 'package:siketan/features/toko/presentation/widget/store_card_widget.dart';
@@ -28,79 +29,71 @@ class _TokoPageViewState extends State<TokoPageView>
     with TickerProviderStateMixin {
   late TabController _tabController;
 
-  // State pagination untuk masing-masing tab
-  int _currentProductPage = 1;
-  int _currentStorePage = 1;
-  int _totalPages = 5; // Misal total page untuk semua tab
-
   // State search
   String _searchQueryProduct = '';
   String _searchQueryStore = '';
 
-  // Data dummy
-  List<Map<String, dynamic>> _ProductData = [
+  // Data dummy Product
+  final List<Map<String, dynamic>> _productData = [
     {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
+      'image':
+          'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
       'name': 'Bibit Padi Siap Tanam Persemaian Sistem Kering',
       'price': 'Rp. 100.000',
       'id': '1',
     },
     {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'name': 'Product 2',
+      'image':
+          'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
+      'name': 'Pupuk Organik Cair Multiguna',
       'price': 'Rp. 200.000',
       'id': '2',
     },
     {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'name': 'Product 3',
+      'image':
+          'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
+      'name': 'Benih Jagung Hibrida Unggul',
       'price': 'Rp. 300.000',
       'id': '3',
     },
     {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'name': 'Product 4',
+      'image':
+          'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
+      'name': 'Obat Pembasmi Hama Wereng',
       'price': 'Rp. 400.000',
       'id': '4',
     },
     {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'name': 'Product 5',
+      'image':
+          'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
+      'name': 'Alat Semprot Pertanian Elektrik',
       'price': 'Rp. 500.000',
       'id': '5',
     },
   ];
 
-  final List<Map<String, dynamic>> _StoreData = [
+  // Data dummy Store
+  final List<Map<String, dynamic>> _storeData = [
     {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
+      'image':
+          'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
       'location': 'Desa Sekarjati, Karanganyar',
       'name': 'Toko Tani Maju',
       'id': '1',
     },
     {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'location': 'Desa Sekarjati, Karanganyar',
-      'name': 'Toko Tani Maju',
+      'image':
+          'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
+      'location': 'Kecamatan Ngawi Kota',
+      'name': 'Toko Pertanian Berkah',
       'id': '2',
     },
     {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'location': 'Desa Sekarjati, Karanganyar',
-      'name': 'Toko Tani Maju',
+      'image':
+          'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
+      'location': 'Desa Geneng',
+      'name': 'UD. Tani Sejahtera',
       'id': '3',
-    },
-    {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'location': 'Desa Sekarjati, Karanganyar',
-      'name': 'Toko Tani Maju',
-      'id': '4',
-    },
-    {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'location': 'Desa Sekarjati, Karanganyar',
-      'name': 'Toko Tani Maju',
-      'id': '5',
     },
   ];
 
@@ -124,7 +117,7 @@ class _TokoPageViewState extends State<TokoPageView>
         physics: const BouncingScrollPhysics(),
         child: Stack(
           children: [
-            // Gradient Background (scrollable)
+            // Gradient Background
             Container(
               width: double.infinity,
               height: 300.h,
@@ -174,7 +167,7 @@ class _TokoPageViewState extends State<TokoPageView>
                       BoxShadow(
                         color: AppColors.gray200.withOpacity(0.2),
                         blurRadius: 8.r,
-                        offset: Offset(0, 2),
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
@@ -187,7 +180,7 @@ class _TokoPageViewState extends State<TokoPageView>
                     tabs: [
                       Tab(
                         child: Text(
-                          'Prodok',
+                          'Produk',
                           style: TextStyle(
                             fontSize: 14.sp,
                             fontWeight: FontWeight.w500,
@@ -207,56 +200,39 @@ class _TokoPageViewState extends State<TokoPageView>
                   ),
                 ),
 
-
-                // Tab Content (Tanpa tinggi tetap)
+                // Tab Content - DINAMIS HEIGHT (Tanpa SizedBox fixed height)
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: SizedBox(
-                    height: 600.h, // Tetapkan tinggi tetap agar tidak loncat
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        // Tab Produk
-                        _buildTabContent(
-                          totalPages: _totalPages,
+                  child: AnimatedBuilder(
+                    animation: _tabController,
+                    builder: (context, child) {
+                      // Logic switch tab
+                      if (_tabController.index == 0) {
+                        return _ProductTabContent(
                           searchQuery: _searchQueryProduct,
+                          data: _productData,
                           onSearchChanged: (value) {
                             setState(() {
                               _searchQueryProduct = value;
                             });
                           },
-                          onPageChanged: (page) {
-                            setState(() {
-                              _currentProductPage = page;
-                            });
-                          },
-                          currentPage: _currentProductPage,
-                          label: 'Product',
-                          isAcara: true,
-                        ),
-
-                        // Tab Berita
-                        _buildTabContent(
-                          totalPages: _totalPages,
+                        );
+                      } else {
+                        return _StoreTabContent(
                           searchQuery: _searchQueryStore,
+                          data: _storeData,
                           onSearchChanged: (value) {
                             setState(() {
                               _searchQueryStore = value;
                             });
                           },
-                          onPageChanged: (page) {
-                            setState(() {
-                              _currentStorePage = page;
-                            });
-                          },
-                          currentPage: _currentStorePage,
-                          label: 'Toko',
-                          isAcara: false,
-                        ),
-                      ],
-                    ),
+                        );
+                      }
+                    },
                   ),
                 ),
+
+                SizedBox(height: 24.h), // Bottom spacing
               ],
             ),
           ],
@@ -264,248 +240,195 @@ class _TokoPageViewState extends State<TokoPageView>
       ),
     );
   }
-
-  // Widget reusable untuk konten tab
-  Widget _buildTabContent({
-    required String searchQuery,
-    required Function(String) onSearchChanged,
-    required Function(int) onPageChanged,
-    required int currentPage,
-    required String label,
-    required bool isAcara,
-    required int totalPages,
-  }) {
-    final contentData = isAcara ? _ProductData : _StoreData;
-
-    return _TabContent(
-      totalPages: totalPages,
-      searchQuery: searchQuery,
-      onSearchChanged: onSearchChanged,
-      contentData: contentData,
-      isAcara: isAcara,
-      currentPage: currentPage,
-      onPageChanged: onPageChanged,
-      label: label,
-    );
-  }
 }
 
-class _TabContent extends StatefulWidget {
+// ============================================================================
+// WIDGET KHUSUS TAB PRODUK
+// ============================================================================
+class _ProductTabContent extends StatelessWidget {
   final String searchQuery;
+  final List<Map<String, dynamic>> data;
   final Function(String) onSearchChanged;
-  final List<Map<String, dynamic>> contentData;
-  final bool isAcara;
-  final int currentPage;
-  final Function(int) onPageChanged;
-  final String label;
-  final int totalPages;
 
-  const _TabContent({
+  const _ProductTabContent({
+    Key? key,
     required this.searchQuery,
+    required this.data,
     required this.onSearchChanged,
-    required this.contentData,
-    required this.isAcara,
-    required this.currentPage,
-    required this.onPageChanged,
-    required this.label,
-    required this.totalPages,
-  });
-
-  @override
-  State<_TabContent> createState() => _TabContentState();
-}
-
-class _TabContentState extends State<_TabContent>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
+    // Logic filter produk
+    final filteredData = data.where((item) {
+      final name = item['name'].toString().toLowerCase();
+      final query = searchQuery.toLowerCase();
+      return name.contains(query);
+    }).toList();
 
-    return ListView(
-      physics: const BouncingScrollPhysics(),
+    return Column(
       children: [
-        // Search Bar
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.w),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8.r),
-            border: Border.all(color: AppColors.gray200, width: 1),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.gray200.withOpacity(0.3),
-                blurRadius: 8.r,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Iconify(
-                MaterialSymbols.search_rounded,
-                size: 20.w,
-                color: AppColors.gray500,
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: TextField(
-                  onChanged: widget.onSearchChanged,
-                  decoration: InputDecoration(
-                    hintText: "Cari ${widget.label}...",
-                    border: InputBorder.none,
-                  ),
+        SizedBox(height: 16.h),
+        // Search Bar Produk
+        _buildSearchBar(hint: "Cari Produk...", onChanged: onSearchChanged),
+        SizedBox(height: 16.h),
+
+        // Grid Produk
+        filteredData.isEmpty
+            ? _buildEmptyState("Produk tidak ditemukan")
+            : GridView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true, // Agar tinggi dinamis
+                physics:
+                    const NeverScrollableScrollPhysics(), // Scroll ikut parent
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10.w,
+                  mainAxisSpacing: 10.h,
+                  childAspectRatio: 0.60,
                 ),
+                itemCount: filteredData.length,
+                itemBuilder: (context, index) {
+                  final item = filteredData[index];
+                  return ProductCardWidget(
+                    imageUrl: item['image'],
+                    name: item['name'] ?? "",
+                    price: item['price'] ?? "",
+                    id: item['id'],
+                  );
+                },
               ),
-            ],
-          ),
-        ),
-
-        SizedBox(height: 16.h),
-
-        // Konten LIST / GRID
-        widget.isAcara ? _buildGridproduct() : _buildGridstore(),
-
-        SizedBox(height: 16.h),
-
-        _buildPagination(
-          currentPage: widget.currentPage,
-          onPageChanged: widget.onPageChanged,
-          totalPages: widget.totalPages,
-        ),
       ],
-    );
-  }
-
-  Widget _buildGridproduct() {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10.w,
-        mainAxisSpacing: 10.h,
-        childAspectRatio: 0.60,
-      ),
-      itemCount: widget.contentData.length,
-      itemBuilder: (context, index) {
-        final data = widget.contentData[index];
-        return ProductCardWidget(
-          imageUrl: data['image'],
-          name: data['name'] ?? "",
-          price: data['price'] ?? "",
-          id: data['id'],
-        );
-      },
-    );
-  }
-
-  Widget _buildGridstore() {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10.w,
-        mainAxisSpacing: 10.h,
-        childAspectRatio: 0.60,
-      ),
-      itemCount: widget.contentData.length,
-      itemBuilder: (context, index) {
-        final data = widget.contentData[index];
-        return StoreCardWidget(
-          imageUrl: data['image'],
-          name: data['name'],
-          location: data['location'],
-          id: data['id'],
-        );
-      },
     );
   }
 }
 
-// Widget pagination server-side (scrollable) - dipindahkan ke sini agar bisa diakses oleh _TabContent
-Widget _buildPagination({
-  required int currentPage,
-  required Function(int) onPageChanged,
-  required int totalPages,
-}) {
-  return SizedBox(
-    height: 48.h,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+// ============================================================================
+// WIDGET KHUSUS TAB TOKO
+// ============================================================================
+class _StoreTabContent extends StatelessWidget {
+  final String searchQuery;
+  final List<Map<String, dynamic>> data;
+  final Function(String) onSearchChanged;
+
+  const _StoreTabContent({
+    Key? key,
+    required this.searchQuery,
+    required this.data,
+    required this.onSearchChanged,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Logic filter toko
+    final filteredData = data.where((item) {
+      final name = item['name'].toString().toLowerCase();
+      final location = item['location'].toString().toLowerCase();
+      final query = searchQuery.toLowerCase();
+      return name.contains(query) || location.contains(query);
+    }).toList();
+
+    return Column(
       children: [
-        // Tombol Previous
-        IconButton(
-          onPressed: currentPage == 1
-              ? null
-              : () => onPageChanged(currentPage - 1),
-          icon: Iconify(
-            MaterialSymbols.chevron_left_rounded,
-            color: currentPage == 1 ? AppColors.gray300 : AppColors.green4,
-          ),
-        ),
+        SizedBox(height: 16.h),
+        // Search Bar Toko
+        _buildSearchBar(hint: "Cari Toko...", onChanged: onSearchChanged),
+        SizedBox(height: 16.h),
 
-        // Nomor Halaman (Scrollable)
+        // Grid Toko
+        filteredData.isEmpty
+            ? _buildEmptyState("Toko tidak ditemukan")
+            : GridView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true, // Agar tinggi dinamis
+                physics:
+                    const NeverScrollableScrollPhysics(), // Scroll ikut parent
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10.w,
+                  mainAxisSpacing: 10.h,
+                  childAspectRatio: 0.60, // Sesuaikan rasio kartu toko
+                ),
+                itemCount: filteredData.length,
+                itemBuilder: (context, index) {
+                  final item = filteredData[index];
+                  return StoreCardWidget(
+                    imageUrl: item['image'],
+                    name: item['name'],
+                    location: item['location'],
+                    id: item['id'],
+                  );
+                },
+              ),
+      ],
+    );
+  }
+}
+
+// ============================================================================
+// HELPER WIDGETS
+// ============================================================================
+
+Widget _buildSearchBar({
+  required String hint,
+  required Function(String) onChanged,
+}) {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 12.w),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(8.r),
+      border: Border.all(color: AppColors.gray200, width: 1),
+      boxShadow: [
+        BoxShadow(
+          color: AppColors.gray200.withOpacity(0.3),
+          blurRadius: 8.r,
+          offset: const Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Row(
+      children: [
+        Iconify(
+          MaterialSymbols.search_rounded,
+          size: 20.w,
+          color: AppColors.gray500,
+        ),
+        SizedBox(width: 12.w),
         Expanded(
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-            children: List.generate(totalPages, (index) {
-              int pageNum = index + 1;
-              bool isCurrent = pageNum == currentPage;
-
-              if (pageNum == 1 ||
-                  pageNum == totalPages ||
-                  (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4.w),
-                  child: ElevatedButton(
-                    onPressed: () => onPageChanged(pageNum),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isCurrent
-                          ? AppColors.green4
-                          : Colors.white,
-                      foregroundColor: isCurrent
-                          ? Colors.white
-                          : AppColors.gray900,
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.all(8.w),
-                    ),
-                    child: Text(
-                      pageNum.toString(),
-                      style: TextStyle(fontSize: 12.sp),
-                    ),
-                  ),
-                );
-              } else if (pageNum == currentPage - 2 ||
-                  pageNum == currentPage + 2) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4.w),
-                  child: Text('...', style: TextStyle(fontSize: 12.sp)),
-                );
-              }
-              return const SizedBox.shrink();
-            }).where((widget) => widget != const SizedBox.shrink()).toList(),
-          ),
-        ),
-
-        // Tombol Next
-        IconButton(
-          onPressed: currentPage == totalPages
-              ? null
-              : () => onPageChanged(currentPage + 1),
-          icon: Iconify(
-            MaterialSymbols.chevron_right_rounded,
-            color: currentPage == totalPages
-                ? AppColors.gray300
-                : AppColors.green4,
+          child: TextField(
+            onChanged: onChanged,
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(fontSize: 14.sp, color: AppColors.gray400),
+              border: InputBorder.none,
+            ),
+            style: TextStyle(fontSize: 14.sp, color: AppColors.gray900),
           ),
         ),
       ],
+    ),
+  );
+}
+
+Widget _buildEmptyState(String message) {
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: 40.h),
+    child: Center(
+      child: Column(
+        children: [
+          Iconify(
+            MaterialSymbols.inbox_rounded,
+            size: 48.w,
+            color: AppColors.gray300,
+          ),
+          SizedBox(height: 12.h),
+          Text(
+            message,
+            style: TextStyle(color: AppColors.gray500, fontSize: 14.sp),
+          ),
+        ],
+      ),
     ),
   );
 }
