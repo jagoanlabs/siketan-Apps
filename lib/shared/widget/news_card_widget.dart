@@ -60,8 +60,8 @@ class BeritaCard extends StatelessWidget {
               errorBuilder: (context, error, stackTrace) {
                 return Container(
                   width: 120.w,
-                  height: 120.h,
-                  color: Colors.grey[200],
+                  height: 160.h,
+                  color: AppColors.gray200,
                   child: Transform.scale(
                     scale: 0.7,
                     child: Image.asset(
