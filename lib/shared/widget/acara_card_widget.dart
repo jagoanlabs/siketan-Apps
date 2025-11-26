@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
+import 'package:siketan/core/constant/image/image_config.dart' show ImageConfig;
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/style/shadow.dart';
+import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class AcaraCard extends StatelessWidget {
   final String imageUrl;
@@ -29,14 +31,11 @@ class AcaraCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 16),
-      
+
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(
-          color: AppColors.gray200,
-          width: 1.w,
-        ),
+        border: Border.all(color: AppColors.gray200, width: 1.w),
         boxShadow: shadowSm,
       ),
       child: Row(
@@ -50,13 +49,51 @@ class AcaraCard extends StatelessWidget {
                   topLeft: Radius.circular(12.r),
                   bottomLeft: Radius.circular(12.r),
                 ),
-                child: Image.network(
-                  // imageUrl
-                  "https://ik.imagekit.io/hw6fintvt1/IMG-1758077527726_rV634MeuT.jpeg",
-                  width: 120.w,
-                  height: 120.h,
-                  fit: BoxFit.cover,
-                ),
+                child: (imageUrl.isEmpty)
+                    // 1. JIKA URL KOSONG (null dari API), LANGSUNG TAMPILKAN PLACEHOLDER
+                    ? Container(
+                        width: 120.w,
+                        height: 120.h,
+                        color: Colors.grey[200], // Background abu-abu biar rapi
+                        child: Transform.scale(
+                          scale: 0.7,
+                          child: Image.asset(
+                            ImageConfig.imagePlaceholder,
+                            fit: BoxFit
+                                .contain, // Gunakan contain agar icon tidak terpotong
+                          ),
+                        ),
+                      )
+                    // 2. JIKA URL ADA, COBA LOAD DARI NETWORK
+                    : Image.network(
+                        imageUrl,
+                        width: 120.w,
+                        height: 120.h,
+                        fit: BoxFit.cover,
+                        // Loading builder opsional (biar ada loading muter saat download)
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return ShimmerContainerWidget(
+                            width: 120.w,
+                            height: 120.h,
+                          );
+                        },
+                        // 3. JIKA URL ADA TAPI ERROR (404/Not Found), TAMPILKAN PLACEHOLDER
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: 120.w,
+                            height: 120.h,
+                            color: Colors.grey[200],
+                            child: Transform.scale(
+                              scale: 0.7,
+                              child: Image.asset(
+                                ImageConfig.imagePlaceholder,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
               ),
               Positioned(
                 top: 8.h,
@@ -101,7 +138,7 @@ class AcaraCard extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 8.h),
-              
+
                   // Tanggal
                   Row(
                     children: [
@@ -121,7 +158,7 @@ class AcaraCard extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 4.h),
-              
+
                   // Waktu
                   Row(
                     children: [
@@ -141,7 +178,7 @@ class AcaraCard extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 4.h),
-              
+
                   // Lokasi
                   Row(
                     children: [
@@ -151,11 +188,15 @@ class AcaraCard extends StatelessWidget {
                         color: AppColors.gray500,
                       ),
                       SizedBox(width: 6.w),
-                      Text(
-                        location,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          color: AppColors.gray600,
+                      Expanded(
+                        child: Text(
+                          location,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            color: AppColors.gray600,
+                          ),
                         ),
                       ),
                     ],

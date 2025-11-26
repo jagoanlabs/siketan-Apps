@@ -168,29 +168,31 @@ class _DataPageViewState extends State<DataPageView> {
                       SizedBox(height: 16.h),
                       StatisticWidget(),
                       SizedBox(height: 16.h),
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onVerticalDragUpdate: (_) {},
-                        onVerticalDragDown: (_) {},
-                        onVerticalDragCancel: () {},
-                        onVerticalDragEnd: (details) {
-                          _scrollOffset = details.primaryVelocity ?? 0;
-                        },
-                        child: NotificationListener<ScrollNotification>(
-                          onNotification: (notification) {
-                            // Block pull-to-refresh ketika scroll di tabel
-                            if (notification is ScrollStartNotification ||
-                                notification is ScrollUpdateNotification) {
-                              return true; // Consume the notification
-                            }
-                            return false;
-                          },
-                          child: TableWidget(),
-                        ),
-                      ),
                     ],
                   ),
                 ],
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onVerticalDragUpdate: (_) {},
+                onVerticalDragDown: (_) {},
+                onVerticalDragCancel: () {},
+                onVerticalDragEnd: (details) {
+                  _scrollOffset = details.primaryVelocity ?? 0;
+                },
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (notification) {
+                    // Block pull-to-refresh ketika scroll di tabel
+                    if (notification is ScrollStartNotification ||
+                        notification is ScrollUpdateNotification) {
+                      return true; // Consume the notification
+                    }
+                    return false;
+                  },
+                  child: TableWidget(),
+                ),
               ),
             ),
           ],

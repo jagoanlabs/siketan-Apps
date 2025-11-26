@@ -1,6 +1,15 @@
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
-import 'package:siketan/core/constant/image/image_config.dart';
-import 'package:siketan/features/data/presentation/widget/table_widget.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:siketan/app/dependency_injector/import.dart';
+import 'package:siketan/app/helper/date_format_helper.dart';
+import 'package:siketan/app/helper/kegiatan_status_helper.dart';
+import 'package:siketan/core/utils/logger/logger.dart';
+import 'package:siketan/features/home/domain/model/berita_petani_response_model.dart';
+import 'package:siketan/features/home/domain/model/kegiatan_petani_response_model.dart';
+import 'package:siketan/features/home/domain/repository/home_repository.dart';
+import 'package:siketan/features/home/presentation/bloc/berita_bloc.dart';
+import 'package:siketan/features/home/presentation/bloc/kegiatan_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:siketan/shared/widget/acara_card_widget.dart';
@@ -8,13 +17,26 @@ import 'package:siketan/shared/widget/banner_home_widget.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:siketan/shared/widget/news_card_widget.dart';
+import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class InformasiPage extends StatelessWidget {
   const InformasiPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const InformasiPageView();
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              KegiatanBloc(homeRepository: getIt<HomeRepository>()),
+        ),
+        BlocProvider(
+          create: (context) =>
+              BeritaBloc(homeRepository: getIt<HomeRepository>()),
+        ),
+      ],
+      child: const InformasiPageView(),
+    );
   }
 }
 
@@ -29,17 +51,12 @@ class _InformasiPageViewState extends State<InformasiPageView>
     with TickerProviderStateMixin {
   late TabController _tabController;
 
-  // State pagination untuk masing-masing tab
-  int _currentAcaraPage = 1;
-  int _currentBeritaPage = 1;
-  int _totalPages = 5; // Misal total page untuk semua tab
-
   // State search
   String _searchQueryAcara = '';
   String _searchQueryBerita = '';
 
   // Data dummy
-  List<Map<String, dynamic>> _acaraData = [
+  final List<Map<String, dynamic>> _acaraData = [
     {
       'image': 'https://placehold.co/600x400',
       'status': 'Sudah berakhir',
@@ -87,7 +104,7 @@ class _InformasiPageViewState extends State<InformasiPageView>
     },
   ];
 
-  List<Map<String, dynamic>> _beritaData = [
+  final List<Map<String, dynamic>> _beritaData = [
     {
       'image': 'https://placehold.co/600x400',
       'author': 'Agus Pasianto, S.P., M.M.A',
@@ -135,6 +152,8 @@ class _InformasiPageViewState extends State<InformasiPageView>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    context.read<KegiatanBloc>().add(KegiatanEventFetch());
+    context.read<BeritaBloc>().add(BeritaEventFetch());
   }
 
   @override
@@ -147,214 +166,264 @@ class _InformasiPageViewState extends State<InformasiPageView>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.gray50,
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Stack(
-          children: [
-            // Gradient Background (scrollable)
-            Container(
-              width: double.infinity,
-              height: 300.h,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  stops: const [0.0, 0.8, 0.9, 1.0],
-                  colors: [
-                    AppColors.blue2,
-                    AppColors.blue1.withValues(alpha: 0.5),
-                    AppColors.blue1.withValues(alpha: 0.2),
-                    AppColors.blue1.withValues(alpha: 0.0),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+      body: EasyRefresh(
+        header: const ClassicHeader(
+          showMessage: false,
+          armedText: 'Lepaskan',
+          dragText: 'Tarik ke bawah untuk refresh',
+          failedText: 'Refresh gagal',
+          readyText: 'Merefresh...',
+          processingText: "Merefresh...",
+          processedText: "Refresh berhasil",
+        ),
+        triggerAxis: Axis.vertical,
+        onRefresh: () {
+          logger.d('refresh');
+          // aksi ketika icon search ditekan
+          context.read<KegiatanBloc>().add(KegiatanEventFetch());
+          context.read<BeritaBloc>().add(BeritaEventFetch());
+        },
+        child: SingleChildScrollView(
+          // physics: const BouncingScrollPhysics(),
+          child: Stack(
+            children: [
+              // Gradient Background
+              Container(
+                width: double.infinity,
+                height: 300.h,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    stops: const [0.0, 0.8, 0.9, 1.0],
+                    colors: [
+                      AppColors.blue2,
+                      AppColors.blue1.withValues(alpha: 0.5),
+                      AppColors.blue1.withValues(alpha: 0.2),
+                      AppColors.blue1.withValues(alpha: 0.0),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 72.h),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: Text(
-                    "Informasi Pertanian",
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.gray900,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 72.h),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
+                    child: Text(
+                      "Informasi Pertanian",
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.gray900,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 16.h),
-                BannerHomeWidget(
-                  title: 'Informasi Pertanian',
-                  subtitle: 'Informasi Statistik Data Pertanian di Kab. Ngawi',
-                ),
-                SizedBox(height: 16.h),
-
-                // Tab Bar
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 24.w),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12.r),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.gray200.withOpacity(0.2),
-                        blurRadius: 8.r,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
+                  SizedBox(height: 16.h),
+                  BannerHomeWidget(
+                    title: 'Informasi Pertanian',
+                    subtitle:
+                        'Informasi Statistik Data Pertanian di Kab. Ngawi',
                   ),
-                  child: TabBar(
-                    controller: _tabController,
-                    labelColor: AppColors.green4,
-                    unselectedLabelColor: AppColors.gray500,
-                    dividerHeight: 0,
-                    indicatorColor: AppColors.green4,
-                    tabs: [
-                      Tab(
-                        child: Text(
-                          'Acara',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      Tab(
-                        child: Text(
-                          'Berita',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                  SizedBox(height: 16.h),
 
-                SizedBox(height: 16.h),
-
-                // Tab Content (Tanpa tinggi tetap)
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: SizedBox(
-                    height: 600.h, // Tetapkan tinggi tetap agar tidak loncat
-                    child: TabBarView(
+                  // Tab Bar
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 24.w),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12.r),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.gray200.withOpacity(0.2),
+                          blurRadius: 8.r,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: TabBar(
                       controller: _tabController,
-                      children: [
-                        // Tab Acara
-                        _buildTabContent(
-                          totalPages: _totalPages,
-                          searchQuery: _searchQueryAcara,
-                          onSearchChanged: (value) {
-                            setState(() {
-                              _searchQueryAcara = value;
-                            });
-                          },
-                          onPageChanged: (page) {
-                            setState(() {
-                              _currentAcaraPage = page;
-                            });
-                          },
-                          currentPage: _currentAcaraPage,
-                          label: 'Acara',
-                          isAcara: true,
+                      labelColor: AppColors.green4,
+                      unselectedLabelColor: AppColors.gray500,
+                      dividerHeight: 0,
+                      indicatorColor: AppColors.green4,
+                      tabs: [
+                        Tab(
+                          child: Text(
+                            'Acara',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
-
-                        // Tab Berita
-                        _buildTabContent(
-                          totalPages: _totalPages,
-                          searchQuery: _searchQueryBerita,
-                          onSearchChanged: (value) {
-                            setState(() {
-                              _searchQueryBerita = value;
-                            });
-                          },
-                          onPageChanged: (page) {
-                            setState(() {
-                              _currentBeritaPage = page;
-                            });
-                          },
-                          currentPage: _currentBeritaPage,
-                          label: 'Berita',
-                          isAcara: false,
+                        Tab(
+                          child: Text(
+                            'Berita',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+
+                  SizedBox(height: 16.h),
+
+                  // Tab Content - DINAMIS HEIGHT
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 24.w),
+                    child: AnimatedBuilder(
+                      animation: _tabController,
+                      builder: (context, child) {
+                        // Logic manual switch tab
+                        return _tabController.index == 0
+                            ? BlocBuilder<KegiatanBloc, KegiatanState>(
+                                builder: (context, state) {
+                                  if (state is KegiatanLoading) {
+                                    return Column(
+                                      children: [
+                                        ShimmerContainerWidget(
+                                          width: double.infinity,
+                                          height: 48.h,
+                                        ),
+                                        SizedBox(height: 16.h),
+                                        ListView.builder(
+                                          scrollDirection: Axis.vertical,
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemCount: 5,
+                                          itemBuilder: (context, index) {
+                                            return Padding(
+                                              padding: EdgeInsets.only(
+                                                bottom: 16.h,
+                                              ),
+                                              child: ShimmerContainerWidget(
+                                                width: double.infinity,
+                                                height: 120.h,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                  if (state is KegiatanError) {
+                                    return Center(child: Text(state.message));
+                                  }
+                                  if (state is KegiatanLoaded) {
+                                    return _AcaraTabContent(
+                                      searchQuery: _searchQueryAcara,
+                                      onSearchChanged: (value) {
+                                        setState(() {
+                                          _searchQueryAcara = value;
+                                        });
+                                      },
+                                      acaraData: state.kegiatan,
+                                    );
+                                  }
+                                  return const SizedBox();
+                                },
+                              )
+                            : BlocBuilder<BeritaBloc, BeritaState>(
+                                builder: (context, state) {
+                                  if (state is BeritaLoading) {
+                                    return Column(
+                                      children: [
+                                        ShimmerContainerWidget(
+                                          width: double.infinity,
+                                          height: 48.h,
+                                        ),
+                                        SizedBox(height: 16.h),
+                                        ListView.builder(
+                                          scrollDirection: Axis.vertical,
+                                          padding: EdgeInsets.zero,
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          itemCount: 5,
+                                          itemBuilder: (context, index) {
+                                            return Padding(
+                                              padding: EdgeInsets.only(
+                                                bottom: 16.h,
+                                              ),
+                                              child: ShimmerContainerWidget(
+                                                width: double.infinity,
+                                                height: 200.h,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  }
+                                  if (state is BeritaError) {
+                                    return Center(child: Text(state.message));
+                                  }
+                                  if (state is BeritaLoaded) {
+                                    return _BeritaTabContent(
+                                      searchQuery: _searchQueryBerita,
+                                      onSearchChanged: (value) {
+                                        setState(() {
+                                          _searchQueryBerita = value;
+                                        });
+                                      },
+                                      beritaData: state.berita,
+                                    );
+                                  }
+                                  return const SizedBox();
+                                },
+                              );
+                      },
+                    ),
+                  ),
+
+                  // Extra padding bottom agar tidak mentok
+                  SizedBox(height: 24.h),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-
-  // Widget reusable untuk konten tab
-  Widget _buildTabContent({
-    required String searchQuery,
-    required Function(String) onSearchChanged,
-    required Function(int) onPageChanged,
-    required int currentPage,
-    required String label,
-    required bool isAcara,
-    required int totalPages,
-  }) {
-    final contentData = isAcara ? _acaraData : _beritaData;
-
-    return _TabContent(
-      totalPages: totalPages,
-      searchQuery: searchQuery,
-      onSearchChanged: onSearchChanged,
-      contentData: contentData,
-      isAcara: isAcara,
-      currentPage: currentPage,
-      onPageChanged: onPageChanged,
-      label: label,
-    );
-  }
 }
 
-// Widget tambahan untuk masing-masing tab, dengan keep alive
-class _TabContent extends StatefulWidget {
+// ================== WIDGET UNTUK TAB ACARA ==================
+class _AcaraTabContent extends StatelessWidget {
   final String searchQuery;
   final Function(String) onSearchChanged;
-  final List<Map<String, dynamic>> contentData;
-  final bool isAcara;
-  final int currentPage;
-  final Function(int) onPageChanged;
-  final String label;
-  final int totalPages;
+  final KegiatanPetaniResponseModel acaraData;
 
-  const _TabContent({
+  const _AcaraTabContent({
+    Key? key,
     required this.searchQuery,
     required this.onSearchChanged,
-    required this.contentData,
-    required this.isAcara,
-    required this.currentPage,
-    required this.onPageChanged,
-    required this.label,
-    required this.totalPages,
-  });
-
-  @override
-  State<_TabContent> createState() => _TabContentState();
-}
-
-class _TabContentState extends State<_TabContent> with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
+    required this.acaraData,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Penting untuk keep alive
+    // Filter data berdasarkan search query
+    final filteredData = acaraData.infotani?.where((item) {
+      final title = item.namaKegiatan.toString().toLowerCase();
+      final isi = item.isi.toString().toLowerCase();
+      final lokasi = item.tempat.toString().toLowerCase();
+      final query = searchQuery.toLowerCase();
+      return title.contains(query) ||
+          isi.contains(query) ||
+          lokasi.contains(query);
+    }).toList();
 
     return Column(
       children: [
-        // Search Bar
+        // Search Bar untuk Acara
         Container(
           padding: EdgeInsets.symmetric(horizontal: 12.w),
           decoration: BoxDecoration(
@@ -365,7 +434,7 @@ class _TabContentState extends State<_TabContent> with AutomaticKeepAliveClientM
               BoxShadow(
                 color: AppColors.gray200.withOpacity(0.3),
                 blurRadius: 8.r,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -379,9 +448,9 @@ class _TabContentState extends State<_TabContent> with AutomaticKeepAliveClientM
               SizedBox(width: 12.w),
               Expanded(
                 child: TextField(
-                  onChanged: widget.onSearchChanged,
+                  onChanged: onSearchChanged,
                   decoration: InputDecoration(
-                    hintText: "Cari ${widget.label}...",
+                    hintText: "Cari Acara...",
                     hintStyle: TextStyle(
                       fontSize: 14.sp,
                       color: AppColors.gray400,
@@ -398,130 +467,152 @@ class _TabContentState extends State<_TabContent> with AutomaticKeepAliveClientM
             ],
           ),
         ),
-
         SizedBox(height: 16.h),
 
-        // Konten Tab Scrollable (AcaraCard atau BeritaCard) + Pagination
-        Expanded(
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ...widget.contentData.map((data) {
-                  if (widget.isAcara) {
-                    return AcaraCard(
-                      imageUrl: data['image'],
-                      status: data['status'],
-                      statusColor: data['statusColor'],
-                      title: data['title'],
-                      date: data['date'],
-                      time: data['time'],
-                      location: data['location'],
-                    );
-                  }
-                  return BeritaCard(
-                    imageUrl: data['image'],
-                    author: data['author'],
-                    title: data['title'],
-                    description: data['description'],
-                    date: data['date'],
-                  );
-                }).toList(),
-                SizedBox(height: 16.h),
-                _buildPagination(
-                  currentPage: widget.currentPage,
-                  onPageChanged: widget.onPageChanged,
-                  totalPages: widget.totalPages,
+        // Daftar AcaraCard
+        filteredData?.isEmpty ?? true
+            ? Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24.h),
+                  child: Text(
+                    'Tidak ada acara ditemukan',
+                    style: TextStyle(color: AppColors.gray500, fontSize: 14.sp),
+                  ),
                 ),
-              ],
-            ),
-          ),
-        ),
+              )
+            : ListView.builder(
+                padding: EdgeInsets.zero,
+                // KUNCI: shrinkWrap true & NeverScrollable
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: filteredData?.length ?? 0,
+                itemBuilder: (context, index) {
+                  final item = filteredData?[index];
+                  final status = getEventStatus(item?.tanggalAcara);
+                  final statusText = getEventStatusText(status);
+                  final statusColor = getEventStatusColor(status);
+                  return AcaraCard(
+                    imageUrl: item?.fotoKegiatan ?? "",
+                    status: statusText,
+                    statusColor: statusColor,
+                    title: item?.namaKegiatan ?? "-",
+                    date: formatDateNullable(item?.tanggalAcara),
+                    time: item?.waktuAcara ?? "-",
+                    location: item?.tempat ?? "-",
+                  );
+                },
+              ),
       ],
     );
   }
 }
 
-// Widget pagination server-side (scrollable) - dipindahkan ke sini agar bisa diakses oleh _TabContent
-Widget _buildPagination({
-  required int currentPage,
-  required Function(int) onPageChanged,
-  required int totalPages,
-}) {
-  return SizedBox(
-    height: 48.h,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+// ================== WIDGET UNTUK TAB BERITA ==================
+class _BeritaTabContent extends StatelessWidget {
+  final String searchQuery;
+  final Function(String) onSearchChanged;
+  final BeritaPetaniResponseModel beritaData;
+
+  const _BeritaTabContent({
+    Key? key,
+    required this.searchQuery,
+    required this.onSearchChanged,
+    required this.beritaData,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Filter data berdasarkan search query
+    final filteredData = beritaData.infotani?.where((item) {
+      final title = item.judul.toString().toLowerCase();
+      final description = item.isi.toString().toLowerCase();
+      final author = item.createdBy.toString().toLowerCase();
+      final query = searchQuery.toLowerCase();
+      return title.contains(query) ||
+          description.contains(query) ||
+          author.contains(query);
+    }).toList();
+
+    return Column(
       children: [
-        // Tombol Previous
-        IconButton(
-          onPressed: currentPage == 1
-              ? null
-              : () => onPageChanged(currentPage - 1),
-          icon: Iconify(
-            MaterialSymbols.chevron_left_rounded,
-            color: currentPage == 1 ? AppColors.gray300 : AppColors.green4,
+        // Search Bar untuk Berita
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 12.w),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8.r),
+            border: Border.all(color: AppColors.gray200, width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.gray200.withOpacity(0.3),
+                blurRadius: 8.r,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-        ),
-
-        // Nomor Halaman (Scrollable)
-        Expanded(
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-            children: List.generate(totalPages, (index) {
-              int pageNum = index + 1;
-              bool isCurrent = pageNum == currentPage;
-
-              if (pageNum == 1 ||
-                  pageNum == totalPages ||
-                  (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4.w),
-                  child: ElevatedButton(
-                    onPressed: () => onPageChanged(pageNum),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isCurrent
-                          ? AppColors.green4
-                          : Colors.white,
-                      foregroundColor: isCurrent
-                          ? Colors.white
-                          : AppColors.gray900,
-                      shape: CircleBorder(),
-                      padding: EdgeInsets.all(8.w),
+          child: Row(
+            children: [
+              Iconify(
+                MaterialSymbols.search_rounded,
+                size: 20.w,
+                color: AppColors.gray500,
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: TextField(
+                  onChanged: onSearchChanged,
+                  decoration: InputDecoration(
+                    hintText: "Cari Berita...",
+                    hintStyle: TextStyle(
+                      fontSize: 14.sp,
+                      color: AppColors.gray400,
                     ),
-                    child: Text(
-                      pageNum.toString(),
-                      style: TextStyle(fontSize: 12.sp),
-                    ),
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
                   ),
-                );
-              } else if (pageNum == currentPage - 2 || pageNum == currentPage + 2) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 4.w),
-                  child: Text('...', style: TextStyle(fontSize: 12.sp)),
-                );
-              }
-              return const SizedBox.shrink();
-            }).where((widget) => widget != const SizedBox.shrink()).toList(),
+                  style: TextStyle(fontSize: 14.sp, color: AppColors.gray900),
+                ),
+              ),
+            ],
           ),
         ),
+        SizedBox(height: 16.h),
 
-        // Tombol Next
-        IconButton(
-          onPressed: currentPage == totalPages
-              ? null
-              : () => onPageChanged(currentPage + 1),
-          icon: Iconify(
-            MaterialSymbols.chevron_right_rounded,
-            color: currentPage == totalPages
-                ? AppColors.gray300
-                : AppColors.green4,
-          ),
-        ),
+        // Daftar BeritaCard
+        filteredData?.isEmpty ?? true
+            ? Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24.h),
+                  child: Text(
+                    'Tidak ada berita ditemukan',
+                    style: TextStyle(color: AppColors.gray500, fontSize: 14.sp),
+                  ),
+                ),
+              )
+            : ListView.builder(
+                padding: EdgeInsets.zero,
+                // KUNCI: shrinkWrap true & NeverScrollable
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: filteredData?.length ?? 0,
+                itemBuilder: (context, index) {
+                  final item = filteredData?[index];
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 16.h),
+                    child: BeritaCard(
+                      imageUrl: item?.fotoBerita ?? "",
+                      author: item?.createdBy ?? "",
+                      title: item?.judul ?? "",
+                      description: item?.isi ?? "",
+                      date: formatDateNullable(item?.tanggal),
+                    ),
+                  );
+                },
+              ),
       ],
-    ),
-  );
+    );
+  }
 }

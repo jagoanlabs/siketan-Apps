@@ -30,4 +30,8 @@ class ApiEndpoints {
       "/tanaman-petani/statistik?"; //tanaman-petani/statistik?month=6&year=2023&lineType=komoditas&pieType=kategori
   static const String komoditasStatistik =
       "/tanaman-petani"; //tanaman-petani?page=1&limit=10&sortOrder=ASC
+
+  // informasi
+  static const String beritaInformasi = "/info-tani";
+  static const String kegiatanInformasi = "/event-tani";
 }
