@@ -603,6 +603,7 @@ class _BeritaTabContent extends StatelessWidget {
                   return Padding(
                     padding: EdgeInsets.only(bottom: 16.h),
                     child: BeritaCard(
+                      id: item?.id.toString() ?? "",
                       imageUrl: item?.fotoBerita ?? "",
                       author: item?.createdBy ?? "",
                       title: item?.judul ?? "",

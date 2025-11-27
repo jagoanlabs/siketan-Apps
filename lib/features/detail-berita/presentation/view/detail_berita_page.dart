@@ -4,39 +4,32 @@ import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
+import 'package:siketan/features/detail-berita/domain/model/detail_berita_dto.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:flutter_html/flutter_html.dart'; // Tambahkan ini
 import 'package:siketan/app/helper/share_helper.dart';
+import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class DetailBeritaPage extends StatelessWidget {
-  final String title;
-  final String author;
-  final String date;
-  final String imageUrl;
-  final String content; // Isi HTML berita
+  final DetailBeritaDto detailBeritaDto;
 
-  const DetailBeritaPage({
-    super.key,
-    required this.title,
-    required this.author,
-    required this.date,
-    required this.imageUrl,
-    required this.content,
-  });
+  const DetailBeritaPage({super.key, required this.detailBeritaDto});
 
   @override
   Widget build(BuildContext context) {
     return DetailBeritaPageView(
-      title: title,
-      author: author,
-      date: date,
-      imageUrl: imageUrl,
-      content: content,
+      id: detailBeritaDto.id,
+      title: detailBeritaDto.title,
+      author: detailBeritaDto.author,
+      date: detailBeritaDto.date,
+      imageUrl: detailBeritaDto.imageUrl,
+      content: detailBeritaDto.content,
     );
   }
 }
 
 class DetailBeritaPageView extends StatefulWidget {
+  final String id;
   final String title;
   final String author;
   final String date;
@@ -45,6 +38,7 @@ class DetailBeritaPageView extends StatefulWidget {
 
   const DetailBeritaPageView({
     super.key,
+    required this.id,
     required this.title,
     required this.author,
     required this.date,
@@ -105,7 +99,27 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                   width: double.infinity,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12.r),
-                    child: Image.asset(widget.imageUrl, fit: BoxFit.cover),
+                    child: Image.network(
+                      widget.imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Transform.scale(
+                          scale: 0.7,
+                          child: Image.asset(
+                            ImageConfig.imagePlaceholder,
+                            width: double.infinity,
+                            height: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        );
+                      },
+                      loadingBuilder: (context, child, loadingProgress) {
+                        return ShimmerContainerWidget(
+                          width: double.infinity,
+                          height: 330.h,
+                        );
+                      },
+                    ),
                   ),
                 ),
                 SizedBox(height: 16.h),

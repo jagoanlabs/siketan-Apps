@@ -1,3 +1,4 @@
+import 'package:double_back_to_close/double_back_to_close.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
@@ -30,57 +31,55 @@ class _HomeWrapperState extends State<HomeWrapper> {
     _pageController.jumpToPage(index);
   }
 
-
   /// ✅ Fungsi agar halaman anak bisa ganti tab
   void switchTab(int index) {
     _onItemTapped(index);
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.gray50,
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: _onItemTapped,
-        children: [
-          HomePage(onNavigateToTab: switchTab),
-          DataPage(),
-          InformasiPage(),
-          TokoPage(),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: shadowSm,
+    return DoubleBack(
+      message: "Ketuk kembali lagi untuk keluar",
+      waitForSecondBackPress: 2,
+      child: Scaffold(
+        backgroundColor: AppColors.gray50,
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: _onItemTapped,
+          children: [
+            HomePage(onNavigateToTab: switchTab),
+            DataPage(),
+            InformasiPage(),
+            TokoPage(),
+          ],
         ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _navItem(
-                  index: 0,
-                  icon: MaterialSymbols.home_rounded,
-                  label: "Beranda",
-                ),
-                _navItem(
-                  index: 1,
-                  icon: MaterialSymbols.insert_chart_outline_rounded,
-                  label: "Data",
-                ),
-                _navItem(
-                  index: 2,
-                  icon: Heroicons.newspaper_solid,
-                  label: "Informasi",
-                ),
-                _navItem(index: 3, icon: Uil.shop, label: "Toko"),
-              ],
+        bottomNavigationBar: Container(
+          decoration: BoxDecoration(color: Colors.white, boxShadow: shadowSm),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _navItem(
+                    index: 0,
+                    icon: MaterialSymbols.home_rounded,
+                    label: "Beranda",
+                  ),
+                  _navItem(
+                    index: 1,
+                    icon: MaterialSymbols.insert_chart_outline_rounded,
+                    label: "Data",
+                  ),
+                  _navItem(
+                    index: 2,
+                    icon: Heroicons.newspaper_solid,
+                    label: "Informasi",
+                  ),
+                  _navItem(index: 3, icon: Uil.shop, label: "Toko"),
+                ],
+              ),
             ),
           ),
         ),

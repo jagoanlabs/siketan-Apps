@@ -48,11 +48,7 @@ class HomePage extends StatelessWidget {
               BeritaBloc(homeRepository: getIt<HomeRepository>()),
         ),
       ],
-      child: DoubleBack(
-        message: "Ketuk kembali lagi untuk keluar",
-        waitForSecondBackPress: 2,
-        child: HomePageView(onNavigateToTab: onNavigateToTab),
-      ),
+      child: HomePageView(onNavigateToTab: onNavigateToTab),
     );
   }
 }

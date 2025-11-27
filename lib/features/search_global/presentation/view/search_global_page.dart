@@ -486,6 +486,7 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
             itemBuilder: (context, index) {
               final berita = _beritaData[index];
               return BeritaCard(
+                id: berita['id'],
                 imageUrl: berita['image'],
                 author: berita['author'],
                 title: berita['title'],

@@ -52,7 +52,9 @@ class MyRoute {
 
       case RoutesName.detailBerita:
         return PageTransition(
-          child: const DetailBeritaPage(),
+          child: DetailBeritaPage(
+            detailBeritaDto: settings.arguments as DetailBeritaDto,
+          ),
           type: PageTransitionType.fade, // efek halus untuk splash
           settings: settings,
           duration: const Duration(milliseconds: 300),

@@ -5,12 +5,14 @@ import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:siketan/app/helper/html_to_text_helper.dart';
 import 'package:siketan/core/constant/image/image_config.dart' show ImageConfig;
+import 'package:siketan/features/detail-berita/domain/model/detail_berita_dto.dart';
 import 'package:siketan/features/detail-berita/presentation/view/detail_berita_page.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/style/shadow.dart';
 import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class BeritaCard extends StatelessWidget {
+  final String id;
   final String imageUrl;
   final String author;
   final String title;
@@ -19,6 +21,7 @@ class BeritaCard extends StatelessWidget {
 
   const BeritaCard({
     super.key,
+    required this.id,
     required this.imageUrl,
     required this.author,
     required this.title,
@@ -30,16 +33,19 @@ class BeritaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        DetailBeritaDto detailBeritaDto = DetailBeritaDto(
+          id: id,
+          title: title,
+          author: author,
+          date: date,
+          imageUrl: imageUrl,
+          content: description,
+        );
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => DetailBeritaPage(
-              title: title,
-              content: description,
-              imageUrl: imageUrl,
-              author: author,
-              date: date,
-            ),
+            builder: (context) =>
+                DetailBeritaPage(detailBeritaDto: detailBeritaDto),
           ),
         );
       },
