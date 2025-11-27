@@ -20,23 +20,27 @@ class StoreCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     return Container(
+    return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.r),
-        boxShadow: shadowMd
+        boxShadow: shadowMd,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Gambar Produk
-          ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
-            child: Image.network(
-              imageUrl,
-              width: double.infinity,
-              height: 120.h,
-              fit: BoxFit.cover,
+          Container(
+            color: AppColors.gray200,
+            child: Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(12.r)),
+                child: Iconify(
+                  MaterialSymbols.store_rounded,
+                  size: 120.h,
+                  color: AppColors.gray400,
+                ),
+              ),
             ),
           ),
 
@@ -58,10 +62,11 @@ class StoreCardWidget extends StatelessWidget {
                       color: AppColors.gray900,
                     ),
                   ),
-            
-                  // Harga
+
                   Text(
                     location,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w500,
@@ -70,8 +75,7 @@ class StoreCardWidget extends StatelessWidget {
                   ),
 
                   Spacer(),
-            
-                  // Tombol Beli Sekarang
+
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
+import 'package:siketan/app/helper/format_currency_helper.dart';
+import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/style/shadow.dart';
+import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class ProductCardWidget extends StatelessWidget {
   final String imageUrl;
@@ -37,6 +40,28 @@ class ProductCardWidget extends StatelessWidget {
               width: double.infinity,
               height: 120.h,
               fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return ShimmerContainerWidget(
+                  width: double.infinity,
+                  height: 120.h,
+                );
+              },
+              // 3. JIKA URL ADA TAPI ERROR (404/Not Found), TAMPILKAN PLACEHOLDER
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: double.infinity,
+                  height: 120.h,
+                  color: Colors.grey[200],
+                  child: Transform.scale(
+                    scale: 0.7,
+                    child: Image.asset(
+                      ImageConfig.imagePlaceholder,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                );
+              },
             ),
           ),
 
@@ -63,7 +88,7 @@ class ProductCardWidget extends StatelessWidget {
 
                     // Harga
                     Text(
-                      price,
+                      FormatCurrencyHelper.currency(price),
                       style: TextStyle(
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w500,

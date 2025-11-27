@@ -21,6 +21,10 @@ import 'package:siketan/features/register/data/repository_impl/register_reposito
 import 'package:siketan/features/register/domain/repository/register_repository.dart';
 import 'package:siketan/features/home/data/datasources/home_remote_data_source.dart';
 import 'package:siketan/features/home/data/repository_impl/home_repository_impl.dart';
+import 'package:siketan/features/toko/data/datasources/product_remote_data_source.dart';
+import 'package:siketan/features/toko/data/datasources/product_remote_data_source.dart';
+import 'package:siketan/features/toko/data/repository_impl/product_repository_impl.dart';
+import 'package:siketan/features/toko/domain/repository/product_repository.dart';
 
 // Core dependencies
 import '../../core/network/api_clients.dart';

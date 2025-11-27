@@ -126,4 +126,17 @@ Future<void> setupDependencies() async {
   getIt.registerFactory<DataRepository>(
     () => DataRepositoryImpl(dataSource: getIt<DataRemoteDataSource>()),
   );
+
+  // toko
+  // toko data source
+  getIt.registerFactory<ProductRemoteDataSource>(
+    () => ProductRemoteDataSource(baseService: getIt<PublicBaseService>()),
+  );
+
+  // toko repository
+  getIt.registerFactory<ProductRepository>(
+    () => ProductRepositoryImpl(
+      remoteDataSource: getIt<ProductRemoteDataSource>(),
+    ),
+  );
 }
