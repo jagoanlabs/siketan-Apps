@@ -81,7 +81,7 @@ class _TokoPageViewState extends State<TokoPageView>
           );
         },
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          // physics: const BouncingScrollPhysics(),
           child: Stack(
             children: [
               // Gradient Background

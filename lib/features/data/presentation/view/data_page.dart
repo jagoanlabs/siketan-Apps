@@ -97,7 +97,7 @@ class _DataPageViewState extends State<DataPageView> {
           }
         },
         child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+          // physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverToBoxAdapter(
               child: Stack(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ButtonPrimary extends StatelessWidget {
   final VoidCallback mainButton;
@@ -28,14 +29,14 @@ class ButtonPrimary extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           gradient: isGradient
               ? gradient ??
-                  const LinearGradient(
-                    colors: [
-                      Color(0xFF4CAF50), // hijau muda
-                      Color(0xFF087F23), // hijau tua
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  )
+                    const LinearGradient(
+                      colors: [
+                        Color(0xFF4CAF50), // hijau muda
+                        Color(0xFF087F23), // hijau tua
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
               : null,
           color: isGradient ? null : color,
         ),
@@ -60,10 +61,10 @@ class ButtonPrimary extends StatelessWidget {
               : Text(
                   mainButtonMessage,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
-                    fontSize: 16,
+                    fontSize: 14.sp,
                   ),
                 ),
         ),
