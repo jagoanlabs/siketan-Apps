@@ -9,19 +9,19 @@ import 'package:flutter_html/flutter_html.dart'; // Tambahkan ini
 import 'package:siketan/app/helper/share_helper.dart';
 
 class DetailBeritaPage extends StatelessWidget {
-  final String? title;
-  final String? author;
-  final String? date;
-  final String? imageUrl;
-  final String? content; // Isi HTML berita
+  final String title;
+  final String author;
+  final String date;
+  final String imageUrl;
+  final String content; // Isi HTML berita
 
   const DetailBeritaPage({
     super.key,
-    this.title,
-    this.author,
-    this.date,
-    this.imageUrl,
-    this.content,
+    required this.title,
+    required this.author,
+    required this.date,
+    required this.imageUrl,
+    required this.content,
   });
 
   @override
@@ -37,19 +37,19 @@ class DetailBeritaPage extends StatelessWidget {
 }
 
 class DetailBeritaPageView extends StatefulWidget {
-  final String? title;
-  final String? author;
-  final String? date;
-  final String? imageUrl;
-  final String? content; // Isi HTML berita
+  final String title;
+  final String author;
+  final String date;
+  final String imageUrl;
+  final String content; // Isi HTML berita
 
   const DetailBeritaPageView({
     super.key,
-    this.title,
-    this.author,
-    this.date,
-    this.imageUrl,
-    this.content,
+    required this.title,
+    required this.author,
+    required this.date,
+    required this.imageUrl,
+    required this.content,
   });
 
   @override
@@ -105,12 +105,7 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                   width: double.infinity,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12.r),
-                    child: Image.asset(
-                      widget.imageUrl ??
-                          ImageConfig
-                              .authBackground, // Gunakan imageUrl dari parameter
-                      fit: BoxFit.cover,
-                    ),
+                    child: Image.asset(widget.imageUrl, fit: BoxFit.cover),
                   ),
                 ),
                 SizedBox(height: 16.h),

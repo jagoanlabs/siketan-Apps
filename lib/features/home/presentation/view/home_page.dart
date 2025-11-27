@@ -22,6 +22,7 @@ import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/widget/primary_button_widget.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
+import 'package:double_back_to_close/double_back_to_close.dart';
 
 class HomePage extends StatelessWidget {
   final void Function(int index)? onNavigateToTab;
@@ -47,7 +48,11 @@ class HomePage extends StatelessWidget {
               BeritaBloc(homeRepository: getIt<HomeRepository>()),
         ),
       ],
-      child: HomePageView(onNavigateToTab: onNavigateToTab),
+      child: DoubleBack(
+        message: "Ketuk kembali lagi untuk keluar",
+        waitForSecondBackPress: 2,
+        child: HomePageView(onNavigateToTab: onNavigateToTab),
+      ),
     );
   }
 }

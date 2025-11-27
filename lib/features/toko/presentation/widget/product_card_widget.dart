@@ -45,6 +45,10 @@ class ProductCardWidget extends StatelessWidget {
                 return ShimmerContainerWidget(
                   width: double.infinity,
                   height: 120.h,
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(12.r),
+                    bottom: Radius.circular(0.r),
+                  ),
                 );
               },
               // 3. JIKA URL ADA TAPI ERROR (404/Not Found), TAMPILKAN PLACEHOLDER
