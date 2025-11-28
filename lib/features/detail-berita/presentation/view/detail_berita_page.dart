@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:iconify_flutter/icons/ph.dart';
+import 'package:siketan/core/constant/env.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/features/detail-berita/domain/model/detail_berita_dto.dart';
 import 'package:siketan/shared/style/color.dart';
@@ -83,13 +84,24 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                 SizedBox(height: 72.h),
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24.w),
-                  child: Text(
-                    "Informasi Pertanian",
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.gray900,
-                    ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    spacing: 12.w,
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.pop(context),
+                        child: Icon(Icons.chevron_left, size: 32.sp),
+                      ),
+                      Text(
+                        "Informasi Pertanian",
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.gray900,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(height: 16.h),
@@ -102,6 +114,16 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                     child: Image.network(
                       widget.imageUrl,
                       fit: BoxFit.cover,
+
+                      // 🔥 FIX DI SINI
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return ShimmerContainerWidget(
+                          width: double.infinity,
+                          height: 330.h,
+                        );
+                      },
+
                       errorBuilder: (context, error, stackTrace) {
                         return Transform.scale(
                           scale: 0.7,
@@ -111,12 +133,6 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                             height: double.infinity,
                             fit: BoxFit.cover,
                           ),
-                        );
-                      },
-                      loadingBuilder: (context, child, loadingProgress) {
-                        return ShimmerContainerWidget(
-                          width: double.infinity,
-                          height: 330.h,
                         );
                       },
                     ),
@@ -243,7 +259,7 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                           // Implementasi share ke platform lain
                           shareContent(
                             widget.title ?? "",
-                            widget.imageUrl ?? "",
+                            Env.frontend + '/home/information/${widget.id}',
                           );
                         },
                         icon: Iconify(
@@ -259,7 +275,7 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                           shareToWhatsApp(
                             context,
                             widget.title ?? "",
-                            widget.imageUrl ?? "",
+                            Env.frontend + '/home/information/${widget.id}',
                           );
                         },
                         icon: Iconify(
@@ -275,7 +291,7 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                           shareToInstagram(
                             context,
                             widget.title ?? "",
-                            widget.imageUrl ?? "",
+                            Env.frontend + '/home/information/${widget.id}',
                           );
                         },
                         icon: Iconify(

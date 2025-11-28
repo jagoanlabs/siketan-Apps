@@ -7,8 +7,10 @@ import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:siketan/app/helper/date_format_helper.dart';
 import 'package:siketan/app/helper/html_to_text_helper.dart';
+import 'package:siketan/app/routes/route_name.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/core/utils/logger/logger.dart';
+import 'package:siketan/features/detail-berita/domain/model/detail_berita_dto.dart';
 import 'package:siketan/features/home/presentation/bloc/berita_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/widget/shimmer_container_widget.dart';
@@ -146,7 +148,19 @@ class _NewsCardViewState extends State<NewsCardView> {
                           : EdgeInsets.only(right: 12.w),
                       child: GestureDetector(
                         onTap: () {
-                          debugPrint("Klik berita: ${news.judul}");
+                          DetailBeritaDto detailBeritaDto = DetailBeritaDto(
+                            id: news.id.toString(),
+                            title: news.judul!,
+                            author: news.createdBy!,
+                            date: formatDateNullable(news.tanggal),
+                            imageUrl: news.fotoBerita!,
+                            content: news.isi!,
+                          );
+                          Navigator.pushNamed(
+                            context,
+                            RoutesName.detailBerita,
+                            arguments: detailBeritaDto,
+                          );
                         },
                         child: Container(
                           width: 280.w,
@@ -186,77 +200,88 @@ class _NewsCardViewState extends State<NewsCardView> {
                               ),
 
                               // Konten teks
-                              Padding(
-                                padding: EdgeInsets.all(12.w),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    // Penulis
-                                    Row(
-                                      children: [
-                                        Iconify(
-                                          MaterialSymbols
-                                              .person_outline_rounded,
-                                          size: 16.w,
-                                          color: AppColors.gray500,
-                                        ),
-                                        SizedBox(width: 6.w),
-                                        Text(
-                                          news.createdBy ?? "Anonymous",
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
-                                            color: AppColors.gray700,
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.all(12.w),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      // Penulis
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Iconify(
+                                                MaterialSymbols
+                                                    .person_outline_rounded,
+                                                size: 16.w,
+                                                color: AppColors.gray500,
+                                              ),
+                                              SizedBox(width: 6.w),
+                                              Text(
+                                                news.createdBy ?? "Anonymous",
+                                                style: TextStyle(
+                                                  fontSize: 12.sp,
+                                                  color: AppColors.gray700,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 8.h),
+                                          SizedBox(height: 8.h),
 
-                                    // Judul
-                                    Text(
-                                      news.judul ?? "Judul tidak tersedia",
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 14.sp,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.gray900,
+                                          // Judul
+                                          Text(
+                                            news.judul ??
+                                                "Judul tidak tersedia",
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 14.sp,
+                                              fontWeight: FontWeight.w600,
+                                              color: AppColors.gray900,
+                                            ),
+                                          ),
+                                          SizedBox(height: 8.h),
+
+                                          // Deskripsi
+                                          Text(
+                                            htmlToPlainText(news.isi ?? ""),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 10.sp,
+                                              color: Colors.black87,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    SizedBox(height: 8.h),
 
-                                    // Deskripsi
-                                    Text(
-                                      htmlToPlainText(news.isi ?? ""),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontSize: 10.sp,
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                    SizedBox(height: 12.h),
-
-                                    // Tanggal
-                                    Row(
-                                      children: [
-                                        Iconify(
-                                          MaterialSymbols
-                                              .calendar_today_rounded,
-                                          size: 16.w,
-                                          color: AppColors.gray500,
-                                        ),
-                                        SizedBox(width: 6.w),
-                                        Text(
-                                          formatDateNullable(news.tanggal),
-                                          style: TextStyle(
-                                            fontSize: 12.sp,
+                                      //
+                                      Row(
+                                        children: [
+                                          Iconify(
+                                            MaterialSymbols
+                                                .calendar_today_rounded,
+                                            size: 16.w,
                                             color: AppColors.gray500,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                          SizedBox(width: 6.w),
+                                          Text(
+                                            formatDateNullable(news.tanggal),
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              color: AppColors.gray500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:siketan/app/helper/html_to_text_helper.dart';
+import 'package:siketan/app/routes/route_name.dart';
 import 'package:siketan/core/constant/image/image_config.dart' show ImageConfig;
 import 'package:siketan/features/detail-berita/domain/model/detail_berita_dto.dart';
 import 'package:siketan/features/detail-berita/presentation/view/detail_berita_page.dart';
@@ -41,12 +42,10 @@ class BeritaCard extends StatelessWidget {
           imageUrl: imageUrl,
           content: description,
         );
-        Navigator.push(
+        Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) =>
-                DetailBeritaPage(detailBeritaDto: detailBeritaDto),
-          ),
+          RoutesName.detailBerita,
+          arguments: detailBeritaDto,
         );
       },
       child: Container(
