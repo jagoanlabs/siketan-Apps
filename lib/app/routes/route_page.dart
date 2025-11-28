@@ -61,7 +61,7 @@ class MyRoute {
         );
       case RoutesName.detailProduct:
         return PageTransition(
-          child: const DetailProductPage(),
+          child: DetailProductPage(id: settings.arguments as String),
           type: PageTransitionType.fade, // efek halus untuk splash
           settings: settings,
           duration: const Duration(milliseconds: 300),

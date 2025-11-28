@@ -1,23 +1,36 @@
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:iconify_flutter/icons/ph.dart';
+import 'package:siketan/app/dependency_injector/import.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
+import 'package:siketan/core/utils/logger/logger.dart';
+import 'package:siketan/features/detail-product/domain/repository/detail_product_repository.dart';
+import 'package:siketan/features/detail-product/presentation/bloc/detail_product_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:colorful_iconify_flutter/icons/logos.dart';
+import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class DetailProductPage extends StatelessWidget {
-  const DetailProductPage({super.key});
+  final String id;
+  const DetailProductPage({super.key, required this.id});
 
   @override
   Widget build(BuildContext context) {
-    return const DetailProductPageView();
+    return BlocProvider(
+      create: (context) =>
+          DetailProductBloc(repository: getIt<DetailProductRepository>()),
+      child: DetailProductPageView(id: id),
+    );
   }
 }
 
 class DetailProductPageView extends StatefulWidget {
-  const DetailProductPageView({super.key});
+  final String id;
+  const DetailProductPageView({super.key, required this.id});
 
   @override
   State<DetailProductPageView> createState() => _DetailProductPageViewState();
@@ -40,6 +53,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
         setState(() => isScrolled = false);
       }
     });
+    context.read<DetailProductBloc>().add(GetDetailProductEvent(id: widget.id));
   }
 
   @override
@@ -48,40 +62,6 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
     _scroll.dispose();
     super.dispose();
   }
-
-
-  final List<Map<String, dynamic>> _StoreData = [
-    {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'location': 'Desa Sekarjati, Karanganyar',
-      'name': 'Toko Tani Maju',
-      'id': '1',
-    },
-    {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'location': 'Desa Sekarjati, Karanganyar',
-      'name': 'Toko Tani Maju',
-      'id': '2',
-    },
-    {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'location': 'Desa Sekarjati, Karanganyar',
-      'name': 'Toko Tani Maju',
-      'id': '3',
-    },
-    {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'location': 'Desa Sekarjati, Karanganyar',
-      'name': 'Toko Tani Maju',
-      'id': '4',
-    },
-    {
-      'image': 'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'location': 'Desa Sekarjati, Karanganyar',
-      'name': 'Toko Tani Maju',
-      'id': '5',
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -99,9 +79,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
             appBarTheme: AppBarTheme(
               backgroundColor: isScrolled ? Colors.white : Colors.transparent,
               elevation: isScrolled ? 1 : 0,
-              iconTheme: IconThemeData(
-                color: AppColors.gray900,
-              ),
+              iconTheme: IconThemeData(color: AppColors.gray900),
             ),
           ),
           child: AppBar(
@@ -135,7 +113,9 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
           children: [
             Expanded(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  logger.d("Hubungi Penjual");
+                },
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(
@@ -188,331 +168,439 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
         ),
       ),
 
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        controller: _scroll,
-        child: Stack(
-          children: [
-            // 🔵 Background Gradient
-            Container(
-              width: double.infinity,
-              height: 300.h,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  stops: const [0.0, 0.8, 0.9, 1.0],
-                  colors: [
-                    AppColors.blue2,
-                    AppColors.blue1.withValues(alpha: 0.5),
-                    AppColors.blue1.withValues(alpha: 0.2),
-                    AppColors.blue1.withValues(alpha: 0.0),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+      body: EasyRefresh(
+        header: const ClassicHeader(
+          showMessage: false,
+          armedText: 'Lepaskan',
+          dragText: 'Tarik ke bawah untuk refresh',
+          failedText: 'Refresh gagal',
+          readyText: 'Merefresh...',
+          processingText: "Merefresh...",
+          processedText: "Refresh berhasil",
+        ),
+        triggerAxis: Axis.vertical,
+        onRefresh: () {
+          logger.d('refresh');
+          // aksi ketika icon search ditekan
+          context.read<DetailProductBloc>().add(
+            GetDetailProductEvent(id: widget.id),
+          );
+        },
+        child: SingleChildScrollView(
+          // physics: const BouncingScrollPhysics(),
+          controller: _scroll,
+          child: Stack(
+            children: [
+              // 🔵 Background Gradient
+              Container(
+                width: double.infinity,
+                height: 300.h,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    stops: const [0.0, 0.8, 0.9, 1.0],
+                    colors: [
+                      AppColors.blue2,
+                      AppColors.blue1.withValues(alpha: 0.5),
+                      AppColors.blue1.withValues(alpha: 0.2),
+                      AppColors.blue1.withValues(alpha: 0.0),
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
                 ),
               ),
-            ),
-        
-            // 🔵 Konten scroll
-            Padding(
-              padding: EdgeInsets.only(top: kToolbarHeight + 24.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 24.h),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12.r),
-                      child: Image.asset(
-                        ImageConfig.authBackground,
-                        width: double.infinity,
-                        height: 320.h,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-                  // title
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Bibit Padi Siap Tanam Persemaian Sistem Kering",
-                          style: TextStyle(
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.gray900,
-                          ),
-                        ),
-                        Text(
-                          "Beras Pulen, Varietas Inpari 32, Satuan Kg",
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.gray900,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(
-                      left: 24.w,
-                      right: 24.w,
-                      top: 16.h,
-                      bottom: 24.h,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Rp12.000",
-                          style: TextStyle(
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.gray900,
-                          ),
-                        ),
-                        Text(
-                          "Stok Tersedia : 1000",
-                          style: TextStyle(
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.green4,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                    
-                  // Tab Bar: Detail Produk & Penjual
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 24.w),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.r),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.gray200.withOpacity(0.2),
-                          blurRadius: 8.r,
-                          offset: Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: TabBar(
-                      tabAlignment: TabAlignment.start,
-                      padding: EdgeInsets.zero,
-                      labelPadding: EdgeInsets.only(right: 24),
-                      isScrollable: true,
-                      dividerColor: Colors.transparent,
-                      dividerHeight: 0,
-                      controller: _tabController,
-                      labelColor: AppColors.blue4,
-                      unselectedLabelColor: AppColors.gray500,
-                      indicator: BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(color: AppColors.blue4, width: 3),
-                        ),
-                      ),
-                      tabs: [
-                        Tab(
-                          child: Text(
-                            'Detail Produk',
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        Tab(
-                          child: Text(
-                            'Penjual',
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                    
-                  SizedBox(height: 16.h),
-                    
-                  // Tab Content
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: SizedBox(
-                      height: 300.h, // Atur tinggi konten tab
-                      child: TabBarView(
-                        controller: _tabController,
+
+              // 🔵 Konten scroll
+              BlocBuilder<DetailProductBloc, DetailProductState>(
+                builder: (context, state) {
+                  if (state is DetailProductLoading) {
+                    return Padding(
+                      padding: EdgeInsets.only(top: kToolbarHeight + 24.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Tab Detail Produk
-                          _buildTabContent(
-                            child: Text(
-                              'Beras pulen varietas Inpari 32 ini memiliki tekstur yang lembut dan aroma yang khas saat dimasak. Cocok digunakan untuk konsumsi harian maupun kebutuhan usaha kuliner. Dikemas dalam karung bersih dan rapi, beras ini berasal langsung dari petani lokal Kabupaten Ngawi sehingga kualitas dan kesegarannya terjamin.',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w400,
-                              ),
+                          SizedBox(height: 24.h),
+                          // gambar
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: ShimmerContainerWidget(
+                              width: double.infinity,
+                              height: 320.h,
                             ),
                           ),
-                    
-                          // Tab Penjual
-                          _buildTabContent(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  spacing: 8.w,
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 24.r,
-                                      backgroundColor: AppColors.blue1,
-                                      child: Icon(
-                                        Icons.person,
-                                        color: AppColors.blue4,
-                                      ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      spacing: 2.h,
-                                      children: [
-                                        Text(
-                                          'AGNES DYAN PARAMITA, S.P.',
-                                          style: TextStyle(
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 8.w,
-                                            vertical: 4.h,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              12.r,
-                                            ),
-                                            color: AppColors.green0,
-                                          ),
-                                          child: Text(
-                                            "Penyuluh",
-                                            style: TextStyle(
-                                              fontSize: 12.sp,
-                                              color: AppColors.green5,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 16.h),
-                                _buildMenuProfile(
-                                  icon: MaterialSymbols.location_on_outline_rounded,
-                                  value: "Ngawi, Jawa Timur",
-                                ),
-                                SizedBox(height: 16.h),
-                                _buildMenuProfile(
-                                  icon: MaterialSymbols.alternate_email_rounded,
-                                  value: "agnesdyanparamita@gmail.com",
-                                ),
-                                SizedBox(height: 16.h),
-                                _buildMenuProfile(
-                                  icon: MaterialSymbols
-                                      .phone_android_outline_rounded,
-                                  value: "08123456789",
-                                ),
-                                SizedBox(height: 24.h),
-                                Text(
-                                  "Lokasi",
-                                  style: TextStyle(
-                                    fontSize: 14.sp,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.gray900,
-                                  ),
-                                ),
-                                SizedBox(height: 16.h),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        spacing: 8.h,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Kecamatan:",
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w500,
-                                              color: AppColors.gray400,
-                                            ),
-                                          ),
-                                          Text(
-                                            "Jogorogo",
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w500,
-                                              color: AppColors.gray900,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        spacing: 8.h,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "Kabupaten:",
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w500,
-                                              color: AppColors.gray400,
-                                            ),
-                                          ),
-                                          Text(
-                                            "Macanan",
-                                            style: TextStyle(
-                                              fontSize: 14.sp,
-                                              fontWeight: FontWeight.w500,
-                                              color: AppColors.gray900,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                          SizedBox(height: 24.h),
+                          // title
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: ShimmerContainerWidget(
+                              width: double.infinity,
+                              height: 40.h,
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          // desc singkat
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: ShimmerContainerWidget(
+                              width: 120.w,
+                              height: 24.h,
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+                          // harga
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: ShimmerContainerWidget(
+                              width: MediaQuery.of(context).size.width / 3,
+                              height: 32.h,
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          // harga
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: ShimmerContainerWidget(
+                              width: MediaQuery.of(context).size.width / 3,
+                              height: 12.h,
+                            ),
+                          ),
+                          SizedBox(height: 32.h),
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: ShimmerContainerWidget(
+                              width: MediaQuery.of(context).size.width,
+                              height: 200.h,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                    
-                  SizedBox(height: 32.h),
-                ],
+                    );
+                  }
+                  if (state is DetailProductError) {
+                    return Center(child: Text(state.message));
+                  }
+                  if (state is DetailProductLoaded) {
+                    return Padding(
+                      padding: EdgeInsets.only(top: kToolbarHeight + 24.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: 24.h),
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12.r),
+                              child: Image.asset(
+                                ImageConfig.authBackground,
+                                width: double.infinity,
+                                height: 320.h,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 24.h),
+                          // title
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Bibit Padi Siap Tanam Persemaian Sistem Kering",
+                                  style: TextStyle(
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.gray900,
+                                  ),
+                                ),
+                                Text(
+                                  "Beras Pulen, Varietas Inpari 32, Satuan Kg",
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.gray900,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.only(
+                              left: 24.w,
+                              right: 24.w,
+                              top: 16.h,
+                              bottom: 24.h,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Rp12.000",
+                                  style: TextStyle(
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.gray900,
+                                  ),
+                                ),
+                                Text(
+                                  "Stok Tersedia : 1000",
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.green4,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Tab Bar: Detail Produk & Penjual
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.gray200.withOpacity(0.2),
+                                  blurRadius: 8.r,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: TabBar(
+                              tabAlignment: TabAlignment.start,
+                              padding: EdgeInsets.zero,
+                              labelPadding: EdgeInsets.only(right: 24),
+                              isScrollable: true,
+                              dividerColor: Colors.transparent,
+                              dividerHeight: 0,
+                              controller: _tabController,
+                              labelColor: AppColors.blue4,
+                              unselectedLabelColor: AppColors.gray500,
+                              indicator: BoxDecoration(
+                                border: Border(
+                                  bottom: BorderSide(
+                                    color: AppColors.blue4,
+                                    width: 3,
+                                  ),
+                                ),
+                              ),
+                              tabs: [
+                                Tab(
+                                  child: Text(
+                                    'Detail Produk',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                Tab(
+                                  child: Text(
+                                    'Penjual',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(height: 16.h),
+
+                          // Tab Content
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: SizedBox(
+                              height: 300.h, // Atur tinggi konten tab
+                              child: TabBarView(
+                                controller: _tabController,
+                                children: [
+                                  // Tab Detail Produk
+                                  _buildTabContent(
+                                    child: Text(
+                                      'Beras pulen varietas Inpari 32 ini memiliki tekstur yang lembut dan aroma yang khas saat dimasak. Cocok digunakan untuk konsumsi harian maupun kebutuhan usaha kuliner. Dikemas dalam karung bersih dan rapi, beras ini berasal langsung dari petani lokal Kabupaten Ngawi sehingga kualitas dan kesegarannya terjamin.',
+                                      style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+
+                                  // Tab Penjual
+                                  _buildTabContent(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          spacing: 8.w,
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 24.r,
+                                              backgroundColor: AppColors.blue1,
+                                              child: Icon(
+                                                Icons.person,
+                                                color: AppColors.blue4,
+                                              ),
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              spacing: 2.h,
+                                              children: [
+                                                Text(
+                                                  'AGNES DYAN PARAMITA, S.P.',
+                                                  style: TextStyle(
+                                                    fontSize: 14.sp,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: 8.w,
+                                                    vertical: 4.h,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          12.r,
+                                                        ),
+                                                    color: AppColors.green0,
+                                                  ),
+                                                  child: Text(
+                                                    "Penyuluh",
+                                                    style: TextStyle(
+                                                      fontSize: 12.sp,
+                                                      color: AppColors.green5,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(height: 16.h),
+                                        _buildMenuProfile(
+                                          icon: MaterialSymbols
+                                              .location_on_outline_rounded,
+                                          value: "Ngawi, Jawa Timur",
+                                        ),
+                                        SizedBox(height: 16.h),
+                                        _buildMenuProfile(
+                                          icon: MaterialSymbols
+                                              .alternate_email_rounded,
+                                          value: "agnesdyanparamita@gmail.com",
+                                        ),
+                                        SizedBox(height: 16.h),
+                                        _buildMenuProfile(
+                                          icon: MaterialSymbols
+                                              .phone_android_outline_rounded,
+                                          value: "08123456789",
+                                        ),
+                                        SizedBox(height: 24.h),
+                                        Text(
+                                          "Lokasi",
+                                          style: TextStyle(
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w500,
+                                            color: AppColors.gray900,
+                                          ),
+                                        ),
+                                        SizedBox(height: 16.h),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                              child: Column(
+                                                spacing: 8.h,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "Kecamatan:",
+                                                    style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: AppColors.gray400,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "Jogorogo",
+                                                    style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: AppColors.gray900,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Column(
+                                                spacing: 8.h,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    "Kabupaten:",
+                                                    style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: AppColors.gray400,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "Macanan",
+                                                    style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: AppColors.gray900,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(height: 32.h),
+                        ],
+                      ),
+                    );
+                  }
+                  return SizedBox();
+                },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

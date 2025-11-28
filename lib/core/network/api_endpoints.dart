@@ -34,4 +34,7 @@ class ApiEndpoints {
   // informasi
   static const String beritaInformasi = "/info-tani";
   static const String kegiatanInformasi = "/event-tani";
+
+  // detail product
+  static const String detailProduct = "/product-petani";
 }

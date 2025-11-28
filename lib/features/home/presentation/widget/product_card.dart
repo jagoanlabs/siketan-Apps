@@ -5,6 +5,7 @@ import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:siketan/app/helper/format_currency_helper.dart';
+import 'package:siketan/app/routes/route_name.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/features/home/presentation/bloc/product_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
@@ -140,7 +141,14 @@ class _ProductCardViewState extends State<ProductCardView> {
                           : EdgeInsets.only(right: 12.w),
                       child: GestureDetector(
                         onTap: () {
-                          debugPrint("Klik produk: ${product?.namaProducts}");
+                          debugPrint(
+                            "Klik produk: ${product?.namaProducts}, ${product?.id}",
+                          );
+                          Navigator.pushNamed(
+                            context,
+                            RoutesName.detailProduct,
+                            arguments: product?.id.toString(),
+                          );
                         },
                         child: Container(
                           width: 200.w,

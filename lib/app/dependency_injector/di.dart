@@ -139,4 +139,18 @@ Future<void> setupDependencies() async {
       remoteDataSource: getIt<ProductRemoteDataSource>(),
     ),
   );
+
+  //detail product
+  //detail data source
+  getIt.registerFactory<DetailProductRemoteDataSource>(
+    () =>
+        DetailProductRemoteDataSource(baseService: getIt<PublicBaseService>()),
+  );
+
+  //detail repository
+  getIt.registerFactory<DetailProductRepository>(
+    () => DetailProductRepositoryImpl(
+      remoteDataSource: getIt<DetailProductRemoteDataSource>(),
+    ),
+  );
 }
