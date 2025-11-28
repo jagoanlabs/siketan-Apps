@@ -6,6 +6,10 @@ import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 import 'package:siketan/app/dependency_injector/import.dart';
+import 'package:siketan/app/helper/format_currency_helper.dart';
+import 'package:siketan/app/helper/share_helper.dart';
+import 'package:siketan/app/helper/string_extenstion.dart';
+import 'package:siketan/core/constant/env.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/features/detail-product/domain/repository/detail_product_repository.dart';
@@ -13,6 +17,7 @@ import 'package:siketan/features/detail-product/presentation/bloc/detail_product
 import 'package:siketan/shared/style/color.dart';
 import 'package:colorful_iconify_flutter/icons/logos.dart';
 import 'package:siketan/shared/widget/shimmer_container_widget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailProductPage extends StatelessWidget {
   final String id;
@@ -41,6 +46,8 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
   late TabController _tabController;
   final ScrollController _scroll = ScrollController();
   bool isScrolled = false;
+  String? phoneNumber;
+  String? title;
 
   @override
   void initState() {
@@ -114,7 +121,14 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  logger.d("Hubungi Penjual");
+                  final message =
+                      "Halo, saya tertarik dengan produk Anda. Apakah masih tersedia?";
+
+                  launchUrl(
+                    Uri.parse(
+                      "https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}",
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
@@ -147,7 +161,13 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
             ),
             SizedBox(width: 16.w),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                // bagikan
+                shareContent(
+                  title ?? "",
+                  Env.frontend + '/home/toko/product/${widget.id}',
+                );
+              },
               style: ElevatedButton.styleFrom(
                 elevation: 0,
                 padding: const EdgeInsets.all(16),
@@ -280,6 +300,10 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                     return Center(child: Text(state.message));
                   }
                   if (state is DetailProductLoaded) {
+                    phoneNumber =
+                        state.detailProduct.data?.tblAkun?.petani?.noTelp ??
+                        state.detailProduct.data?.tblAkun?.penyuluh?.noTelp;
+                    title = state.detailProduct.data?.namaProducts;
                     return Padding(
                       padding: EdgeInsets.only(top: kToolbarHeight + 24.h),
                       child: Column(
@@ -290,11 +314,32 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                             margin: EdgeInsets.symmetric(horizontal: 24.w),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(12.r),
-                              child: Image.asset(
-                                ImageConfig.authBackground,
+                              child: Image.network(
+                                state.detailProduct.data?.fotoTanaman ?? "",
                                 width: double.infinity,
                                 height: 320.h,
                                 fit: BoxFit.cover,
+                                // 🔥 FIX DI SINI
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return ShimmerContainerWidget(
+                                        width: double.infinity,
+                                        height: 330.h,
+                                      );
+                                    },
+
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Transform.scale(
+                                    scale: 0.7,
+                                    child: Image.asset(
+                                      ImageConfig.imagePlaceholder,
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  );
+                                },
                               ),
                             ),
                           ),
@@ -306,7 +351,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Bibit Padi Siap Tanam Persemaian Sistem Kering",
+                                  state.detailProduct.data?.namaProducts ?? "",
                                   style: TextStyle(
                                     fontSize: 20.sp,
                                     fontWeight: FontWeight.w600,
@@ -314,7 +359,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                                   ),
                                 ),
                                 Text(
-                                  "Beras Pulen, Varietas Inpari 32, Satuan Kg",
+                                  "Satuan : ${state.detailProduct.data?.satuan ?? ""}",
                                   style: TextStyle(
                                     fontSize: 12.sp,
                                     fontWeight: FontWeight.w600,
@@ -335,15 +380,17 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Rp12.000",
+                                  FormatCurrencyHelper.currency(
+                                    state.detailProduct.data?.harga ?? "",
+                                  ),
                                   style: TextStyle(
-                                    fontSize: 20.sp,
+                                    fontSize: 24.sp,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.gray900,
                                   ),
                                 ),
                                 Text(
-                                  "Stok Tersedia : 1000",
+                                  "${state.detailProduct.data?.status} :${state.detailProduct.data?.stok ?? "0"}",
                                   style: TextStyle(
                                     fontSize: 12.sp,
                                     fontWeight: FontWeight.w600,
@@ -422,7 +469,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                                   // Tab Detail Produk
                                   _buildTabContent(
                                     child: Text(
-                                      'Beras pulen varietas Inpari 32 ini memiliki tekstur yang lembut dan aroma yang khas saat dimasak. Cocok digunakan untuk konsumsi harian maupun kebutuhan usaha kuliner. Dikemas dalam karung bersih dan rapi, beras ini berasal langsung dari petani lokal Kabupaten Ngawi sehingga kualitas dan kesegarannya terjamin.',
+                                      state.detailProduct.data?.deskripsi ?? "",
                                       style: TextStyle(
                                         fontSize: 14.sp,
                                         fontWeight: FontWeight.w400,
@@ -457,7 +504,12 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                                               spacing: 2.h,
                                               children: [
                                                 Text(
-                                                  'AGNES DYAN PARAMITA, S.P.',
+                                                  state
+                                                          .detailProduct
+                                                          .data
+                                                          ?.tblAkun
+                                                          ?.nama ??
+                                                      "",
                                                   style: TextStyle(
                                                     fontSize: 14.sp,
                                                     fontWeight: FontWeight.w500,
@@ -476,7 +528,13 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                                                     color: AppColors.green0,
                                                   ),
                                                   child: Text(
-                                                    "Penyuluh",
+                                                    (state
+                                                                .detailProduct
+                                                                .data
+                                                                ?.tblAkun
+                                                                ?.peran ??
+                                                            "")
+                                                        .capitalize(),
                                                     style: TextStyle(
                                                       fontSize: 12.sp,
                                                       color: AppColors.green5,
@@ -493,19 +551,44 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                                         _buildMenuProfile(
                                           icon: MaterialSymbols
                                               .location_on_outline_rounded,
-                                          value: "Ngawi, Jawa Timur",
+                                          value:
+                                              state
+                                                  .detailProduct
+                                                  .data
+                                                  ?.tblAkun
+                                                  ?.penyuluh
+                                                  ?.alamat ??
+                                              state
+                                                  .detailProduct
+                                                  .data
+                                                  ?.tblAkun
+                                                  ?.petani
+                                                  ?.alamat ??
+                                              "",
                                         ),
                                         SizedBox(height: 16.h),
                                         _buildMenuProfile(
                                           icon: MaterialSymbols
                                               .alternate_email_rounded,
-                                          value: "agnesdyanparamita@gmail.com",
+                                          value:
+                                              state
+                                                  .detailProduct
+                                                  .data
+                                                  ?.tblAkun
+                                                  ?.email ??
+                                              "",
                                         ),
                                         SizedBox(height: 16.h),
                                         _buildMenuProfile(
                                           icon: MaterialSymbols
                                               .phone_android_outline_rounded,
-                                          value: "08123456789",
+                                          value:
+                                              state
+                                                  .detailProduct
+                                                  .data
+                                                  ?.tblAkun
+                                                  ?.noWa ??
+                                              "",
                                         ),
                                         SizedBox(height: 24.h),
                                         Text(
@@ -541,7 +624,19 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                                                     ),
                                                   ),
                                                   Text(
-                                                    "Jogorogo",
+                                                    state
+                                                            .detailProduct
+                                                            .data
+                                                            ?.tblAkun
+                                                            ?.petani
+                                                            ?.kecamatan ??
+                                                        state
+                                                            .detailProduct
+                                                            .data
+                                                            ?.tblAkun
+                                                            ?.penyuluh
+                                                            ?.kecamatan ??
+                                                        "",
                                                     style: TextStyle(
                                                       fontSize: 14.sp,
                                                       fontWeight:
@@ -570,7 +665,7 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                                                     ),
                                                   ),
                                                   Text(
-                                                    "Macanan",
+                                                    "Ngawi",
                                                     style: TextStyle(
                                                       fontSize: 14.sp,
                                                       fontWeight:
@@ -613,12 +708,15 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
       spacing: 4.w,
       children: [
         Iconify(icon, size: 20.sp, color: AppColors.blue4),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w500,
-            color: AppColors.gray900,
+        Expanded(
+          child: Text(
+            value,
+            maxLines: 1,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w500,
+              color: AppColors.gray900,
+            ),
           ),
         ),
       ],
