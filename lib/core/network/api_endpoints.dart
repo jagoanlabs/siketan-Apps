@@ -40,4 +40,7 @@ class ApiEndpoints {
 
   // detail toko
   static const String detailToko = "/list-product";
+
+  //cek NIK
+  static const String cekNik = "/cek-nik";
 }

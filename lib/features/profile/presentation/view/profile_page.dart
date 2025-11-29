@@ -239,7 +239,7 @@ class _ProfileViewState extends State<ProfileView> {
                           vertical: 16.h,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.gray100,
+                          color: AppColors.gray50,
                           borderRadius: BorderRadius.circular(12.r),
                         ),
                         child: Column(
@@ -315,7 +315,7 @@ class _ProfileViewState extends State<ProfileView> {
                           vertical: 16.h,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.gray100,
+                          color: AppColors.gray50,
                           borderRadius: BorderRadius.circular(12.r),
                         ),
                         child: Column(

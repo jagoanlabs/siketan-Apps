@@ -166,4 +166,17 @@ Future<void> setupDependencies() async {
       remoteDataSource: getIt<TokoProductRemoteDataSource>(),
     ),
   );
+
+  // cek NIK
+
+  // remote datasource
+  getIt.registerFactory<CekNikRemoteDataSource>(
+    () => CekNikRemoteDataSource(baseService: getIt<AuthBaseService>()),
+  );
+
+  // repository
+  getIt.registerFactory<CekNikRepository>(
+    () =>
+        CekNikRepositoryImpl(remoteDataSource: getIt<CekNikRemoteDataSource>()),
+  );
 }
