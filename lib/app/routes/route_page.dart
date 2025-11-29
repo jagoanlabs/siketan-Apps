@@ -68,7 +68,7 @@ class MyRoute {
         );
       case RoutesName.detailToko:
         return PageTransition(
-          child: const DetailTokoPage(),
+          child: DetailTokoPage(id: settings.arguments as String),
           type: PageTransitionType.fade, // efek halus untuk splash
           settings: settings,
           duration: const Duration(milliseconds: 300),

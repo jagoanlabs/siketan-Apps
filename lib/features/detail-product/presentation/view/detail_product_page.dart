@@ -493,10 +493,32 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
                                             CircleAvatar(
                                               radius: 24.r,
                                               backgroundColor: AppColors.blue1,
-                                              child: Icon(
-                                                Icons.person,
-                                                color: AppColors.blue4,
-                                              ),
+                                              child:
+                                                  state
+                                                              .detailProduct
+                                                              .data!
+                                                              .tblAkun!
+                                                              .foto !=
+                                                          null &&
+                                                      state
+                                                          .detailProduct
+                                                          .data!
+                                                          .tblAkun!
+                                                          .foto!
+                                                          .isNotEmpty
+                                                  ? Image.network(
+                                                      state
+                                                          .detailProduct
+                                                          .data!
+                                                          .tblAkun!
+                                                          .foto!,
+                                                      height: 48.h,
+                                                      width: 48.w,
+                                                    )
+                                                  : Icon(
+                                                      Icons.person,
+                                                      color: AppColors.blue4,
+                                                    ),
                                             ),
                                             Column(
                                               crossAxisAlignment:

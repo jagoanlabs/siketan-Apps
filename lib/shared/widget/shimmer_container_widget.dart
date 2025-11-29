@@ -7,25 +7,32 @@ class ShimmerContainerWidget extends StatelessWidget {
   final double width;
   final double height;
   final BorderRadius? borderRadius;
+  final bool isRounded;
+
   const ShimmerContainerWidget({
     super.key,
     required this.width,
     required this.height,
     this.borderRadius,
+    this.isRounded = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer(
+    final shimmerChild = Shimmer(
       color: AppColors.gray500,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.gray300,
-          borderRadius: borderRadius ?? BorderRadius.circular(12.r),
-        ),
-        width: width,
-        height: height,
-      ),
+      child: Container(width: width, height: height, color: AppColors.gray300),
+    );
+
+    // Jika circle → pakai ClipOval biar shimmer juga bulat
+    if (isRounded) {
+      return ClipOval(child: shimmerChild);
+    }
+
+    // Jika rectangle → gunakan ClipRRect
+    return ClipRRect(
+      borderRadius: borderRadius ?? BorderRadius.circular(12.r),
+      child: shimmerChild,
     );
   }
 }

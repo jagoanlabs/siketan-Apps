@@ -111,7 +111,7 @@ class _TokoPageViewState extends State<TokoPageView>
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24.w),
                     child: Text(
-                      "Informasi Pertanian",
+                      "Produk Pertanian",
                       style: TextStyle(
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w500,
