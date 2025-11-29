@@ -75,7 +75,7 @@ class MyRoute {
         );
       case RoutesName.searchGlobal:
         return PageTransition(
-          child: const SearchGlobalPage(),
+          child: SearchGlobalPage(searchQuery: settings.arguments as String),
           type: PageTransitionType.fade, // efek halus untuk splash
           settings: settings,
           duration: const Duration(milliseconds: 300),

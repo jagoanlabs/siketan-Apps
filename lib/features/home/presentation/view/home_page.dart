@@ -62,6 +62,8 @@ class HomePageView extends StatefulWidget {
 }
 
 class _HomePageViewState extends State<HomePageView> {
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,7 +75,7 @@ class _HomePageViewState extends State<HomePageView> {
         backgroundColor: AppColors.green0,
         onPressed: () {
           // aksi ketika icon search ditekan
-          debugPrint('Search clicked!');
+          // debugPrint('Search clicked!');
           Navigator.pushNamed(context, RoutesName.twakto);
         },
         child: Iconify(
@@ -203,8 +205,15 @@ class _HomePageViewState extends State<HomePageView> {
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 24.w),
                         child: SearchBarWidget(
+                          controller: _searchController,
                           onSearchTap: () {
                             // aksi ketika icon search ditekan
+
+                            Navigator.pushNamed(
+                              context,
+                              RoutesName.searchGlobal,
+                              arguments: _searchController.text,
+                            );
                             debugPrint('Search clicked!');
                           },
                         ),

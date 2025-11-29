@@ -11,16 +11,18 @@ import 'package:siketan/shared/widget/acara_card_widget.dart';
 import 'package:siketan/shared/widget/news_card_widget.dart';
 
 class SearchGlobalPage extends StatelessWidget {
-  const SearchGlobalPage({super.key});
+  final String searchQuery;
+  const SearchGlobalPage({super.key, required this.searchQuery});
 
   @override
   Widget build(BuildContext context) {
-    return const SearchGlobalView();
+    return SearchGlobalView(searchQuery: searchQuery);
   }
 }
 
 class SearchGlobalView extends StatefulWidget {
-  const SearchGlobalView({super.key});
+  final String searchQuery;
+  const SearchGlobalView({super.key, required this.searchQuery});
 
   @override
   State<SearchGlobalView> createState() => _SearchGlobalViewState();
@@ -43,6 +45,7 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
 
   @override
   void initState() {
+    _searchController.text = widget.searchQuery;
     super.initState();
     _scroll.addListener(() {
       if (_scroll.offset > 80 && !isScrolled) {
