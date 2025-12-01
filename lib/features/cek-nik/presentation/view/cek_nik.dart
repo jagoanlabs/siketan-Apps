@@ -156,20 +156,27 @@ class _CekNIKViewState extends State<CekNIKView> {
                                 // Show error toast when result is not found or error occurs
                                 String errorMessage = state.message;
 
+                                AppToast.showError(
+                                  context,
+                                  'NIK tidak ditemukan',
+                                );
                                 // Check if the error message indicates NIK not found
-                                if (errorMessage.toLowerCase().contains('not found') ||
-                                    errorMessage.toLowerCase().contains('tidak ditemukan') ||
-                                    errorMessage.toLowerCase().contains('404')) {
-                                  AppToast.showError(context, 'NIK tidak ditemukan');
-                                } else {
-                                  AppToast.showError(context, errorMessage);
-                                }
+                                // if (errorMessage.toLowerCase().contains('not found') ||
+                                //     errorMessage.toLowerCase().contains('tidak ditemukan') ||
+                                //     errorMessage.toLowerCase().contains('404')) {
+                                //   AppToast.showError(context, 'NIK tidak ditemukan');
+                                // } else {
+                                //   AppToast.showError(context, errorMessage);
+                                // }
                               }
                             },
                             builder: (context, state) {
-                              bool isLoading = state is CekNikLoading || state is CekNikProcessing;
+                              bool isLoading =
+                                  state is CekNikLoading ||
+                                  state is CekNikProcessing;
                               return ElevatedButton(
-                                onPressed: _nikController.text.isEmpty || isLoading
+                                onPressed:
+                                    _nikController.text.isEmpty || isLoading
                                     ? null
                                     : () {
                                         // Dispatch CekNikEventPostCekNik event with the NIK
@@ -177,12 +184,18 @@ class _CekNIKViewState extends State<CekNIKView> {
                                           nik: _nikController.text.trim(),
                                         );
                                         context.read<CekNikBloc>().add(
-                                          CekNikEventPostCekNik(payload: payload),
+                                          CekNikEventPostCekNik(
+                                            payload: payload,
+                                          ),
                                         );
                                       },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: isLoading ? AppColors.gray200 : AppColors.green4,
-                                  foregroundColor: isLoading ? AppColors.gray500 : AppColors.green5,
+                                  backgroundColor: isLoading
+                                      ? AppColors.gray200
+                                      : AppColors.green4,
+                                  foregroundColor: isLoading
+                                      ? AppColors.gray500
+                                      : AppColors.green5,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(6.r),
                                   ),
@@ -194,22 +207,22 @@ class _CekNIKViewState extends State<CekNIKView> {
                                   ),
                                 ),
                                 child: isLoading
-                                  ? SizedBox(
-                                      width: 20.w,
-                                      height: 20.h,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2.w,
-                                        color: Colors.white,
+                                    ? SizedBox(
+                                        width: 20.w,
+                                        height: 20.h,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.w,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                    : Text(
+                                        "Cari",
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    )
-                                  : Text(
-                                      "Cari",
-                                      style: TextStyle(
-                                        fontSize: 14.sp,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.white,
-                                      ),
-                                    ),
                               );
                             },
                           ),
@@ -235,7 +248,8 @@ class _CekNIKViewState extends State<CekNIKView> {
                   if (state is CekNikInitial) {
                     // Show placeholder when initial
                     return _buildResultPlaceholder();
-                  } else if (state is CekNikLoading || state is CekNikProcessing) {
+                  } else if (state is CekNikLoading ||
+                      state is CekNikProcessing) {
                     // Show loading indicator
                     return _buildLoadingResult();
                   } else if (state is CekNikSuccess) {
@@ -377,11 +391,7 @@ class _CekNIKViewState extends State<CekNIKView> {
               padding: EdgeInsets.all(24.h),
               child: Column(
                 children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 40.w,
-                    color: AppColors.red5,
-                  ),
+                  Icon(Icons.error_outline, size: 40.w, color: AppColors.red5),
                   SizedBox(height: 16.h),
                   Text(
                     "Data tidak ditemukan",
@@ -538,7 +548,8 @@ class _CekNIKViewState extends State<CekNIKView> {
             SizedBox(height: 28.h),
             _sectionStatusKelompok(user),
           ],
-          if (user.tanamanPetanis != null && user.tanamanPetanis!.isNotEmpty) ...[
+          if (user.tanamanPetanis != null &&
+              user.tanamanPetanis!.isNotEmpty) ...[
             SizedBox(height: 28.h),
             _sectionInformasiTanaman(user),
           ],
@@ -618,15 +629,15 @@ class _CekNIKViewState extends State<CekNIKView> {
         SizedBox(height: 20.h),
         _buildInfo(
           title: "Jumlah Tanaman",
-          value: "${user.tanamanPetanis?.length ?? 0} Tanaman"
+          value: "${user.tanamanPetanis?.length ?? 0} Tanaman",
         ),
         if (user.tanamanPetanis != null && user.tanamanPetanis!.isNotEmpty) ...[
           SizedBox(height: 12.h),
           _buildInfo(
             title: "Terdaftar Sejak",
-            value: user.createdAt != null ?
-              "${user.createdAt!.day} ${_getMonthName(user.createdAt!.month)} ${user.createdAt!.year}" :
-              "-"
+            value: user.createdAt != null
+                ? "${user.createdAt!.day} ${_getMonthName(user.createdAt!.month)} ${user.createdAt!.year}"
+                : "-",
           ),
         ],
       ],
@@ -692,7 +703,10 @@ class _CekNIKViewState extends State<CekNIKView> {
         SizedBox(height: 20.h),
         _buildInfo(title: "Gapoktan", value: user.kelompok?.gapoktan ?? "-"),
         SizedBox(height: 12.h),
-        _buildInfo(title: "Nama Kelompok", value: user.kelompok?.namaKelompok ?? "-"),
+        _buildInfo(
+          title: "Nama Kelompok",
+          value: user.kelompok?.namaKelompok ?? "-",
+        ),
       ],
     );
   }
@@ -725,8 +739,18 @@ class _CekNIKViewState extends State<CekNIKView> {
 
   String _getMonthName(int month) {
     const months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
     if (month >= 1 && month <= 12) {
       return months[month - 1];

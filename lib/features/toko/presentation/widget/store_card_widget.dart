@@ -8,13 +8,11 @@ import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/style/shadow.dart';
 
 class StoreCardWidget extends StatelessWidget {
-  final String imageUrl;
   final String location;
   final String name;
   final String id;
   const StoreCardWidget({
     super.key,
-    required this.imageUrl,
     required this.name,
     required this.location,
     required this.id,
@@ -72,14 +70,16 @@ class StoreCardWidget extends StatelessWidget {
                       ),
                     ),
 
-                    Text(
-                      location,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.gray500,
+                    Expanded(
+                      child: Text(
+                        location,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.gray500,
+                        ),
                       ),
                     ),
 

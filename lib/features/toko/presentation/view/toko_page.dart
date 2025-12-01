@@ -346,7 +346,6 @@ class _StoreTabContent extends StatelessWidget {
                     id: item.id.toString(),
                     name: item.name,
                     location: item.location.toString(),
-                    imageUrl: item.photoUrl.toString(),
                   );
                 },
               ),

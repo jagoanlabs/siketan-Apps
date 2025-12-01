@@ -179,4 +179,19 @@ Future<void> setupDependencies() async {
     () =>
         CekNikRepositoryImpl(remoteDataSource: getIt<CekNikRemoteDataSource>()),
   );
+
+  // search global
+  // remote datasource
+  getIt.registerFactory<SearchGlobalRemoteDataSource>(
+    () => SearchGlobalRemoteDataSource(
+      publicBaseService: getIt<PublicBaseService>(),
+    ),
+  );
+
+  // repository
+  getIt.registerFactory<SearchGlobalRepository>(
+    () => SearchGlobalRepositoryImpl(
+      remoteDataSource: getIt<SearchGlobalRemoteDataSource>(),
+    ),
+  );
 }

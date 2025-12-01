@@ -32,6 +32,10 @@ import 'package:siketan/features/register/data/repository_impl/register_reposito
 import 'package:siketan/features/register/domain/repository/register_repository.dart';
 import 'package:siketan/features/home/data/datasources/home_remote_data_source.dart';
 import 'package:siketan/features/home/data/repository_impl/home_repository_impl.dart';
+import 'package:siketan/features/search_global/data/datasources/search_global_remote_data_source.dart';
+import 'package:siketan/features/search_global/data/datasources/search_global_remote_data_source.dart';
+import 'package:siketan/features/search_global/data/repository_impl/search_global_repository_impl.dart';
+import 'package:siketan/features/search_global/domain/repository/search_global_repository.dart';
 import 'package:siketan/features/toko/data/datasources/product_remote_data_source.dart';
 import 'package:siketan/features/toko/data/repository_impl/product_repository_impl.dart';
 import 'package:siketan/features/toko/domain/repository/product_repository.dart';

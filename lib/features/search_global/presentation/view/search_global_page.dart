@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/carbon.dart';
 import 'package:iconify_flutter/icons/ri.dart';
+import 'package:siketan/app/dependency_injector/import.dart';
+import 'package:siketan/app/helper/date_format_helper.dart';
+import 'package:siketan/app/helper/html_to_text_helper.dart';
+import 'package:siketan/app/helper/kegiatan_status_helper.dart';
 import 'package:siketan/features/home/presentation/widget/search_widget.dart';
+import 'package:siketan/features/search_global/domain/repository/search_global_repository.dart';
 import 'package:siketan/features/toko/presentation/widget/product_card_widget.dart';
 import 'package:siketan/features/toko/presentation/widget/store_card_widget.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/widget/acara_card_widget.dart';
 import 'package:siketan/shared/widget/news_card_widget.dart';
+import 'package:siketan/features/search_global/presentation/bloc/search_global_bloc.dart';
+import 'package:siketan/features/search_global/domain/model/search_global_response_model.dart'
+    as search_global_model;
+import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class SearchGlobalPage extends StatelessWidget {
   final String searchQuery;
@@ -16,7 +26,12 @@ class SearchGlobalPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SearchGlobalView(searchQuery: searchQuery);
+    return BlocProvider(
+      create: (context) => SearchGlobalBloc(
+        searchGlobalRepository: getIt<SearchGlobalRepository>(),
+      ),
+      child: SearchGlobalView(searchQuery: searchQuery),
+    );
   }
 }
 
@@ -36,16 +51,21 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
   int _selectedIndex = 0; // Index untuk chip yang aktif
 
   final List<String> _chipLabels = [
-    "Semua (10)",
-    "Produk (4)",
-    "Toko (2)",
-    "Berita (2)",
-    "Kegiatan (2)",
+    "Semua (0)",
+    "Produk (0)",
+    "Toko (0)",
+    "Berita (0)",
+    "Kegiatan/Event (0)",
   ];
 
   @override
   void initState() {
     _searchController.text = widget.searchQuery;
+
+    // first load
+    context.read<SearchGlobalBloc>().add(
+      SearchGlobalStarted(widget.searchQuery),
+    );
     super.initState();
     _scroll.addListener(() {
       if (_scroll.offset > 80 && !isScrolled) {
@@ -140,6 +160,9 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
                       controller: _searchController,
                       onSearchTap: () {
                         // aksi ketika icon search ditekan
+                        context.read<SearchGlobalBloc>().add(
+                          SearchGlobalQueryChanged(_searchController.text),
+                        );
                         debugPrint('Search clicked!');
                       },
                     ),
@@ -185,6 +208,9 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
                                 setState(() {
                                   _selectedIndex = selected ? index : 0;
                                 });
+                                context.read<SearchGlobalBloc>().add(
+                                  SearchGlobalFilterChanged(_chipLabels[index]),
+                                );
                               },
                             ),
                           );
@@ -193,37 +219,82 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
                     ),
                   ),
                   SizedBox(height: 24.h),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: Text(
-                      'Ditemukan 10 hasil pencarian untuk “Beras” (diurutkan berdasarkan relevansi)',
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.gray900,
-                      ),
-                    ),
+                  BlocBuilder<SearchGlobalBloc, SearchGlobalState>(
+                    builder: (context, state) {
+                      if (state.isLoading) {
+                        return _buildLoading();
+                      }
+
+                      final products =
+                          state.result?.data?.products?.items ?? [];
+                      final tokos = state.result?.data?.tokos?.items ?? [];
+                      final berita = state.result?.data?.berita?.items ?? [];
+                      final events = state.result?.data?.events?.items ?? [];
+                      _chipLabels[0] =
+                          "Semua (${products.length + tokos.length + berita.length + events.length})";
+                      _chipLabels[1] = "Produk (${products.length})";
+                      _chipLabels[2] = "Toko (${tokos.length})";
+                      _chipLabels[3] = "Berita (${berita.length})";
+                      _chipLabels[4] = "Kegiatan/Event (${events.length})";
+
+                      if (products.isEmpty &&
+                          tokos.isEmpty &&
+                          berita.isEmpty &&
+                          events.isEmpty)
+                        return const Center(
+                          child: Text('Tidak ada hasil pencarian'),
+                        );
+                      final totalResults =
+                          products.length +
+                          tokos.length +
+                          berita.length +
+                          events.length;
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: Text(
+                              'Ditemukan $totalResults hasil pencarian untuk “${state.query}”',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.gray900,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 4.h),
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 24.w),
+                            child: Text(
+                              'Menampilkan 1-10 dari $totalResults hasil',
+                              style: TextStyle(
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w400,
+                                color: AppColors.gray600,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 24.h),
+                          _buildSectionProduct(
+                            products: state.result?.data?.products?.items ?? [],
+                          ),
+                          SizedBox(height: 24.h),
+                          _buildSectionToko(
+                            tokos: state.result?.data?.tokos?.items ?? [],
+                          ),
+                          SizedBox(height: 24.h),
+                          _buildSectionBerita(
+                            berita: state.result?.data?.berita?.items ?? [],
+                          ),
+                          SizedBox(height: 24.h),
+                          _buildSectionAcara(
+                            events: state.result?.data?.events?.items ?? [],
+                          ),
+                        ],
+                      );
+                    },
                   ),
-                  SizedBox(height: 4.h),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: Text(
-                      'Menampilkan 1-10 dari 10 hasil',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.gray600,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 24.h),
-                  _buildSectionProduct(),
-                  SizedBox(height: 24.h),
-                  _buildSectionToko(),
-                  SizedBox(height: 24.h),
-                  _buildSectionBerita(),
-                  SizedBox(height: 24.h),
-                  _buildSectionAcara(),
                 ],
               ),
             ),
@@ -233,69 +304,243 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
     );
   }
 
-  Widget _buildSectionProduct() {
-    List<Map<String, dynamic>> _ProductData = [
-      {
-        'image':
-            'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-        'name': 'Bibit Padi Siap Tanam Persemaian Sistem Kering',
-        'price': 'Rp. 100.000',
-        'id': '1',
-      },
-      {
-        'image':
-            'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-        'name': 'Product 2',
-        'price': 'Rp. 200.000',
-        'id': '2',
-      },
-      {
-        'image':
-            'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-        'name': 'Product 3',
-        'price': 'Rp. 300.000',
-        'id': '3',
-      },
-      {
-        'image':
-            'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-        'name': 'Product 4',
-        'price': 'Rp. 400.000',
-        'id': '4',
-      },
-      {
-        'image':
-            'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-        'name': 'Product 5',
-        'price': 'Rp. 500.000',
-        'id': '5',
-      },
-    ];
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
+  Widget _buildSectionProduct({
+    required List<search_global_model.ProductsItem> products,
+  }) {
+    return products.isEmpty
+        ? Container()
+        : Container(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Section
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  spacing: 8.w,
+                  children: [
+                    Iconify(Carbon.product, color: AppColors.blue4),
+                    Text(
+                      "Produk (4)",
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.gray900,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.h),
+
+                // Grid Produk
+                GridView.builder(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16.w,
+                    mainAxisSpacing: 16.h,
+                    childAspectRatio: 0.60, // Rasio untuk card produk
+                  ),
+                  itemCount: products.length,
+                  itemBuilder: (context, index) {
+                    final product = products[index];
+                    return ProductCardWidget(
+                      imageUrl: product.image ?? "",
+                      name: product.namaProducts ?? "",
+                      price: product.price ?? "",
+                      id: product.id.toString(),
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+  }
+
+  Widget _buildSectionToko({
+    required List<search_global_model.TokosItem> tokos,
+  }) {
+    return tokos.isEmpty
+        ? Container()
+        : Container(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Section
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  spacing: 8.w,
+                  children: [
+                    Iconify(Carbon.store, color: AppColors.blue4),
+                    Text(
+                      "Toko (4)",
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.gray900,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.h),
+
+                // Grid Produk
+                GridView.builder(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16.w,
+                    mainAxisSpacing: 16.h,
+                    childAspectRatio: 0.6, // Rasio untuk card produk
+                  ),
+                  itemCount: tokos.length,
+                  itemBuilder: (context, index) {
+                    final store = tokos[index];
+                    return StoreCardWidget(
+                      name: store.nama ?? "",
+                      location: store.alamat ?? "",
+                      id: store.id.toString(),
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+  }
+
+  Widget _buildSectionBerita({
+    required List<search_global_model.BeritaItem> berita,
+  }) {
+    return berita.isEmpty
+        ? Container()
+        : Container(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Section
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  spacing: 8.w,
+                  children: [
+                    Iconify(Ri.newspaper_line, color: AppColors.blue4),
+                    Text(
+                      "Berita (4)",
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.gray900,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.h),
+
+                // List Berita
+                ListView.builder(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: berita.length,
+                  itemBuilder: (context, index) {
+                    final beritaItem = berita[index];
+                    return Padding(
+                      padding: EdgeInsets.only(bottom: 8.h),
+                      child: BeritaCard(
+                        id: beritaItem.id.toString(),
+                        imageUrl: beritaItem.image ?? "",
+                        author: beritaItem.author ?? "",
+                        title: beritaItem.title ?? "",
+                        description: htmlToPlainText(beritaItem.isi ?? ""),
+                        date: formatDateNullable(beritaItem.createdAt),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+  }
+
+  Widget _buildSectionAcara({
+    required List<search_global_model.EventsItem> events,
+  }) {
+    return events.isEmpty
+        ? Container()
+        : Container(
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header Section
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  spacing: 8.w,
+                  children: [
+                    Iconify(Ri.newspaper_line, color: AppColors.blue4),
+                    Text(
+                      "Kegiatan (4)",
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.gray900,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.h),
+
+                // List Berita
+                ListView.builder(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: events.length,
+                  itemBuilder: (context, index) {
+                    final acara = events[index];
+                    final status = getEventStatus(acara.eventDate);
+                    final statusColor = getEventStatusColor(status);
+                    final statusText = getEventStatusText(status);
+
+                    return AcaraCard(
+                      imageUrl: acara.image ?? "",
+                      status: statusText,
+                      statusColor: statusColor,
+                      title: acara.title ?? "",
+                      date: acara.eventTime ?? "",
+                      time: formatDateNullable(acara.eventDate),
+                      location: acara.tempat ?? "",
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+  }
+
+  Widget _buildLoading() {
+    return Padding(
+      padding: EdgeInsets.only(left: 24.w, right: 24.w, bottom: 32.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Section
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            spacing: 8.w,
-            children: [
-              Iconify(Carbon.product, color: AppColors.blue4),
-              Text(
-                "Produk (4)",
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.gray900,
-                ),
-              ),
-            ],
-          ),
+          // chip
+          ShimmerContainerWidget(width: double.infinity, height: 32.h),
+          SizedBox(height: 4.h),
+          ShimmerContainerWidget(width: 200, height: 18.h),
           SizedBox(height: 16.h),
-
-          // Grid Produk
+          // produk
+          ShimmerContainerWidget(width: 120, height: 24.h),
+          SizedBox(height: 12.h),
           GridView.builder(
             padding: EdgeInsets.zero,
             shrinkWrap: true,
@@ -306,86 +551,18 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
               mainAxisSpacing: 16.h,
               childAspectRatio: 0.60, // Rasio untuk card produk
             ),
-            itemCount: _ProductData.length,
+            itemCount: 6,
             itemBuilder: (context, index) {
-              final product = _ProductData[index];
-              return ProductCardWidget(
-                imageUrl: product['image'],
-                name: product['name'],
-                price: product['price'],
-                id: product['id'],
+              return ShimmerContainerWidget(
+                width: double.infinity,
+                height: 120.h,
               );
             },
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionToko() {
-    final List<Map<String, dynamic>> _StoreData = [
-      {
-        'image':
-            'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-        'location': 'Desa Sekarjati, Karanganyar',
-        'name': 'Toko Tani Maju',
-        'id': '1',
-      },
-      {
-        'image':
-            'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-        'location': 'Desa Sekarjati, Karanganyar',
-        'name': 'Toko Tani Maju',
-        'id': '2',
-      },
-      {
-        'image':
-            'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-        'location': 'Desa Sekarjati, Karanganyar',
-        'name': 'Toko Tani Maju',
-        'id': '3',
-      },
-      {
-        'image':
-            'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-        'location': 'Desa Sekarjati, Karanganyar',
-        'name': 'Toko Tani Maju',
-        'id': '4',
-      },
-      {
-        'image':
-            'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-        'location': 'Desa Sekarjati, Karanganyar',
-        'name': 'Toko Tani Maju',
-        'id': '5',
-      },
-    ];
-
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header Section
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            spacing: 8.w,
-            children: [
-              Iconify(Carbon.store, color: AppColors.blue4),
-              Text(
-                "Toko (4)",
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.gray900,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-
-          // Grid Produk
+          SizedBox(height: 24.h), //jarak card
+          //toko
+          ShimmerContainerWidget(width: 120, height: 24.h),
+          SizedBox(height: 12.h),
           GridView.builder(
             padding: EdgeInsets.zero,
             shrinkWrap: true,
@@ -396,201 +573,49 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
               mainAxisSpacing: 16.h,
               childAspectRatio: 0.60, // Rasio untuk card produk
             ),
-            itemCount: _StoreData.length,
+            itemCount: 6,
             itemBuilder: (context, index) {
-              final store = _StoreData[index];
-              return StoreCardWidget(
-                imageUrl: store['image'],
-                name: store['name'],
-                location: store['location'],
-                id: store['id'],
+              return ShimmerContainerWidget(
+                width: double.infinity,
+                height: 120.h,
               );
             },
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionBerita() {
-    List<Map<String, dynamic>> _beritaData = [
-      {
-        'image': 'https://placehold.co/600x400',
-        'author': 'Agus Pasianto, S.P., M.M.A',
-        'title':
-            'Perangkap Tikus dengan Bubu. Salah Satu Strategi Pengendali Tikus...',
-        'description':
-            'Kalau masih ada yang ramah lingkungan, kenapa pakai yang ekstrim. Perangkap...',
-        'date': '16 Agustus 2024',
-      },
-      {
-        'image': 'https://placehold.co/600x400',
-        'author': 'Dewi Sartika, M.P.',
-        'title': 'Pupuk Organik Lebih Baik dari Kimia?',
-        'description':
-            'Pupuk organik tidak hanya menyuburkan tanah, tapi juga menjaga kelestarian ekosistem pertanian jangka panjang.',
-        'date': '18 Agustus 2024',
-      },
-      {
-        'image': 'https://placehold.co/600x400',
-        'author': 'Budi Santoso, S.T.P.',
-        'title': 'Teknologi Pertanian Digital Mulai Masuk Desa',
-        'description':
-            'Aplikasi mobile untuk pemantauan cuaca, harga pasar, dan prediksi hasil panen kini bisa diakses petani di pelosok desa.',
-        'date': '20 Agustus 2024',
-      },
-      {
-        'image': 'https://placehold.co/600x400',
-        'author': 'Dewi Sartika, M.P.',
-        'title': 'Pupuk Organik Lebih Baik dari Kimia?',
-        'description':
-            'Pupuk organik tidak hanya menyuburkan tanah, tapi juga menjaga kelestarian ekosistem pertanian jangka panjang.',
-        'date': '18 Agustus 2024',
-      },
-      {
-        'image': 'https://placehold.co/600x400',
-        'author': 'Budi Santoso, S.T.P.',
-        'title': 'Teknologi Pertanian Digital Mulai Masuk Desa',
-        'description':
-            'Aplikasi mobile untuk pemantauan cuaca, harga pasar, dan prediksi hasil panen kini bisa diakses petani di pelosok desa.',
-        'date': '20 Agustus 2024',
-      },
-    ];
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header Section
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            spacing: 8.w,
-            children: [
-              Iconify(Ri.newspaper_line, color: AppColors.blue4),
-              Text(
-                "Berita (4)",
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.gray900,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-
-          // List Berita
+          SizedBox(height: 24.h), //jarak card
+          //berita
+          ShimmerContainerWidget(width: 120, height: 24.h),
+          SizedBox(height: 12.h),
           ListView.builder(
             padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: _beritaData.length,
+            itemCount: 6,
             itemBuilder: (context, index) {
-              final berita = _beritaData[index];
-              return BeritaCard(
-                id: berita['id'],
-                imageUrl: berita['image'],
-                author: berita['author'],
-                title: berita['title'],
-                description: berita['description'],
-                date: berita['date'],
+              return Padding(
+                padding: EdgeInsets.only(bottom: 8.h),
+                child: ShimmerContainerWidget(
+                  width: double.infinity,
+                  height: 160.h,
+                ),
               );
             },
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionAcara() {
-    List<Map<String, dynamic>> _acaraData = [
-      {
-        'image': 'https://placehold.co/600x400',
-        'status': 'Sudah berakhir',
-        'statusColor': AppColors.red4,
-        'title': 'Pendampingan Lomba Cipta Menu B2SA',
-        'date': '16 Agustus 2024',
-        'time': '08:00 - 11:00',
-        'location': 'Rumah Bu Widy',
-      },
-      {
-        'image': 'https://placehold.co/600x400',
-        'status': 'Sedang Berlangsung',
-        'statusColor': AppColors.green4,
-        'title': 'Pelatihan Pertanian Organik',
-        'date': '20 Agustus 2024',
-        'time': '09:00 - 15:00',
-        'location': 'Balai Desa Ngawi',
-      },
-      {
-        'image': 'https://placehold.co/600x400',
-        'status': 'Akan Datang',
-        'statusColor': AppColors.blue4,
-        'title': 'Sosialisasi Pupuk Subsidi',
-        'date': '5 September 2024',
-        'time': '10:00 - 12:00',
-        'location': 'Kantor Kecamatan',
-      },
-      {
-        'image': 'https://placehold.co/600x400',
-        'status': 'Sudah berakhir',
-        'statusColor': AppColors.red4,
-        'title': 'Pendampingan Lomba Cipta Menu B2SA',
-        'date': '16 Agustus 2024',
-        'time': '08:00 - 11:00',
-        'location': 'Rumah Bu Widy',
-      },
-      {
-        'image': 'https://placehold.co/600x400',
-        'status': 'Sedang Berlangsung',
-        'statusColor': AppColors.green4,
-        'title': 'Pelatihan Pertanian Organik',
-        'date': '20 Agustus 2024',
-        'time': '09:00 - 15:00',
-        'location': 'Balai Desa Ngawi',
-      },
-    ];
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header Section
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            spacing: 8.w,
-            children: [
-              Iconify(Ri.newspaper_line, color: AppColors.blue4),
-              Text(
-                "Kegiatan (4)",
-                style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.gray900,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-
-          // List Berita
+          SizedBox(height: 24.h), //jarak card
+          // event
+          ShimmerContainerWidget(width: 120, height: 24.h),
+          SizedBox(height: 12.h),
           ListView.builder(
             padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: _acaraData.length,
+            itemCount: 6,
             itemBuilder: (context, index) {
-              final acara = _acaraData[index];
-              return AcaraCard(
-                imageUrl: acara['image'],
-                status: acara['status'],
-                statusColor: acara['statusColor'],
-                title: acara['title'],
-                date: acara['date'],
-                time: acara['time'],
-                location: acara['location'],
+              return Padding(
+                padding: EdgeInsets.only(bottom: 8.h),
+                child: ShimmerContainerWidget(
+                  width: double.infinity,
+                  height: 120.h,
+                ),
               );
             },
           ),

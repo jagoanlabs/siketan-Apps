@@ -43,4 +43,7 @@ class ApiEndpoints {
 
   //cek NIK
   static const String cekNik = "/cek-nik";
+
+  //search
+  static const String search = "/search";
 }
