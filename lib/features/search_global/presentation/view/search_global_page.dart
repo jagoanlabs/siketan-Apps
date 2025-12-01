@@ -52,6 +52,12 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
 
   int _selectedIndex = 0; // Index untuk chip yang aktif
 
+  int _countAll = 0;
+  int _countProduct = 0;
+  int _countToko = 0;
+  int _countBerita = 0;
+  int _countEvent = 0;
+
   final List<String> _chipLabels = [
     "Semua (0)",
     "Produk (0)",
@@ -75,6 +81,16 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
       } else if (_scroll.offset <= 80 && isScrolled) {
         setState(() => isScrolled = false);
       }
+    });
+  }
+
+  void _updateChipLabels() {
+    setState(() {
+      _chipLabels[0] = "Semua ($_countAll)";
+      _chipLabels[1] = "Produk ($_countProduct)";
+      _chipLabels[2] = "Toko ($_countToko)";
+      _chipLabels[3] = "Berita ($_countBerita)";
+      _chipLabels[4] = "Kegiatan/Event ($_countEvent)";
     });
   }
 
@@ -230,7 +246,34 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
                     ),
                   ),
                   SizedBox(height: 24.h),
-                  BlocBuilder<SearchGlobalBloc, SearchGlobalState>(
+                  BlocConsumer<SearchGlobalBloc, SearchGlobalState>(
+                    listener: (context, state) {
+                      if (!state.isLoading && state.result?.data != null) {
+                        final products =
+                            state.result?.data?.products?.items ?? [];
+                        final tokos = state.result?.data?.tokos?.items ?? [];
+                        final berita = state.result?.data?.berita?.items ?? [];
+                        final events = state.result?.data?.events?.items ?? [];
+
+                        // LOGIKA BARU:
+                        // Hanya update "Count Global" jika kita sedang melihat tab "Semua".
+                        // Karena hanya di tab "Semua" data yang dikembalikan lengkap.
+                        if (_selectedIndex == 0) {
+                          _countProduct = products.length;
+                          _countToko = tokos.length;
+                          _countBerita = berita.length;
+                          _countEvent = events.length;
+                          _countAll =
+                              _countProduct +
+                              _countToko +
+                              _countBerita +
+                              _countEvent;
+
+                          // Update label text berdasarkan angka yang baru disimpan
+                          _updateChipLabels();
+                        }
+                      }
+                    },
                     builder: (context, state) {
                       if (state.isLoading) {
                         return _buildLoading();
@@ -241,14 +284,6 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
                       final tokos = state.result?.data?.tokos?.items ?? [];
                       final berita = state.result?.data?.berita?.items ?? [];
                       final events = state.result?.data?.events?.items ?? [];
-                      setState(() {
-                        _chipLabels[0] =
-                            "Semua (${products.length + tokos.length + berita.length + events.length})";
-                        _chipLabels[1] = "Produk (${products.length})";
-                        _chipLabels[2] = "Toko (${tokos.length})";
-                        _chipLabels[3] = "Berita (${berita.length})";
-                        _chipLabels[4] = "Kegiatan/Event (${events.length})";
-                      });
 
                       if (products.isEmpty &&
                           tokos.isEmpty &&
