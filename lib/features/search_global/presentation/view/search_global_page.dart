@@ -1,3 +1,4 @@
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -8,6 +9,7 @@ import 'package:siketan/app/dependency_injector/import.dart';
 import 'package:siketan/app/helper/date_format_helper.dart';
 import 'package:siketan/app/helper/html_to_text_helper.dart';
 import 'package:siketan/app/helper/kegiatan_status_helper.dart';
+import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/features/home/presentation/widget/search_widget.dart';
 import 'package:siketan/features/search_global/domain/repository/search_global_repository.dart';
 import 'package:siketan/features/toko/presentation/widget/product_card_widget.dart';
@@ -208,8 +210,17 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
                                 setState(() {
                                   _selectedIndex = selected ? index : 0;
                                 });
+                                final List<String> listSupportQueryParams = [
+                                  'all',
+                                  'product',
+                                  'toko',
+                                  'berita',
+                                  'event',
+                                ];
                                 context.read<SearchGlobalBloc>().add(
-                                  SearchGlobalFilterChanged(_chipLabels[index]),
+                                  SearchGlobalFilterChanged(
+                                    listSupportQueryParams[_selectedIndex],
+                                  ),
                                 );
                               },
                             ),
@@ -230,12 +241,14 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
                       final tokos = state.result?.data?.tokos?.items ?? [];
                       final berita = state.result?.data?.berita?.items ?? [];
                       final events = state.result?.data?.events?.items ?? [];
-                      _chipLabels[0] =
-                          "Semua (${products.length + tokos.length + berita.length + events.length})";
-                      _chipLabels[1] = "Produk (${products.length})";
-                      _chipLabels[2] = "Toko (${tokos.length})";
-                      _chipLabels[3] = "Berita (${berita.length})";
-                      _chipLabels[4] = "Kegiatan/Event (${events.length})";
+                      setState(() {
+                        _chipLabels[0] =
+                            "Semua (${products.length + tokos.length + berita.length + events.length})";
+                        _chipLabels[1] = "Produk (${products.length})";
+                        _chipLabels[2] = "Toko (${tokos.length})";
+                        _chipLabels[3] = "Berita (${berita.length})";
+                        _chipLabels[4] = "Kegiatan/Event (${events.length})";
+                      });
 
                       if (products.isEmpty &&
                           tokos.isEmpty &&
