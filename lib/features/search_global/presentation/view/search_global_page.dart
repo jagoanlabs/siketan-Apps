@@ -335,7 +335,7 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
                   children: [
                     Iconify(Carbon.product, color: AppColors.blue4),
                     Text(
-                      "Produk (4)",
+                      "Produk (${products.length})",
                       style: TextStyle(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
@@ -391,7 +391,7 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
                   children: [
                     Iconify(Carbon.store, color: AppColors.blue4),
                     Text(
-                      "Toko (4)",
+                      "Toko (${tokos.length})",
                       style: TextStyle(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
@@ -446,7 +446,7 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
                   children: [
                     Iconify(Ri.newspaper_line, color: AppColors.blue4),
                     Text(
-                      "Berita (4)",
+                      "Berita (${berita.length})",
                       style: TextStyle(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
@@ -501,7 +501,7 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
                   children: [
                     Iconify(Ri.newspaper_line, color: AppColors.blue4),
                     Text(
-                      "Kegiatan (4)",
+                      "Kegiatan (${events.length})",
                       style: TextStyle(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
