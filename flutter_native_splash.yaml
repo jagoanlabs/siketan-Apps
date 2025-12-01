@@ -139,8 +139,4 @@ flutter_native_splash:
     # center-logo background color
     icon_background_color: "#ffffff"
     icon_background_color_dark: "#ffffff"
-
-    # branding:
-    # The branding image dimensions must be 800x320 px.
-    #branding:      assets/dart.png      
-    #branding_dark: assets/dart_dark.png
+    image: assets/images/logo/logo_icon_siketan.png 

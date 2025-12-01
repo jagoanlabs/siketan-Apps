@@ -1,11 +1,11 @@
 # flutter_native_splash-development.yaml
 flutter_native_splash:
   color: "#ffffff"
-  image: assets/images/logo/logo_icon.png
-  # branding: assets/images/logo/logo-kabupaten-ngawi.png
+  image: assets/images/logo/logo_icon_siketan.png
+  # branding: assets/images/logo/logo_kabupaten_ngawi.png
   color_dark: "#ffffff"
-  image_dark: assets/images/logo/logo_icon.png
-  # branding_dark: assets/images/logo/logo-kabupaten-ngawi.png
+  image_dark: assets/images/logo/logo_icon_siketan.png
+  # branding_dark: assets/images/logo/logo_kabupaten_ngawi.png
 
 
 
