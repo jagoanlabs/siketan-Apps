@@ -120,13 +120,19 @@ class _SearchGlobalViewState extends State<SearchGlobalView> {
             ),
           ),
           child: AppBar(
-            leadingWidth: 30,
-            leading: IconButton(
-              iconSize: 36,
-              icon: const Icon(Icons.chevron_left),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+            leadingWidth: 42,
+            leading: Padding(
+              padding: EdgeInsets.only(left: 16.w),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Icon(
+                  Icons.chevron_left,
+                  color: AppColors.gray900,
+                  size: 32.sp,
+                ),
+              ),
             ),
             title: AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 300),
