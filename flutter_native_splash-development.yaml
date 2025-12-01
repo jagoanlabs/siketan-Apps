@@ -7,10 +7,6 @@ flutter_native_splash:
   image_dark: assets/images/logo/logo_icon.png
   # branding_dark: assets/images/logo/logo-kabupaten-ngawi.png
 
-  android_12:
-    image: assets/images/logo/logo_icon.png
-    icon_background_color: "#ffffff"
-    image_dark: assets/images/logo/logo_icon.png
-    icon_background_color_dark: "#ffffff"
+
 
   web: false
