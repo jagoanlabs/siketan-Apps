@@ -6,9 +6,7 @@ import 'package:siketan/features/auth/data/datasources/auth_local_datasource.dar
 import 'package:siketan/features/auth/data/repository_impl/auth_repository_impl.dart';
 import 'package:siketan/features/auth/domain/repository/auth_repository.dart';
 import 'package:siketan/features/cek-nik/data/datasources/cek_nik_remote_data_source.dart';
-import 'package:siketan/features/cek-nik/data/datasources/cek_nik_remote_data_source.dart';
 import 'package:siketan/features/cek-nik/data/repository_impl/cek_nik_repository_impl.dart';
-import 'package:siketan/features/cek-nik/domain/repository/cek_nik_repository.dart';
 import 'package:siketan/features/cek-nik/domain/repository/cek_nik_repository.dart';
 import 'package:siketan/features/data/data/datasources/data_remote_data_source.dart';
 import 'package:siketan/features/data/data/repository_impl/data_repository_impl.dart';
@@ -32,7 +30,6 @@ import 'package:siketan/features/register/data/repository_impl/register_reposito
 import 'package:siketan/features/register/domain/repository/register_repository.dart';
 import 'package:siketan/features/home/data/datasources/home_remote_data_source.dart';
 import 'package:siketan/features/home/data/repository_impl/home_repository_impl.dart';
-import 'package:siketan/features/search_global/data/datasources/search_global_remote_data_source.dart';
 import 'package:siketan/features/search_global/data/datasources/search_global_remote_data_source.dart';
 import 'package:siketan/features/search_global/data/repository_impl/search_global_repository_impl.dart';
 import 'package:siketan/features/search_global/domain/repository/search_global_repository.dart';

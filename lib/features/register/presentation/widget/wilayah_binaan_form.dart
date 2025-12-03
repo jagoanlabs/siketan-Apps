@@ -94,6 +94,10 @@ class WilayahBinaanFormState extends State<WilayahBinaanForm> {
                           ),
                         ),
                         DropdownButtonFormField<int>(
+                          icon: Iconify(
+                            Bx.chevron_down,
+                            color: AppColors.gray900,
+                          ),
                           value: state.selectedKecamatanId,
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.symmetric(
@@ -176,6 +180,17 @@ class WilayahBinaanFormState extends State<WilayahBinaanForm> {
                           ),
                         ),
                         MultiSelectDialogField(
+                          chipDisplay: MultiSelectChipDisplay(
+                            chipColor: AppColors.green1,
+                            textStyle: TextStyle(
+                              fontSize: 12.sp,
+                              color: AppColors.gray900,
+                            ),
+                          ),
+                          buttonIcon: Icon(
+                            Icons.arrow_drop_down,
+                            color: AppColors.gray900,
+                          ),
                           checkColor: Colors.white,
                           selectedColor: AppColors.green4,
 
@@ -214,6 +229,17 @@ class WilayahBinaanFormState extends State<WilayahBinaanForm> {
                           ),
                         ),
                         MultiSelectDialogField(
+                          chipDisplay: MultiSelectChipDisplay(
+                            chipColor: AppColors.green1,
+                            textStyle: TextStyle(
+                              fontSize: 12.sp,
+                              color: AppColors.gray900,
+                            ),
+                          ),
+                          buttonIcon: Icon(
+                            Icons.arrow_drop_down,
+                            color: AppColors.gray900,
+                          ),
                           selectedColor: AppColors.green4,
                           title: const Text("Pilih Kelompok"),
                           items:

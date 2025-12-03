@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:siketan/app/dependency_injector/import.dart';
 import 'package:siketan/app/helper/format_currency_helper.dart';
-import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/features/data/domain/model/landing_statistik_response_model.dart';
 import 'package:siketan/features/data/domain/repository/data_repository.dart';
@@ -14,13 +13,9 @@ import 'package:siketan/features/data/presentation/bloc/landing_statistik_bloc.d
 import 'package:siketan/features/data/presentation/widget/statistic_widget.dart';
 import 'package:siketan/features/data/presentation/widget/table_widget.dart';
 import 'package:siketan/shared/style/color.dart';
-import 'package:iconify_flutter/iconify_flutter.dart';
-import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:siketan/shared/style/shadow.dart';
 import 'package:siketan/shared/widget/banner_home_widget.dart';
-import 'package:siketan/shared/widget/select_field_widget.dart';
 import 'package:siketan/shared/widget/shimmer_container_widget.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 
 class DataPage extends StatelessWidget {
   const DataPage({super.key});

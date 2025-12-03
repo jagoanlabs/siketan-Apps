@@ -78,54 +78,46 @@ class _RegisterPageViewState extends State<RegisterPageView> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Image.asset(ImageConfig.authBackground, width: double.infinity),
-            SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: EdgeInsets.only(left: 24.w, right: 24.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: 60.h),
-                  Text.rich(
-                    TextSpan(
-                      text: "Melesat ",
-                      style: TextStyle(
-                        fontSize: 24.sp,
-                        color: AppColors.gray100,
+      body: Stack(
+        children: [
+          Image.asset(ImageConfig.authBackground, width: double.infinity),
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: EdgeInsets.only(left: 24.w, right: 24.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 100.h),
+                Text.rich(
+                  TextSpan(
+                    text: "Melesat ",
+                    style: TextStyle(fontSize: 24.sp, color: AppColors.gray100),
+                    children: [
+                      TextSpan(
+                        text: "Lebih Cepat",
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      children: [
-                        TextSpan(
-                          text: "Lebih Cepat",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
-                  Text.rich(
-                    TextSpan(
-                      text: "Bertumbuh ",
-                      style: TextStyle(
-                        fontSize: 24.sp,
-                        color: AppColors.gray100,
+                ),
+                Text.rich(
+                  TextSpan(
+                    text: "Bertumbuh ",
+                    style: TextStyle(fontSize: 24.sp, color: AppColors.gray100),
+                    children: [
+                      TextSpan(
+                        text: "Lebih Baik",
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      children: [
-                        TextSpan(
-                          text: "Lebih Baik",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
+                    ],
                   ),
-                  SizedBox(height: 50.h),
-                  _BuildForm(),
-                ],
-              ),
+                ),
+                SizedBox(height: 50.h),
+                _BuildForm(),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -160,10 +152,16 @@ class _BuildFormState extends State<_BuildForm> {
       child: BlocListener<RegisterBloc, RegisterState>(
         listener: (context, state) {
           if (state is RegisterFailed) {
-            AppToast.show(context, state.message, type: ToastType.error, position: ToastPosition.top,duration: const Duration(seconds: 2));
+            AppToast.show(
+              context,
+              state.message,
+              type: ToastType.error,
+              position: ToastPosition.top,
+              duration: const Duration(seconds: 2),
+            );
           }
           if (state is RegisterSuccess) {
-            AppToast.showSuccess(context,"Berhasil Mendaftar Penyuluh");
+            AppToast.showSuccess(context, "Berhasil Mendaftar Penyuluh");
             Navigator.pushNamed(context, RoutesName.login);
           }
         },
@@ -321,13 +319,19 @@ class _BuildFormState extends State<_BuildForm> {
 
     if (!kecamatanBinaanSelected) {
       isWilayahBinaanValid = false;
-      AppToast.showError(context, 'Silakan pilih Kecamatan Binaan terlebih dahulu');
+      AppToast.showError(
+        context,
+        'Silakan pilih Kecamatan Binaan terlebih dahulu',
+      );
     } else if (selectedDesa.isEmpty) {
       isWilayahBinaanValid = false;
       AppToast.showError(context, 'Silakan pilih Desa Binaan terlebih dahulu');
     } else if (selectedKelompok.isEmpty) {
       isWilayahBinaanValid = false;
-      AppToast.showError(context, 'Silakan pilih Kelompok Binaan terlebih dahulu');
+      AppToast.showError(
+        context,
+        'Silakan pilih Kelompok Binaan terlebih dahulu',
+      );
     }
 
     if (isBiodataValid && isWilayahValid && isWilayahBinaanValid) {
@@ -361,7 +365,9 @@ class _BuildFormState extends State<_BuildForm> {
       desaBinaan: wilayahBinaanBloc.state.selectedDesaIds
           .map((id) => _getNamaDesa(id))
           .join(','),
-      selectedKelompokIds: wilayahBinaanBloc.state.selectedKelompokIds.join(','),
+      selectedKelompokIds: wilayahBinaanBloc.state.selectedKelompokIds.join(
+        ',',
+      ),
       tipe: biodataState?.selectedTipePenyuluh,
       pekerjaan: 'Penyuluh Pertanian',
     );

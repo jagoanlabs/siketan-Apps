@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
-import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:siketan/app/helper/date_format_helper.dart';
 import 'package:siketan/app/helper/html_to_text_helper.dart';
 import 'package:siketan/app/routes/route_name.dart';

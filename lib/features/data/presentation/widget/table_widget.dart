@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:siketan/features/data/presentation/bloc/komoditas_table_bloc.dart';
+import 'package:siketan/shared/style/shadow.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:colorful_iconify_flutter/icons/logos.dart';
 
@@ -139,6 +140,21 @@ class _TableWidgetState extends State<TableWidget> {
           child: SizedBox(
             height: 600, // wajib fixed
             child: AsyncPaginatedDataTable2(
+              loading: Center(
+                child: SizedBox(
+                  width: 100,
+                  height: 100,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: shadowSm,
+                    ),
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+              ),
+
               empty: Center(child: Text("Data Tidak Ditemukan")),
               isVerticalScrollBarVisible: false,
               wrapInCard: false,

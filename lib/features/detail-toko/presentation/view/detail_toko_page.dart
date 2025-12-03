@@ -64,44 +64,6 @@ class _DetailTokoViewState extends State<DetailTokoView> {
     super.dispose();
   }
 
-  List<Map<String, dynamic>> _ProductData = [
-    {
-      'image':
-          'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'name': 'Bibit Padi Siap Tanam Persemaian Sistem Kering',
-      'price': 'Rp. 100.000',
-      'id': '1',
-    },
-    {
-      'image':
-          'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'name': 'Product 2',
-      'price': 'Rp. 200.000',
-      'id': '2',
-    },
-    {
-      'image':
-          'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'name': 'Product 3',
-      'price': 'Rp. 300.000',
-      'id': '3',
-    },
-    {
-      'image':
-          'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'name': 'Product 4',
-      'price': 'Rp. 400.000',
-      'id': '4',
-    },
-    {
-      'image':
-          'https://ik.imagekit.io/hw6fintvt1/IMG-1727920699145_gT97teFDU.jpg',
-      'name': 'Product 5',
-      'price': 'Rp. 500.000',
-      'id': '5',
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

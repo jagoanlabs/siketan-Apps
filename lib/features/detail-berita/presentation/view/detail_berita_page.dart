@@ -156,7 +156,7 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                             color: AppColors.gray900,
                           ),
                           Text(
-                            widget.author ?? "Penulis Tidak Diketahui",
+                            widget.author,
                             style: TextStyle(
                               fontSize: 11.sp,
                               fontWeight: FontWeight.w500,
@@ -176,7 +176,7 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                             color: AppColors.gray900,
                           ),
                           Text(
-                            widget.date ?? "Tanggal Tidak Diketahui",
+                            widget.date,
                             style: TextStyle(
                               fontSize: 11.sp,
                               fontWeight: FontWeight.w500,
@@ -192,7 +192,7 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                 Container(
                   margin: EdgeInsets.symmetric(horizontal: 24.w),
                   child: Text(
-                    widget.title ?? "Judul Tidak Diketahui",
+                    widget.title,
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500,
@@ -205,8 +205,7 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                   margin: EdgeInsets.symmetric(horizontal: 24.w),
                   // Ganti Text biasa dengan Html widget
                   child: Html(
-                    data:
-                        widget.content ?? "<p>Isi berita tidak ditemukan.</p>",
+                    data: widget.content,
                     style: {
                       "body": Style(
                         fontSize: FontSize(14.sp),
@@ -258,7 +257,7 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                         onPressed: () {
                           // Implementasi share ke platform lain
                           shareContent(
-                            widget.title ?? "",
+                            widget.title,
                             Env.frontend + '/home/information/${widget.id}',
                           );
                         },
@@ -274,7 +273,7 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                         onPressed: () {
                           shareToWhatsApp(
                             context,
-                            widget.title ?? "",
+                            widget.title,
                             Env.frontend + '/home/information/${widget.id}',
                           );
                         },
@@ -290,7 +289,7 @@ class _DetailBeritaPageViewState extends State<DetailBeritaPageView> {
                         onPressed: () {
                           shareToInstagram(
                             context,
-                            widget.title ?? "",
+                            widget.title,
                             Env.frontend + '/home/information/${widget.id}',
                           );
                         },

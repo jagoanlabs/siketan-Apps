@@ -154,7 +154,6 @@ class _CekNIKViewState extends State<CekNIKView> {
                             listener: (context, state) {
                               if (state is CekNikError) {
                                 // Show error toast when result is not found or error occurs
-                                String errorMessage = state.message;
 
                                 AppToast.showError(
                                   context,

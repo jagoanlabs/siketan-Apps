@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:iconify_flutter/icons/bx.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
-import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/features/register/presentation/bloc/register_wilayah_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:siketan/shared/widget/text_field_widget.dart';
 
 class WilayahForm extends StatefulWidget {
   final Function(Map<String, dynamic>)? onCollectData;
@@ -174,11 +172,15 @@ class WilayahFormState extends State<WilayahForm> {
                       prev.desaList != curr.desaList,
                   builder: (context, state) {
                     if (state.loadingDesa) {
-                      return const CircularProgressIndicator();
+                      return Center(child: const CircularProgressIndicator());
                     }
 
                     if (state.desaList != null) {
                       return DropdownButtonFormField<int>(
+                        icon: Iconify(
+                          Bx.chevron_down,
+                          color: AppColors.gray900,
+                        ),
                         value: selectedDesaId,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(

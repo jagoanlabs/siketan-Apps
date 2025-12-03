@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:siketan/app/dependency_injector/import.dart';
 import 'package:siketan/features/cek-nik/domain/model/cek_nik_payload_model.dart';
 import 'package:siketan/features/cek-nik/domain/model/cek_nik_response_model.dart';
 import 'package:siketan/features/cek-nik/domain/repository/cek_nik_repository.dart';

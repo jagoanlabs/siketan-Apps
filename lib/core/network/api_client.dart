@@ -7,31 +7,35 @@ class ApiClient {
   late Dio _dio;
 
   ApiClient({
-    required TokenInterceptor tokenInterceptor, 
+    required TokenInterceptor tokenInterceptor,
     bool enableLogging = false,
   }) {
-    _dio = Dio(BaseOptions(
-      baseUrl: baseUrl,
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    ));
+    _dio = Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
 
     // Menambahkan interceptor untuk menangani token
     _dio.interceptors.add(tokenInterceptor);
-    
+
     // Menambahkan interceptor opsional untuk logging
     if (enableLogging) {
-      _dio.interceptors.add(LogInterceptor(
-        requestBody: true,
-        responseBody: true,
-        requestHeader: true,
-        responseHeader: false,
-        error: true,
-      ));
+      _dio.interceptors.add(
+        LogInterceptor(
+          requestBody: true,
+          responseBody: true,
+          requestHeader: true,
+          responseHeader: false,
+          error: true,
+        ),
+      );
     }
   }
 
@@ -149,8 +153,6 @@ class ApiClient {
       case DioExceptionType.badCertificate:
         throw CertificateException('Certificate error');
       case DioExceptionType.unknown:
-      default:
-        throw NetworkException('Network error: ${e.message}');
     }
   }
 }
