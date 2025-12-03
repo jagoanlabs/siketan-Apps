@@ -25,7 +25,7 @@ class WelcomeCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            "Selamat Datang di Siketan Apps",
+            "Selamat Datang di\nSiketan Apps",
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 28.sp,

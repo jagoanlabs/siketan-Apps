@@ -113,6 +113,11 @@ class ProductCardWidget extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () {
                             debugPrint("Beli produk: $name (ID: $id)");
+                            Navigator.pushNamed(
+                              context,
+                              RoutesName.detailProduct,
+                              arguments: id,
+                            );
                             // Navigasi ke halaman detail atau checkout
                           },
                           style: ElevatedButton.styleFrom(

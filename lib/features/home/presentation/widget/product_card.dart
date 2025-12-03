@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
-import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:siketan/app/helper/format_currency_helper.dart';
 import 'package:siketan/app/routes/route_name.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
@@ -228,7 +227,13 @@ class _ProductCardViewState extends State<ProductCardView> {
                                       SizedBox(
                                         width: double.infinity,
                                         child: ElevatedButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            Navigator.pushNamed(
+                                              context,
+                                              RoutesName.detailProduct,
+                                              arguments: product?.id.toString(),
+                                            );
+                                          },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor: AppColors.blue4,
                                             shape: RoundedRectangleBorder(
@@ -245,7 +250,7 @@ class _ProductCardViewState extends State<ProductCardView> {
                                             children: [
                                               Iconify(
                                                 MaterialSymbols
-                                                    .shop_outline_rounded,
+                                                    .shopping_bag_outline,
                                                 size: 16.w,
                                                 color: Colors.white,
                                               ),
