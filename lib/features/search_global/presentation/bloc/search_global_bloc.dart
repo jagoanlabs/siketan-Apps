@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/features/search_global/domain/model/search_global_response_model.dart';
 import 'package:siketan/features/search_global/domain/repository/search_global_repository.dart';
 
@@ -21,44 +22,64 @@ class SearchGlobalBloc extends Bloc<SearchGlobalEvent, SearchGlobalState> {
     SearchGlobalStarted event,
     Emitter<SearchGlobalState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, query: event.query, currentPage: 1));
+    emit(state.copyWith(isLoading: true, query: event.query, currentPage: 1, errorMessage: null));
 
-    final res = await searchGlobalRepository.searchGlobal(
-      query: event.query,
-      sortBy: "relevance",
-      page: 1,
-      limit: 20,
-    );
+    try {
+      final res = await searchGlobalRepository.searchGlobal(
+        query: event.query,
+        sortBy: "relevance",
+        page: 1,
+        limit: 20,
+      );
 
-    emit(
-      state.copyWith(
-        isLoading: false,
-        result: res,
-        hasReachedEnd: res.pagination?.to == res.pagination?.totalResults,
-      ),
-    );
+      emit(
+        state.copyWith(
+          isLoading: false,
+          result: res,
+          hasReachedEnd: res.pagination?.to == res.pagination?.totalResults,
+          errorMessage: null,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: handleAppError(e), // Using the error handler you created
+        ),
+      );
+    }
   }
 
   Future<void> _onQueryChanged(
     SearchGlobalQueryChanged event,
     Emitter<SearchGlobalState> emit,
   ) async {
-    emit(state.copyWith(isLoading: true, query: event.query, currentPage: 1));
+    emit(state.copyWith(isLoading: true, query: event.query, currentPage: 1, errorMessage: null));
 
-    final res = await searchGlobalRepository.searchGlobal(
-      query: event.query,
-      type: state.selectedType,
-      page: 1,
-      limit: 20,
-    );
+    try {
+      final res = await searchGlobalRepository.searchGlobal(
+        query: event.query,
+        type: state.selectedType,
+        page: 1,
+        limit: 20,
+      );
 
-    emit(
-      state.copyWith(
-        isLoading: false,
-        result: res,
-        hasReachedEnd: res.pagination?.to == res.pagination?.totalResults,
-      ),
-    );
+      emit(
+        state.copyWith(
+          isLoading: false,
+          result: res,
+          hasReachedEnd: res.pagination?.to == res.pagination?.totalResults,
+          errorMessage: null,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: handleAppError(e), // Using the error handler you created
+        ),
+      );
+    }
   }
 
   Future<void> _onFilterChanged(
@@ -66,23 +87,33 @@ class SearchGlobalBloc extends Bloc<SearchGlobalEvent, SearchGlobalState> {
     Emitter<SearchGlobalState> emit,
   ) async {
     emit(
-      state.copyWith(isLoading: true, selectedType: event.type, currentPage: 1),
+      state.copyWith(isLoading: true, selectedType: event.type, currentPage: 1, errorMessage: null),
     );
 
-    final res = await searchGlobalRepository.searchGlobal(
-      query: state.query,
-      type: event.type,
-      page: 1,
-      limit: 20,
-    );
+    try {
+      final res = await searchGlobalRepository.searchGlobal(
+        query: state.query,
+        type: event.type,
+        page: 1,
+        limit: 20,
+      );
 
-    emit(
-      state.copyWith(
-        isLoading: false,
-        result: res,
-        hasReachedEnd: res.pagination?.to == res.pagination?.totalResults,
-      ),
-    );
+      emit(
+        state.copyWith(
+          isLoading: false,
+          result: res,
+          hasReachedEnd: res.pagination?.to == res.pagination?.totalResults,
+          errorMessage: null,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: handleAppError(e), // Using the error handler you created
+        ),
+      );
+    }
   }
 
   Future<void> _onLoadMore(
@@ -91,28 +122,38 @@ class SearchGlobalBloc extends Bloc<SearchGlobalEvent, SearchGlobalState> {
   ) async {
     if (state.hasReachedEnd || state.isLoadMore) return;
 
-    emit(state.copyWith(isLoadMore: true));
+    emit(state.copyWith(isLoadMore: true, errorMessage: null));
 
-    final nextPage = state.currentPage + 1;
+    try {
+      final nextPage = state.currentPage + 1;
 
-    final res = await searchGlobalRepository.searchGlobal(
-      query: state.query,
-      type: state.selectedType,
-      page: nextPage,
-      limit: 20,
-    );
+      final res = await searchGlobalRepository.searchGlobal(
+        query: state.query,
+        type: state.selectedType,
+        page: nextPage,
+        limit: 20,
+      );
 
-    // Gabungkan pagination
-    final merged = _mergeResult(state.result!, res);
+      // Gabungkan pagination
+      final merged = _mergeResult(state.result!, res);
 
-    emit(
-      state.copyWith(
-        isLoadMore: false,
-        currentPage: nextPage,
-        result: merged,
-        hasReachedEnd: merged.pagination?.to == merged.pagination?.totalResults,
-      ),
-    );
+      emit(
+        state.copyWith(
+          isLoadMore: false,
+          currentPage: nextPage,
+          result: merged,
+          hasReachedEnd: merged.pagination?.to == merged.pagination?.totalResults,
+          errorMessage: null,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isLoadMore: false,
+          errorMessage: handleAppError(e), // Using the error handler you created
+        ),
+      );
+    }
   }
 
   SearchGlobalResponseModel _mergeResult(

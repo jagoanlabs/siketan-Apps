@@ -11,6 +11,7 @@ import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/features/detail-berita/domain/model/detail_berita_dto.dart';
 import 'package:siketan/features/home/presentation/bloc/berita_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
+import 'package:siketan/shared/widget/error_widget.dart';
 import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class NewsCard extends StatelessWidget {
@@ -117,15 +118,9 @@ class _NewsCardViewState extends State<NewsCardView> {
                   },
                 );
               } else if (state is BeritaError) {
-                return Center(
-                  child: Text(
-                    state.message,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.gray900,
-                    ),
-                  ),
+                return ErrorMessageWidget(
+                  message: state.message,
+                  size: ErrorSize.L,
                 );
               }
               if (state is BeritaLoaded) {

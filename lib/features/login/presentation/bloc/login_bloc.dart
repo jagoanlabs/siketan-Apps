@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:siketan/app/dependency_injector/import.dart';
 import 'package:siketan/core/network/network_service.dart';
+import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/features/login/domain/model/login_payload_model.dart';
 import 'package:siketan/features/login/domain/model/login_response_model.dart';
@@ -33,7 +34,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       emit(LoginSuccess(data: response));
     } catch (e) {
       logger.e(e);
-      emit(LoginFailure(message: e.toString()));
+      emit(LoginFailure(message: handleAppError(e)));
     }
   }
 }

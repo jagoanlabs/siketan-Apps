@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/features/data/domain/model/komoditas_statistik_response_model.dart';
 import 'package:siketan/features/data/domain/repository/data_repository.dart';
 
@@ -36,7 +37,7 @@ class KomoditasTableBloc
         ),
       );
     } catch (e) {
-      emit(state.copyWith(loading: false, error: e.toString()));
+      emit(state.copyWith(loading: false, error: handleAppError(e)));
     }
   }
 }

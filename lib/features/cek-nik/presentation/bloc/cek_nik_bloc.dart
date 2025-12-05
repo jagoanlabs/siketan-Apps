@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/features/cek-nik/domain/model/cek_nik_payload_model.dart';
 import 'package:siketan/features/cek-nik/domain/model/cek_nik_response_model.dart';
 import 'package:siketan/features/cek-nik/domain/repository/cek_nik_repository.dart';
@@ -24,7 +25,7 @@ class CekNikBloc extends Bloc<CekNikEvent, CekNikState> {
       final result = await cekNikRepository.postCekNik(event.payload);
       emit(CekNikSuccess(data: result));
     } catch (e) {
-      emit(CekNikError(message: e.toString()));
+      emit(CekNikError(message: handleAppError(e)));
     }
   }
 }

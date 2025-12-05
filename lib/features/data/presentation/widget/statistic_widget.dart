@@ -6,6 +6,7 @@ import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:siketan/features/data/presentation/bloc/chart_komoditas_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/style/shadow.dart';
+import 'package:siketan/shared/widget/error_widget.dart';
 import 'package:siketan/shared/widget/select_field_widget.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
@@ -52,6 +53,8 @@ class _StatisticWidgetViewState extends State<StatisticWidgetView> {
       builder: (context, state) {
         final isLoading = state.loading;
         final hasData = state.chartData.isNotEmpty;
+        final hasError = state.hasError;
+        final errorMessage = state.errorMessage;
 
         /// Semua komoditas berasal dari data API (DYNAMIC)
         final dynamicCommodities = state.chartData.keys.toList()..sort();
@@ -123,11 +126,51 @@ class _StatisticWidgetViewState extends State<StatisticWidgetView> {
               SizedBox(height: 20.h),
 
               // ==========================
-              // LINE CHART
+              // LINE CHART OR ERROR STATE
               // ==========================
               SizedBox(
                 height: 300.h,
-                child: isLoading
+                child: hasError
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 48,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              errorMessage ?? "Terjadi kesalahan",
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: Colors.red,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.red4,
+                                shadowColor: Colors.transparent,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              onPressed: () {
+                                context.read<ChartKomoditasBloc>().add(
+                                  FetchChartYearEvent(int.parse(selectedYear)),
+                                );
+                              },
+                              child: const Text("Coba Lagi"),
+                            ),
+                          ],
+                        ),
+                      )
+                    : isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : !hasData
                     ? const Center(child: Text("Tidak ada data"))

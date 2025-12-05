@@ -146,13 +146,13 @@ class ApiClient {
           default:
             throw ServerException('Error: ${e.response?.data}');
         }
-      case DioExceptionType.cancel:
-        throw CancelledException('Request was cancelled');
       case DioExceptionType.connectionError:
         throw ConnectionException('Connection error');
       case DioExceptionType.badCertificate:
         throw CertificateException('Certificate error');
+      case DioExceptionType.cancel:
       case DioExceptionType.unknown:
+        throw NetworkException('Network error');
     }
   }
 }

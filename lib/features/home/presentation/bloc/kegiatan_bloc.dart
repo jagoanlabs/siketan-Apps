@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/features/home/domain/model/kegiatan_petani_response_model.dart';
 import 'package:siketan/features/home/domain/repository/home_repository.dart';
 
@@ -22,7 +23,7 @@ class KegiatanBloc extends Bloc<KegiatanEvent, KegiatanState> {
       final kegiatan = await homeRepository.getKegiatanPetani();
       emit(KegiatanLoaded(kegiatan: kegiatan));
     } catch (e) {
-      emit(KegiatanError(message: e.toString()));
+      emit(KegiatanError(message: handleAppError(e)));
     }
   }
 }

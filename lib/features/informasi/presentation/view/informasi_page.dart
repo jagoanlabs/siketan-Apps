@@ -16,6 +16,7 @@ import 'package:siketan/shared/widget/acara_card_widget.dart';
 import 'package:siketan/shared/widget/banner_home_widget.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
+import 'package:siketan/shared/widget/error_widget.dart';
 import 'package:siketan/shared/widget/news_card_widget.dart';
 import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
@@ -221,7 +222,15 @@ class _InformasiPageViewState extends State<InformasiPageView>
                                     );
                                   }
                                   if (state is KegiatanError) {
-                                    return Center(child: Text(state.message));
+                                    return ErrorMessageWidget(
+                                      message: state.message,
+                                      size: ErrorSize.L,
+                                      padding: EdgeInsets.only(
+                                        top:
+                                            MediaQuery.of(context).size.height *
+                                            0.15,
+                                      ),
+                                    );
                                   }
                                   if (state is KegiatanLoaded) {
                                     return _AcaraTabContent(
@@ -270,7 +279,17 @@ class _InformasiPageViewState extends State<InformasiPageView>
                                     );
                                   }
                                   if (state is BeritaError) {
-                                    return Center(child: Text(state.message));
+                                    return ErrorMessageWidget(
+                                      padding: EdgeInsets.only(
+                                        top:
+                                            MediaQuery.of(context).size.height *
+                                            0.15,
+                                      ),
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      message: state.message,
+                                      size: ErrorSize.L,
+                                    );
                                   }
                                   if (state is BeritaLoaded) {
                                     return _BeritaTabContent(

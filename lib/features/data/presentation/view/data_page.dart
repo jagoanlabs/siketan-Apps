@@ -15,6 +15,7 @@ import 'package:siketan/features/data/presentation/widget/table_widget.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/style/shadow.dart';
 import 'package:siketan/shared/widget/banner_home_widget.dart';
+import 'package:siketan/shared/widget/error_widget.dart';
 import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class DataPage extends StatelessWidget {
@@ -155,7 +156,10 @@ class _DataPageViewState extends State<DataPageView> {
                             return _buildStatistic(state.data);
                           }
                           if (state is LandingStatistikError) {
-                            return Center(child: Text(state.message));
+                            return ErrorMessageWidget(
+                              message: state.message,
+                              size: ErrorSize.M,
+                            );
                           }
                           return const SizedBox();
                         },

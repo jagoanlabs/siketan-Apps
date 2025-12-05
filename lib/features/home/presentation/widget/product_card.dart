@@ -8,6 +8,7 @@ import 'package:siketan/app/routes/route_name.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/features/home/presentation/bloc/product_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
+import 'package:siketan/shared/widget/error_widget.dart';
 import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class ProductCard extends StatelessWidget {
@@ -95,7 +96,10 @@ class _ProductCardViewState extends State<ProductCardView> {
           child: BlocBuilder<ProductBloc, ProductState>(
             builder: (context, state) {
               if (state is ProductError) {
-                return Center(child: Text(state.message));
+                return ErrorMessageWidget(
+                  message: state.message,
+                  size: ErrorSize.L,
+                );
               }
               if (state is ProductLoading) {
                 return ListView.builder(

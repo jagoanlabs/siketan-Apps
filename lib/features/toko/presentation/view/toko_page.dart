@@ -16,6 +16,7 @@ import 'package:siketan/features/toko/presentation/widget/store_card_widget.dart
 
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/widget/banner_home_widget.dart';
+import 'package:siketan/shared/widget/error_widget.dart';
 import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class TokoPage extends StatelessWidget {
@@ -138,7 +139,15 @@ class _TokoPageViewState extends State<TokoPageView>
                       }
 
                       if (state is ProductTokoError) {
-                        return Center(child: Text(state.message));
+                        return ErrorMessageWidget(
+                          message: state.message,
+                          size: ErrorSize.L,
+                          padding: EdgeInsets.only(
+                            left: 24.w,
+                            right: 24.w,
+                            top: MediaQuery.of(context).size.height * 0.15,
+                          ),
+                        );
                       }
 
                       if (state is ProductTokoLoaded) {

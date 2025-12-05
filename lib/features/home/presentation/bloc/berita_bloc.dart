@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/features/home/domain/model/berita_petani_response_model.dart';
 import 'package:siketan/features/home/domain/repository/home_repository.dart';
 
@@ -22,7 +23,7 @@ class BeritaBloc extends Bloc<BeritaEvent, BeritaState> {
       final berita = await homeRepository.getBeritaPetani();
       emit(BeritaLoaded(berita: berita));
     } catch (e) {
-      emit(BeritaError(message: e.toString()));
+      emit(BeritaError(message: handleAppError(e)));
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/features/register/domain/model/desa_response_model.dart';
 import 'package:siketan/features/register/domain/model/kecamatan_response_model.dart';
 import 'package:siketan/features/register/domain/model/kelompok_all_response_model.dart';
@@ -42,14 +43,22 @@ class RegisterWilayahBinaanBloc
         state.copyWith(
           loadingKecamatan: false,
           loadingKelompok: false,
+          errorKecamatan: null,
+          errorKelompok: null,
           kecamatanList: kecamatan,
           allKelompokList: kelompok,
           kelompokList: kelompok, // tampilkan semua di awal (opsional)
         ),
       );
     } catch (e) {
-      emit(state.copyWith(loadingKecamatan: false, loadingKelompok: false));
-      // Bisa tambahkan error handling
+      emit(
+        state.copyWith(
+          loadingKecamatan: false,
+          loadingKelompok: false,
+          errorKecamatan: handleAppError(e), // Using the error handler you created
+          errorKelompok: handleAppError(e),  // Using the error handler you created
+        ),
+      );
     }
   }
 
@@ -64,6 +73,8 @@ class RegisterWilayahBinaanBloc
         selectedKelompokIds: [],
         loadingDesa: true,
         loadingKelompok: true,
+        errorDesa: null,
+        errorKelompok: null,
       ),
     );
 
@@ -91,6 +102,8 @@ class RegisterWilayahBinaanBloc
           desaList: desa,
           loadingDesa: false,
           loadingKelompok: false,
+          errorDesa: null,
+          errorKelompok: null,
           kelompokList: KelompokAllResponseModel(
             // message bisa diisi null atau dari state lama
             message: state.allKelompokList?.message,
@@ -99,8 +112,14 @@ class RegisterWilayahBinaanBloc
         ),
       );
     } catch (e) {
-      emit(state.copyWith(loadingDesa: false, loadingKelompok: false));
-      // Opsional: tambahkan error toast
+      emit(
+        state.copyWith(
+          loadingDesa: false,
+          loadingKelompok: false,
+          errorDesa: handleAppError(e), // Using the error handler you created
+          errorKelompok: handleAppError(e), // Using the error handler you created
+        ),
+      );
     }
   }
 

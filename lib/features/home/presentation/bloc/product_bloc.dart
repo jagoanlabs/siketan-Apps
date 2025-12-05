@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/features/home/domain/model/product_petani_response_model.dart';
 import 'package:siketan/features/home/domain/repository/home_repository.dart';
 
@@ -22,7 +23,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       final product = await homeRepository.getProductPetani();
       emit(ProductLoaded(product: product));
     } catch (e) {
-      emit(ProductError(message: e.toString()));
+      emit(ProductError(message: handleAppError(e)));
     }
   }
 }

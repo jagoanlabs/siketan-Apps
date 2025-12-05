@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/core/utils/logger/logger.dart';
 import 'package:siketan/features/auth/domain/repository/auth_repository.dart';
 
@@ -67,7 +68,7 @@ class AuthenticationBloc
       emit(AuthenticationFalse()); // kembali login
     } catch (e) {
       logger.e('Logout Failed $e');
-      emit(LogoutFailed(e.toString()));
+      emit(LogoutFailed(handleAppError(e)));
     }
   }
 }

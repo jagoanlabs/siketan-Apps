@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/features/data/domain/repository/data_repository.dart';
 
 part 'chart_komoditas_event.dart';
@@ -19,31 +20,43 @@ class ChartKomoditasBloc
   ) async {
     emit(state.copyWith(loading: true));
 
-    Map<String, List<int>> merged = {};
+    try {
+      Map<String, List<int>> merged = {};
 
-    // Loop month 1–12
-    for (int month = 1; month <= 12; month++) {
-      final resp = await dataRepository.getChartStatistik(month, event.year);
+      // Loop month 1–12
+      for (int month = 1; month <= 12; month++) {
+        final resp = await dataRepository.getChartStatistik(month, event.year);
 
-      final statistik = resp.data?.statistik ?? [];
+        final statistik = resp.data?.statistik ?? [];
 
-      for (final item in statistik) {
-        final name = item.komoditas ?? "";
-        final count = item.count ?? 0;
+        for (final item in statistik) {
+          final name = item.komoditas ?? "";
+          final count = item.count ?? 0;
 
-        merged.putIfAbsent(name, () => List.filled(12, 0));
-        merged[name]![month - 1] = count;
+          merged.putIfAbsent(name, () => List.filled(12, 0));
+          merged[name]![month - 1] = count;
+        }
       }
-    }
 
-    emit(
-      state.copyWith(
-        loading: false,
-        chartData: merged,
-        visibleCommodities: merged.keys.toList(),
-        year: event.year,
-      ),
-    );
+      emit(
+        state.copyWith(
+          loading: false,
+          chartData: merged,
+          visibleCommodities: merged.keys.toList(),
+          year: event.year,
+          errorMessage: null,
+          hasError: false,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          loading: false,
+          hasError: true,
+          errorMessage: handleAppError(e), // Using the error handler you created
+        ),
+      );
+    }
   }
 
   void _onToggleCommodity(

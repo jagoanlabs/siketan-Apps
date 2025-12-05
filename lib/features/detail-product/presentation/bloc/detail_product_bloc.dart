@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/features/detail-product/domain/model/detail_product_response_model.dart';
 import 'package:siketan/features/detail-product/domain/repository/detail_product_repository.dart';
 
@@ -23,7 +24,7 @@ class DetailProductBloc extends Bloc<DetailProductEvent, DetailProductState> {
       final result = await repository.getDetailProduct(event.id);
       emit(DetailProductLoaded(detailProduct: result));
     } catch (e) {
-      emit(DetailProductError(message: e.toString()));
+      emit(DetailProductError(message: handleAppError(e)));
     }
   }
 }

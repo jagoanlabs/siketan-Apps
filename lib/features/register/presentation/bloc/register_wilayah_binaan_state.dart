@@ -14,6 +14,11 @@ class RegisterWilayahBinaanState extends Equatable {
   final List<int> selectedDesaIds;
   final List<int> selectedKelompokIds;
 
+  // Error handling properties
+  final String? errorKecamatan;
+  final String? errorDesa;
+  final String? errorKelompok;
+
   const RegisterWilayahBinaanState({
     this.loadingKecamatan = false,
     this.loadingDesa = false,
@@ -25,6 +30,9 @@ class RegisterWilayahBinaanState extends Equatable {
     this.selectedKecamatanId,
     this.selectedDesaIds = const [],
     this.selectedKelompokIds = const [],
+    this.errorKecamatan,
+    this.errorDesa,
+    this.errorKelompok,
   });
 
   RegisterWilayahBinaanState copyWith({
@@ -38,6 +46,9 @@ class RegisterWilayahBinaanState extends Equatable {
     int? selectedKecamatanId,
     List<int>? selectedDesaIds,
     List<int>? selectedKelompokIds,
+    String? errorKecamatan,
+    String? errorDesa,
+    String? errorKelompok,
   }) {
     return RegisterWilayahBinaanState(
       loadingKecamatan: loadingKecamatan ?? this.loadingKecamatan,
@@ -50,6 +61,9 @@ class RegisterWilayahBinaanState extends Equatable {
       selectedKecamatanId: selectedKecamatanId ?? this.selectedKecamatanId,
       selectedDesaIds: selectedDesaIds ?? this.selectedDesaIds,
       selectedKelompokIds: selectedKelompokIds ?? this.selectedKelompokIds,
+      errorKecamatan: errorKecamatan ?? this.errorKecamatan,
+      errorDesa: errorDesa ?? this.errorDesa,
+      errorKelompok: errorKelompok ?? this.errorKelompok,
     );
   }
 
@@ -65,5 +79,8 @@ class RegisterWilayahBinaanState extends Equatable {
         selectedKecamatanId,
         selectedDesaIds,
         selectedKelompokIds,
+        errorKecamatan,
+        errorDesa,
+        errorKelompok,
       ];
 }

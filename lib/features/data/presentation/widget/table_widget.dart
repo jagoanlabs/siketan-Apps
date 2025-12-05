@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/features/data/presentation/bloc/komoditas_table_bloc.dart';
 import 'package:siketan/shared/style/shadow.dart';
+import 'package:siketan/shared/widget/error_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:colorful_iconify_flutter/icons/logos.dart';
 
@@ -140,6 +142,12 @@ class _TableWidgetState extends State<TableWidget> {
           child: SizedBox(
             height: 600, // wajib fixed
             child: AsyncPaginatedDataTable2(
+              errorBuilder: (error) {
+                return ErrorMessageWidget(
+                  message: handleAppError(error),
+                  size: ErrorSize.M,
+                );
+              },
               loading: Center(
                 child: SizedBox(
                   width: 100,

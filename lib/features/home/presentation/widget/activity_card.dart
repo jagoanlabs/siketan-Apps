@@ -6,6 +6,7 @@ import 'package:siketan/app/helper/kegiatan_status_helper.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/features/home/presentation/bloc/kegiatan_bloc.dart';
+import 'package:siketan/shared/widget/error_widget.dart';
 import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 
 class ActivityCard extends StatelessWidget {
@@ -90,7 +91,10 @@ class _ActivityCardViewState extends State<ActivityCardView> {
           child: BlocBuilder<KegiatanBloc, KegiatanState>(
             builder: (context, state) {
               if (state is KegiatanError) {
-                return Center(child: Text(state.message));
+                return ErrorMessageWidget(
+                  message: state.message,
+                  size: ErrorSize.L,
+                );
               }
               if (state is KegiatanLoading) {
                 return ListView.builder(

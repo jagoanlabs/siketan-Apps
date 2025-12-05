@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/features/toko/domain/model/product_item_dto.dart';
 import 'package:siketan/features/toko/domain/model/product_response_model.dart';
 import 'package:siketan/features/toko/domain/model/store_item_dto.dart';
@@ -75,7 +76,7 @@ class ProductTokoBloc extends Bloc<ProductTokoEvent, ProductTokoState> {
       // Emit state loaded
       emit(ProductTokoLoaded(products: products, stores: stores, raw: result));
     } catch (e) {
-      emit(ProductTokoError(message: e.toString()));
+      emit(ProductTokoError(message: handleAppError(e)));
     }
   }
 }
