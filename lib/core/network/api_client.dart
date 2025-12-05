@@ -1,10 +1,12 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:siketan/core/constant/env.dart';
 import 'package:siketan/core/network/token_interceptor.dart';
 
 class ApiClient {
-  static const String baseUrl = Env.backend; // Ganti dengan base URL Anda
-  late Dio _dio;
+  static const String baseUrl = Env.backend;
+  late final Dio _dio;
 
   ApiClient({
     required TokenInterceptor tokenInterceptor,
@@ -22,145 +24,174 @@ class ApiClient {
       ),
     );
 
-    // Menambahkan interceptor untuk menangani token
+    /// Interceptor Token
     _dio.interceptors.add(tokenInterceptor);
 
-    // Menambahkan interceptor opsional untuk logging
+    /// Logging jika debug
     if (enableLogging) {
       _dio.interceptors.add(
         LogInterceptor(
           requestBody: true,
           responseBody: true,
           requestHeader: true,
-          responseHeader: false,
           error: true,
         ),
       );
     }
+
+    /// BYPASS SSL hanya jika debug / bukan release
+    // final isRelease = bool.fromEnvironment('dart.vm.product');
+    // if (!isRelease) {
+    //   (_dio.httpClientAdapter as IOHttpClientAdapter).onHttpClientCreate =
+    //       (HttpClient client) {
+    //         client.badCertificateCallback =
+    //             (X509Certificate cert, String host, int port) {
+    //               print("⚠️ SSL BYPASSED for host: $host");
+    //               return true;
+    //             };
+    //         return client;
+    //       };
+    // }
   }
 
   Dio get dio => _dio;
 
+  /// --------------------
+  /// REQUEST HELPERS
+  /// --------------------
   Future<Response<T>> get<T>(
     String path, {
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
   }) async {
-    try {
-      return await _dio.get<T>(
+    return _execute(
+      () => _dio.get<T>(
         path,
         queryParameters: queryParameters,
         options: options,
         cancelToken: cancelToken,
-      );
-    } on DioException catch (e) {
-      _handleDioError(e);
-      rethrow;
-    }
+      ),
+    );
   }
 
   Future<Response<T>> post<T>(
     String path, {
-    data,
+    dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
   }) async {
-    try {
-      return await _dio.post<T>(
+    return _execute(
+      () => _dio.post<T>(
         path,
         data: data,
         queryParameters: queryParameters,
         options: options,
         cancelToken: cancelToken,
-      );
-    } on DioException catch (e) {
-      _handleDioError(e);
-      rethrow;
-    }
+      ),
+    );
   }
 
   Future<Response<T>> put<T>(
     String path, {
-    data,
+    dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
   }) async {
-    try {
-      return await _dio.put<T>(
+    return _execute(
+      () => _dio.put<T>(
         path,
         data: data,
         queryParameters: queryParameters,
         options: options,
         cancelToken: cancelToken,
-      );
-    } on DioException catch (e) {
-      _handleDioError(e);
-      rethrow;
-    }
+      ),
+    );
   }
 
   Future<Response<T>> delete<T>(
     String path, {
-    data,
+    dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
   }) async {
-    try {
-      return await _dio.delete<T>(
+    return _execute(
+      () => _dio.delete<T>(
         path,
         data: data,
         queryParameters: queryParameters,
         options: options,
         cancelToken: cancelToken,
-      );
+      ),
+    );
+  }
+
+  /// --------------------
+  /// ERROR HANDLER
+  /// --------------------
+  Future<Response<T>> _execute<T>(
+    Future<Response<T>> Function() request,
+  ) async {
+    try {
+      return await request();
     } on DioException catch (e) {
-      _handleDioError(e);
-      rethrow;
+      throw _mapError(e);
     }
   }
 
-  void _handleDioError(DioException e) {
-    // Menangani error Dio di sini
+  ApiException _mapError(DioException e) {
     switch (e.type) {
       case DioExceptionType.connectionTimeout:
-      case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
-        throw TimeoutException('Request timeout');
-      case DioExceptionType.badResponse:
-        final statusCode = e.response?.statusCode;
-        switch (statusCode) {
-          case 400:
-            throw BadRequestException('Bad Request: ${e.response?.data}');
-          case 401:
-            throw UnauthorizedException('Unauthorized: ${e.response?.data}');
-          case 403:
-            throw ForbiddenException('Forbidden: ${e.response?.data}');
-          case 404:
-            throw NotFoundException('Not Found: ${e.response?.data}');
-          case 500:
-            throw ServerException('Internal Server Error: ${e.response?.data}');
-          default:
-            throw ServerException('Error: ${e.response?.data}');
-        }
-      case DioExceptionType.connectionError:
-        throw ConnectionException('Connection error');
+      case DioExceptionType.sendTimeout:
+        return TimeoutException('Request timeout');
+
       case DioExceptionType.badCertificate:
-        throw CertificateException('Certificate error');
+        return CertificateException('SSL Certificate invalid');
+
+      case DioExceptionType.connectionError:
+        return ConnectionException('Failed to connect');
+
+      case DioExceptionType.badResponse:
+        final code = e.response?.statusCode ?? 0;
+        final data = e.response?.data;
+
+        switch (code) {
+          case 400:
+            return BadRequestException('$data');
+          case 401:
+            return UnauthorizedException('$data');
+          case 403:
+            return ForbiddenException('$data');
+          case 404:
+            return NotFoundException('$data');
+          case 500:
+            return ServerException('$data');
+          default:
+            return ServerException('Error $code: $data');
+        }
+
       case DioExceptionType.cancel:
-      case DioExceptionType.unknown:
-        throw NetworkException('Network error');
+        return CancelledException('Request cancelled');
+
+      default:
+        return NetworkException('Unknown network error');
     }
   }
 }
 
-// Kelas exception kustom untuk menangani berbagai jenis error
+/// ===============================
+/// CUSTOM EXCEPTIONS
+/// ===============================
 class ApiException implements Exception {
   final String message;
   ApiException(this.message);
+
+  @override
+  String toString() => message;
 }
 
 class BadRequestException extends ApiException {
