@@ -11,6 +11,7 @@ import 'package:siketan/shared/style/color.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 import 'package:colorful_iconify_flutter/icons/logos.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:siketan/shared/widget/error_widget.dart';
 import 'package:siketan/shared/widget/shimmer_container_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -215,7 +216,16 @@ class _DetailTokoViewState extends State<DetailTokoView> {
                   );
                 }
                 if (state is TokoProductError) {
-                  return Center(child: Text(state.message));
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height,
+                    width: double.infinity,
+                    child: Center(
+                      child: ErrorMessageWidget(
+                        size: ErrorSize.L,
+                        message: state.message,
+                      ),
+                    ),
+                  );
                 }
                 if (state is TokoProductLoaded) {
                   return Padding(
