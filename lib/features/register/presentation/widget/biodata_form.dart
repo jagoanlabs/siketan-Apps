@@ -218,6 +218,12 @@ class BiodataFormState extends State<BiodataForm> {
                   keyboardType: TextInputType.phone,
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(errorText: 'Wajib diisi'),
+                    (val) {
+                      if (val != null && !val.startsWith('08')) {
+                        return 'Awalan nomor harus 08';
+                      }
+                      return null;
+                    },
                   ]),
                   obscureText: false,
                   isPasswordField: false,
