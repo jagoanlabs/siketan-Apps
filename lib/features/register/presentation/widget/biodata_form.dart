@@ -50,7 +50,6 @@ class BiodataFormState extends State<BiodataForm> {
     }
   }
 
-
   void collectFormData() {
     if (widget.onCollectData != null) {
       widget.onCollectData!({
@@ -130,7 +129,10 @@ class BiodataFormState extends State<BiodataForm> {
                 ElevatedButton(
                   onPressed: _pickImage,
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 8.h,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.r),
                       side: BorderSide(
@@ -175,7 +177,6 @@ class BiodataFormState extends State<BiodataForm> {
                   textAlign: TextAlign.center,
                 ),
 
-
                 SizedBox(height: 4.h),
                 TextFieldWidget(
                   controller: nikController,
@@ -213,7 +214,7 @@ class BiodataFormState extends State<BiodataForm> {
                 TextFieldWidget(
                   controller: hpController,
                   label: "No HP",
-                  hintText: "No HP",
+                  hintText: "08xxxxxx",
                   keyboardType: TextInputType.phone,
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(errorText: 'Wajib diisi'),
