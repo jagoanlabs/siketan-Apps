@@ -18,6 +18,10 @@ import 'package:siketan/features/home/presentation/widget/news_card.dart';
 import 'package:siketan/features/home/presentation/widget/product_card.dart';
 import 'package:siketan/features/home/presentation/widget/search_widget.dart';
 import 'package:siketan/features/home/presentation/widget/welcome_card.dart';
+import 'package:siketan/features/profile/domain/repository/profile_repository.dart';
+import 'package:siketan/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:siketan/features/profile/presentation/bloc/profile_event.dart';
+import 'package:siketan/features/profile/presentation/bloc/profile_state.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/widget/primary_button_widget.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
@@ -46,6 +50,10 @@ class HomePage extends StatelessWidget {
           create: (context) =>
               BeritaBloc(homeRepository: getIt<HomeRepository>()),
         ),
+        BlocProvider(
+          create: (context) =>
+              ProfileBloc(profileRepository: getIt<ProfileRepository>()),
+        ),
       ],
       child: HomePageView(onNavigateToTab: onNavigateToTab),
     );
@@ -62,6 +70,13 @@ class HomePageView extends StatefulWidget {
 
 class _HomePageViewState extends State<HomePageView> {
   final TextEditingController _searchController = TextEditingController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    logger.d("init state");
+    context.read<ProfileBloc>().add(LoadUserProfileEvent());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,15 +171,42 @@ class _HomePageViewState extends State<HomePageView> {
                                         RoutesName.profile,
                                       );
                                     },
-                                    child: CircleAvatar(
-                                      radius: 20.r,
-                                      backgroundColor: AppColors.gray200,
-                                      child: Iconify(
-                                        MaterialSymbols.person_2_outline,
-                                        color: AppColors.gray900,
-                                        size: 20.w,
-                                      ),
-                                    ),
+                                    child:
+                                        BlocBuilder<ProfileBloc, ProfileState>(
+                                          builder: (context, state) {
+                                            String foto = "";
+                                            if (state is ProfileLoaded &&
+                                                state.profile != null) {
+                                              final profile = state.profile!;
+                                              foto = profile.foto ?? "";
+                                            }
+                                            return Container(
+                                              width: 50.w,
+                                              height: 50.h,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: foto.isNotEmpty
+                                                    ? Colors.transparent
+                                                    : AppColors.gray100,
+                                              ),
+                                              child: foto.isNotEmpty
+                                                  ? ClipOval(
+                                                      child: Image.network(
+                                                        foto,
+                                                        width: 50.w,
+                                                        height: 50.h,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    )
+                                                  : Iconify(
+                                                      MaterialSymbols
+                                                          .person_2_outline,
+                                                      color: AppColors.gray900,
+                                                      size: 28.w,
+                                                    ),
+                                            );
+                                          },
+                                        ),
                                   );
                                 } else {
                                   return SizedBox(

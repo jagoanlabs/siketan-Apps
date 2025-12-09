@@ -7,6 +7,7 @@ import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:iconify_flutter/icons/ph.dart';
 import 'package:siketan/app/dependency_injector/import.dart';
 import 'package:siketan/app/helper/format_currency_helper.dart';
+import 'package:siketan/app/helper/format_whatsapp_helper.dart';
 import 'package:siketan/app/helper/share_helper.dart';
 import 'package:siketan/app/helper/string_extenstion.dart';
 import 'package:siketan/core/constant/env.dart';
@@ -123,11 +124,11 @@ class _DetailProductPageViewState extends State<DetailProductPageView>
               child: ElevatedButton(
                 onPressed: () {
                   final message =
-                      "Halo, saya tertarik dengan produk Anda. Apakah masih tersedia?";
+                      "Halo, saya tertarik dengan produk Anda $title. Apakah masih tersedia?";
 
                   launchUrl(
                     Uri.parse(
-                      "https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}",
+                      "https://wa.me/${formatWhatsAppNumber(phoneNumber ?? '')}?text=${Uri.encodeComponent(message)}",
                     ),
                   );
                 },

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
+import 'package:siketan/app/helper/format_whatsapp_helper.dart';
 import 'package:siketan/core/utils/error_handler.dart';
 import 'package:siketan/features/data/presentation/bloc/komoditas_table_bloc.dart';
 import 'package:siketan/shared/style/shadow.dart';
@@ -62,7 +63,9 @@ class KomoditasDataTableSource extends AsyncDataTableSource {
               onTap: () {
                 final noWa = data.dataPetani?.noTelp ?? "-";
                 if (noWa != "-" && noWa.isNotEmpty) {
-                  launchUrl(Uri.parse("https://wa.me/$noWa"));
+                  launchUrl(
+                    Uri.parse("https://wa.me/${formatWhatsAppNumber(noWa)}"),
+                  );
                 }
               },
               Align(

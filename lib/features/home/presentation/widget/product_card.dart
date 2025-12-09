@@ -64,6 +64,7 @@ class _ProductCardViewState extends State<ProductCardView> {
                   widget.onNavigateToTab?.call(3); // navigasi ke halaman produk
                 },
                 style: ElevatedButton.styleFrom(
+                  elevation: 0,
                   backgroundColor: AppColors.red1,
                   foregroundColor: AppColors.red1,
                   shape: RoundedRectangleBorder(

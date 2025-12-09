@@ -70,6 +70,7 @@ class _ProfileViewState extends State<ProfileView> {
         String jobRole = "Anonymous";
         String email = "Anonymous";
         String whatsapp = "0000000000";
+        String foto = "";
 
         if (state is ProfileLoaded && state.profile != null) {
           final profile = state.profile!;
@@ -80,6 +81,7 @@ class _ProfileViewState extends State<ProfileView> {
           jobRole = profile.pekerjaan ?? profile.peran ?? "Admin";
           email = profile.email ?? "Anonymous";
           whatsapp = profile.noWa ?? "0000000000";
+          foto = profile.foto ?? "";
         }
 
         return Scaffold(
@@ -175,12 +177,24 @@ class _ProfileViewState extends State<ProfileView> {
                       Center(
                         child: CircleAvatar(
                           radius: 50.r,
-                          backgroundColor: AppColors.gray100,
-                          child: Iconify(
-                            MaterialSymbols.person_2_outline,
-                            color: AppColors.gray900,
-                            size: 50.w,
-                          ),
+                          backgroundColor: foto.isNotEmpty
+                              ? Colors.transparent
+                              : AppColors.gray100,
+                          child: foto.isNotEmpty
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(50.r),
+                                  child: Image.network(
+                                    foto,
+                                    fit: BoxFit.cover,
+                                    width: 100.w,
+                                    height: 100.h,
+                                  ),
+                                )
+                              : Iconify(
+                                  MaterialSymbols.person_2_outline,
+                                  color: AppColors.gray900,
+                                  size: 50.w,
+                                ),
                         ),
                       ),
                       SizedBox(height: 16.h),

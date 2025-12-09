@@ -66,6 +66,7 @@ class _NewsCardViewState extends State<NewsCardView> {
                   widget.onNavigateToTab?.call(2);
                 },
                 style: ElevatedButton.styleFrom(
+                  elevation: 0,
                   backgroundColor: AppColors.red1,
                   foregroundColor: AppColors.red1,
                   shape: RoundedRectangleBorder(

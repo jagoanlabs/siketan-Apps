@@ -4,6 +4,7 @@ import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/carbon.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:siketan/app/dependency_injector/import.dart';
+import 'package:siketan/app/helper/format_whatsapp_helper.dart';
 import 'package:siketan/app/helper/string_extenstion.dart';
 import 'package:siketan/features/detail-toko/domain/repository/toko_product_repository.dart';
 import 'package:siketan/features/detail-toko/presentation/bloc/toko_product_bloc.dart';
@@ -311,11 +312,11 @@ class _DetailTokoViewState extends State<DetailTokoView> {
                                     Logos.whatsapp_icon,
                                     () {
                                       final message =
-                                          "Halo, saya tertarik dengan produk Anda. Apakah masih tersedia?";
+                                          "Halo, saya tertarik dengan produk Anda ${state.data.data?[0].namaProducts}. Apakah masih tersedia?";
 
                                       launchUrl(
                                         Uri.parse(
-                                          "https://wa.me/${state.data.data?[0].tblAkun?.noWa}?text=${Uri.encodeComponent(message)}",
+                                          "https://wa.me/${formatWhatsAppNumber(state.data.data?[0].tblAkun?.noWa ?? '')}?text=${Uri.encodeComponent(message)}",
                                         ),
                                       );
                                     },
