@@ -49,12 +49,15 @@ class InformasiPageView extends StatefulWidget {
 }
 
 class _InformasiPageViewState extends State<InformasiPageView>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late TabController _tabController;
 
   // State search
   String _searchQueryAcara = '';
   String _searchQueryBerita = '';
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -72,6 +75,7 @@ class _InformasiPageViewState extends State<InformasiPageView>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: AppColors.gray50,
       body: EasyRefresh(

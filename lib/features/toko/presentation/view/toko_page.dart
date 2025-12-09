@@ -41,11 +41,14 @@ class TokoPageView extends StatefulWidget {
 }
 
 class _TokoPageViewState extends State<TokoPageView>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   late TabController _tabController;
 
   String _searchQueryProduct = '';
   String _searchQueryStore = '';
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -61,6 +64,7 @@ class _TokoPageViewState extends State<TokoPageView>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: AppColors.gray50,
       body: EasyRefresh(

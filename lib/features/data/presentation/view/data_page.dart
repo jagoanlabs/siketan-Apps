@@ -50,7 +50,11 @@ class DataPageView extends StatefulWidget {
   State<DataPageView> createState() => _DataPageViewState();
 }
 
-class _DataPageViewState extends State<DataPageView> {
+class _DataPageViewState extends State<DataPageView>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     context.read<LandingStatistikBloc>().add(LandingStatistikFetchEvent());
@@ -63,6 +67,7 @@ class _DataPageViewState extends State<DataPageView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: AppColors.gray50,
       body: EasyRefresh(

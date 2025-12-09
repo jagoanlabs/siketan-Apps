@@ -25,10 +25,13 @@ class _HomeWrapperState extends State<HomeWrapper> {
   final PageController _pageController = PageController();
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    _pageController.jumpToPage(index);
+    setState(() => _selectedIndex = index);
+
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+    );
   }
 
   /// ✅ Fungsi agar halaman anak bisa ganti tab
@@ -95,24 +98,28 @@ class _HomeWrapperState extends State<HomeWrapper> {
     final bool isActive = _selectedIndex == index;
     return GestureDetector(
       onTap: () => _onItemTapped(index),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Iconify(
-            icon,
-            color: isActive ? AppColors.green4 : AppColors.gray400,
-            size: 24.w,
-          ),
-          SizedBox(height: 4.h),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w400,
+      child: Container(
+        color: Colors.transparent,
+        width: 60.w,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Iconify(
+              icon,
               color: isActive ? AppColors.green4 : AppColors.gray400,
+              size: 24.w,
             ),
-          ),
-        ],
+            SizedBox(height: 4.h),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w400,
+                color: isActive ? AppColors.green4 : AppColors.gray400,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

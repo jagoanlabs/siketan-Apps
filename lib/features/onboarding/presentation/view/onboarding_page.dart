@@ -61,8 +61,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               height: 40.h,
               fit: BoxFit.contain,
             ),
-            
-        
+
             // Gambar Onboarding
             Expanded(
               child: PageView.builder(
@@ -89,7 +88,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               fit: BoxFit.contain,
                             ),
                           ),
-                        )
+                        ),
                       ),
                       SizedBox(height: 60.h),
                       Padding(
@@ -122,9 +121,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 },
               ),
             ),
-        
+
             SizedBox(height: 24.h),
-        
+
             // Indikator Dot
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -148,9 +147,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 );
               }),
             ),
-        
+
             SizedBox(height: 40.h),
-        
+
             // Footer: Skip & Next Button
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -159,12 +158,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   TextButton(
                     onPressed: () {
                       // skip mengarahkan ke onboarding terakhir
-                      _pageController.animateToPage(
-                        _onboardingData.length - 1,
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                      // atau arahkan ke login/home
+                      Navigator.pushNamed(context, RoutesName.home);
                     },
                     child: Text(
                       'Skip',
@@ -183,8 +177,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           curve: Curves.easeInOut,
                         );
                       } else {
-
-                        context.read<AuthenticationBloc>().add(OnBoardingDoneEvent());
+                        context.read<AuthenticationBloc>().add(
+                          OnBoardingDoneEvent(),
+                        );
                         // Halaman terakhir → arahkan ke halaman utama
                         Navigator.pushReplacementNamed(
                           context,
