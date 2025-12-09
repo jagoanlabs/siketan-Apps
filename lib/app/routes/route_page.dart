@@ -45,9 +45,9 @@ class MyRoute {
       case RoutesName.cekNIK:
         return PageTransition(
           child: const CekNIK(),
-          type: PageTransitionType.fade, // efek halus untuk splash
+          type: PageTransitionType.rightToLeft, // efek halus untuk splash
           settings: settings,
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 150),
         );
 
       case RoutesName.detailBerita:
@@ -55,23 +55,23 @@ class MyRoute {
           child: DetailBeritaPage(
             detailBeritaDto: settings.arguments as DetailBeritaDto,
           ),
-          type: PageTransitionType.fade, // efek halus untuk splash
+          type: PageTransitionType.rightToLeft, // efek halus untuk splash
           settings: settings,
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 150),
         );
       case RoutesName.detailProduct:
         return PageTransition(
           child: DetailProductPage(id: settings.arguments as String),
-          type: PageTransitionType.fade, // efek halus untuk splash
+          type: PageTransitionType.rightToLeft, // efek halus untuk splash
           settings: settings,
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 150),
         );
       case RoutesName.detailToko:
         return PageTransition(
           child: DetailTokoPage(id: settings.arguments as String),
-          type: PageTransitionType.fade, // efek halus untuk splash
+          type: PageTransitionType.rightToLeft, // efek halus untuk splash
           settings: settings,
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 150),
         );
       case RoutesName.searchGlobal:
         return PageTransition(
@@ -91,9 +91,9 @@ class MyRoute {
       case RoutesName.profile:
         return PageTransition(
           child: const ProfilePage(),
-          type: PageTransitionType.fade, // efek halus untuk splash
+          type: PageTransitionType.rightToLeft, // efek halus untuk splash
           settings: settings,
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 150),
         );
 
       default:
