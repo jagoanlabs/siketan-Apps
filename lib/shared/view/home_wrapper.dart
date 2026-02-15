@@ -21,22 +21,20 @@ class HomeWrapper extends StatefulWidget {
 
 class _HomeWrapperState extends State<HomeWrapper> {
   int _selectedIndex = 0;
-  bool isJumping = false;
 
   final PageController _pageController = PageController();
 
   void _onItemTapped(int index) {
     setState(() => _selectedIndex = index);
 
-    isJumping = true;
-
-    _pageController.jumpToPage(index);
-
-    Future.microtask(() {
-      isJumping = false;
-    });
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+    );
   }
 
+  /// ✅ Fungsi agar halaman anak bisa ganti tab
   void switchTab(int index) {
     _onItemTapped(index);
   }
@@ -50,11 +48,7 @@ class _HomeWrapperState extends State<HomeWrapper> {
         backgroundColor: AppColors.gray50,
         body: PageView(
           controller: _pageController,
-          onPageChanged: (index) {
-            if (!isJumping) {
-              setState(() => _selectedIndex = index);
-            }
-          },
+          onPageChanged: _onItemTapped,
           children: [
             HomePage(onNavigateToTab: switchTab),
             DataPage(),
