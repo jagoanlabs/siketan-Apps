@@ -35,7 +35,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
     },
     {
       'image': ImageConfig.onboarding3,
-      'title': 'Mendukung Ketahanan Pangan Daerah',
+      'title': 'Ketahanan Pangan Daerah',
       'description':
           'Menyiapkan informasi real-time untuk pengambilan keputusan yang lebih baik.',
     },
@@ -110,7 +110,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           _onboardingData[index]['description'],
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 14.sp,
+                            fontSize: 16.sp,
                             color: AppColors.gray600,
                             height: 1.5,
                           ),

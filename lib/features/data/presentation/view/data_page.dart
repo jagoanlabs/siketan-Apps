@@ -59,7 +59,9 @@ class _DataPageViewState extends State<DataPageView>
   void initState() {
     context.read<LandingStatistikBloc>().add(LandingStatistikFetchEvent());
     context.read<KomoditasTableBloc>().add(FetchKomoditasTable(1, 10, 'asc'));
-    context.read<ChartKomoditasBloc>().add(FetchChartYearEvent(2025));
+    context.read<ChartKomoditasBloc>().add(
+      FetchChartYearEvent(DateTime.now().year),
+    );
     super.initState();
   }
 

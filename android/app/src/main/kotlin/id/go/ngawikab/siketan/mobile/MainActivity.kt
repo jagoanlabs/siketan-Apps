@@ -1,4 +1,4 @@
-package com.example.siketan
+package id.go.ngawikab.siketan.mobile
 
 import io.flutter.embedding.android.FlutterActivity
 
