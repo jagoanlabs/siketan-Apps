@@ -27,11 +27,7 @@ class _HomeWrapperState extends State<HomeWrapper> {
   void _onItemTapped(int index) {
     setState(() => _selectedIndex = index);
 
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeInOut,
-    );
+    _pageController.jumpToPage(index);
   }
 
   /// ✅ Fungsi agar halaman anak bisa ganti tab
