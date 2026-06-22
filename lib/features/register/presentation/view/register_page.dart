@@ -16,14 +16,15 @@ import 'package:siketan/features/register/presentation/bloc/register_wilayah_blo
 import 'package:siketan/features/register/presentation/widget/biodata_form.dart';
 import 'package:siketan/features/register/presentation/widget/wilayah_binaan_form.dart';
 import 'package:siketan/features/register/presentation/widget/wilayah_form.dart';
+import 'package:siketan/features/register/presentation/widget/register_petani_form.dart';
 import 'package:siketan/shared/style/color.dart';
 import 'package:siketan/shared/style/shadow.dart';
 import 'package:siketan/shared/widget/primary_button_widget.dart';
-import 'package:collection/collection.dart';
 import 'package:siketan/shared/widget/toast_widget.dart';
 
 class RegisterPage extends StatelessWidget {
-  const RegisterPage({super.key});
+  final bool isPenyuluh;
+  const RegisterPage({super.key, this.isPenyuluh = true});
 
   @override
   Widget build(BuildContext context) {
@@ -44,36 +45,20 @@ class RegisterPage extends StatelessWidget {
               RegisterBloc(registerRepository: getIt<RegisterRepository>()),
         ),
       ],
-      child: const RegisterPageView(),
+      child: RegisterPageView(initialIsPenyuluh: isPenyuluh),
     );
   }
 }
 
 class RegisterPageView extends StatefulWidget {
-  const RegisterPageView({super.key});
+  final bool initialIsPenyuluh;
+  const RegisterPageView({super.key, this.initialIsPenyuluh = true});
 
   @override
   State<RegisterPageView> createState() => _RegisterPageViewState();
 }
 
 class _RegisterPageViewState extends State<RegisterPageView> {
-  // FORM KEYS
-  final biodataKey = GlobalKey<FormState>();
-  final wilayahKey = GlobalKey<FormState>();
-  final binaanKey = GlobalKey<FormState>();
-  // BIODATA
-  final nik = TextEditingController();
-  final nama = TextEditingController();
-  final email = TextEditingController();
-  final hp = TextEditingController();
-  final pass = TextEditingController();
-  final confirmPass = TextEditingController();
-  final alamat = TextEditingController();
-  File? foto;
-  String? tipePenyuluh;
-
-  //  wilayah
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,7 +78,7 @@ class _RegisterPageViewState extends State<RegisterPageView> {
                     text: "Melesat ",
                     style: TextStyle(fontSize: 24.sp, color: AppColors.gray100),
                     children: [
-                      TextSpan(
+                      const TextSpan(
                         text: "Lebih Cepat",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
@@ -105,7 +90,7 @@ class _RegisterPageViewState extends State<RegisterPageView> {
                     text: "Bertumbuh ",
                     style: TextStyle(fontSize: 24.sp, color: AppColors.gray100),
                     children: [
-                      TextSpan(
+                      const TextSpan(
                         text: "Lebih Baik",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
@@ -113,7 +98,8 @@ class _RegisterPageViewState extends State<RegisterPageView> {
                   ),
                 ),
                 SizedBox(height: 50.h),
-                _BuildForm(),
+                _BuildForm(initialIsPenyuluh: widget.initialIsPenyuluh),
+                SizedBox(height: 50.h),
               ],
             ),
           ),
@@ -124,13 +110,17 @@ class _RegisterPageViewState extends State<RegisterPageView> {
 }
 
 class _BuildForm extends StatefulWidget {
-  _BuildForm({super.key});
+  final bool initialIsPenyuluh;
+  const _BuildForm({super.key, this.initialIsPenyuluh = true});
 
   @override
   State<_BuildForm> createState() => _BuildFormState();
 }
 
 class _BuildFormState extends State<_BuildForm> {
+  late bool isPenyuluh;
+
+  // Penyuluh keys
   final biodataKey = GlobalKey<FormState>();
   final wilayahKey = GlobalKey<FormState>();
   final wilayahBinaanKey = GlobalKey<FormState>();
@@ -138,6 +128,15 @@ class _BuildFormState extends State<_BuildForm> {
   final biodataFormKey = GlobalKey<BiodataFormState>();
   final wilayahFormKey = GlobalKey<WilayahFormState>();
   final wilayahBinaanFormKey = GlobalKey<WilayahBinaanFormState>();
+
+  // Petani keys
+  final petaniFormKey = GlobalKey<RegisterPetaniFormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    isPenyuluh = widget.initialIsPenyuluh;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +148,7 @@ class _BuildFormState extends State<_BuildForm> {
         color: AppColors.gray50,
         borderRadius: BorderRadius.circular(12.r),
       ),
-      child: BlocListener<RegisterBloc, RegisterState>(
+      child: BlocConsumer<RegisterBloc, RegisterState>(
         listener: (context, state) {
           if (state is RegisterFailed) {
             AppToast.show(
@@ -161,13 +160,15 @@ class _BuildFormState extends State<_BuildForm> {
             );
           }
           if (state is RegisterSuccess) {
-            AppToast.showSuccess(context, "Berhasil Mendaftar Penyuluh");
+            AppToast.showSuccess(
+              context,
+              isPenyuluh ? "Berhasil Mendaftar Penyuluh" : "Berhasil Mendaftar Petani",
+            );
             Navigator.pushNamed(context, RoutesName.login);
           }
         },
-        child: Form(
-          key: biodataKey,
-          child: Column(
+        builder: (context, state) {
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Align(
@@ -222,6 +223,64 @@ class _BuildFormState extends State<_BuildForm> {
               ),
               SizedBox(height: 24.h),
 
+              // Switcher Peran
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.gray100,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => isPenyuluh = true),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 8.h),
+                          decoration: BoxDecoration(
+                            color: isPenyuluh ? AppColors.green4 : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Penyuluh",
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: isPenyuluh ? Colors.white : AppColors.gray600,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => isPenyuluh = false),
+                        child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 8.h),
+                          decoration: BoxDecoration(
+                            color: !isPenyuluh ? AppColors.green4 : Colors.transparent,
+                            borderRadius: BorderRadius.circular(8.r),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Petani",
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: !isPenyuluh ? Colors.white : AppColors.gray600,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 24.h),
+
               // Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -231,7 +290,7 @@ class _BuildFormState extends State<_BuildForm> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Daftar Akun Penyuluh",
+                          isPenyuluh ? "Daftar Akun Penyuluh" : "Daftar Akun Petani",
                           style: TextStyle(
                             fontSize: 18.sp,
                             color: AppColors.gray900,
@@ -240,7 +299,9 @@ class _BuildFormState extends State<_BuildForm> {
                         ),
                         SizedBox(height: 4.h),
                         Text(
-                          "Lengkapi data diri Anda sebagai Penyuluh!",
+                          isPenyuluh
+                              ? "Lengkapi data diri Anda sebagai Penyuluh!"
+                              : "Lengkapi data diri Anda sebagai Petani!",
                           style: TextStyle(
                             fontSize: 10.sp,
                             color: AppColors.gray400,
@@ -265,17 +326,27 @@ class _BuildFormState extends State<_BuildForm> {
               ),
 
               SizedBox(height: 24.h),
-              BiodataForm(key: biodataFormKey),
-              SizedBox(height: 24.h),
-              Form(
-                key: wilayahKey,
-                child: WilayahForm(key: wilayahFormKey),
-              ),
-              SizedBox(height: 24.h),
-              Form(
-                key: wilayahBinaanKey,
-                child: WilayahBinaanForm(key: wilayahBinaanFormKey),
-              ),
+
+              // Forms
+              if (isPenyuluh) ...[
+                Form(
+                  key: biodataKey,
+                  child: BiodataForm(key: biodataFormKey),
+                ),
+                SizedBox(height: 24.h),
+                Form(
+                  key: wilayahKey,
+                  child: WilayahForm(key: wilayahFormKey),
+                ),
+                SizedBox(height: 24.h),
+                Form(
+                  key: wilayahBinaanKey,
+                  child: WilayahBinaanForm(key: wilayahBinaanFormKey),
+                ),
+              ] else ...[
+                RegisterPetaniForm(key: petaniFormKey),
+              ],
+
               SizedBox(height: 24.h),
               ButtonPrimary(
                 isGradient: true,
@@ -284,36 +355,36 @@ class _BuildFormState extends State<_BuildForm> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                isLoading: false,
+                isLoading: state is RegisterLoading,
                 mainButtonMessage: "Daftar",
                 mainButton: () {
-                  _validateAndSubmit();
+                  if (isPenyuluh) {
+                    _validateAndSubmitPenyuluh();
+                  } else {
+                    _validateAndSubmitPetani();
+                  }
                 },
                 color: AppColors.blue4,
               ),
             ],
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 
-  void _validateAndSubmit() {
+  void _validateAndSubmitPenyuluh() {
     final biodataFormState = biodataKey.currentState;
     final wilayahFormState = wilayahKey.currentState;
 
     bool isBiodataValid = biodataFormState?.validate() ?? false;
     bool isWilayahValid = wilayahFormState?.validate() ?? false;
+    bool isWilayahBinaanValid = true;
 
-    // For wilayah binaan form, we need custom validation for the multi-select
-    bool isWilayahBinaanValid = true; // For the dropdowns that have validators
-
-    // Check if the multi select fields have items selected
     final wilayahBinaanBloc = context.read<RegisterWilayahBinaanBloc>();
     final selectedKelompok = wilayahBinaanBloc.state.selectedKelompokIds;
     final selectedDesa = wilayahBinaanBloc.state.selectedDesaIds;
 
-    // Check if kecamatan has been selected first
     bool kecamatanBinaanSelected =
         wilayahBinaanBloc.state.selectedKecamatanId != null;
 
@@ -335,19 +406,15 @@ class _BuildFormState extends State<_BuildForm> {
     }
 
     if (isBiodataValid && isWilayahValid && isWilayahBinaanValid) {
-      _collectAndLogData();
+      _collectAndSubmitPenyuluhData();
     }
   }
 
-  void _collectAndLogData() {
-    // Data from BiodataForm
+  void _collectAndSubmitPenyuluhData() {
     final biodataState = biodataFormKey.currentState;
-
-    // Data from WilayahForm
     final wilayahState = wilayahFormKey.currentState;
-
-    // Data from WilayahBinaanForm
     final wilayahBinaanBloc = context.read<RegisterWilayahBinaanBloc>();
+
     RegisterPaylaodModel payload = RegisterPaylaodModel(
       nip: biodataState?.nikController.text,
       nama: biodataState?.namaController.text,
@@ -372,43 +439,22 @@ class _BuildFormState extends State<_BuildForm> {
       pekerjaan: 'Penyuluh Pertanian',
     );
 
-    // Collect and log all the data in the requested format
-    print('=== REGISTRASI DATA ===');
-    print('NIP: ${biodataState?.nikController.text}');
-    print('nama: ${biodataState?.namaController.text}');
-    print('email: ${biodataState?.emailController.text}');
-    print('NoWa: ${biodataState?.hpController.text}');
-    print('password: ${biodataState?.passController.text}');
-    print('alamat: ${biodataState?.alamatController.text}');
-    print('tipe: ${biodataState?.selectedTipePenyuluh}');
-    print('kecamatanId: ${wilayahState?.selectedKecamatanId}');
-    print(
-      'kecamatan: ${_getNamaKecamatan(wilayahState?.selectedKecamatanId)}',
-    ); // You'll need to implement this
-    print('desaId: ${wilayahState?.selectedDesaId}');
-    print(
-      'desa: ${_getNamaDesa(wilayahState?.selectedDesaId)}',
-    ); // You'll need to implement this
-    print(
-      'kecamatanBinaan: ${_getNamaKecamatan(wilayahBinaanBloc.state.selectedKecamatanId)}',
-    ); // You'll need to implement this
-    print(
-      'desaBinaan: ${_getNamaDesaList(wilayahBinaanBloc.state.selectedDesaIds)}',
-    ); // You'll need to implement this
-    print(
-      'selectedKelompokIds: ${wilayahBinaanBloc.state.selectedKelompokIds.join(',')}',
-    );
-    print('pekerjaan: Penyuluh Pertanian');
-    print('=====================');
-
     context.read<RegisterBloc>().add(RegisterProccess(payload));
   }
 
-  // Helper methods to get names from IDs by accessing the bloc states
+  void _validateAndSubmitPetani() {
+    final petaniState = petaniFormKey.currentState;
+    if (petaniState != null && petaniState.validate()) {
+      final payload = petaniState.getPayload();
+      final fotoKtp = petaniState.getFotoKtp();
+      context.read<RegisterBloc>().add(
+            RegisterPetaniProccess(payload, fotoKtp: fotoKtp),
+          );
+    }
+  }
+
   String _getNamaKecamatan(int? kecamatanId) {
     if (kecamatanId == null) return '';
-
-    // Access the wilayah bloc to find the kecamatan name
     final wilayahBloc = context.read<RegisterWilayahBloc>();
     if (wilayahBloc.state.kecamatanList?.data != null) {
       for (var kec in wilayahBloc.state.kecamatanList!.data!) {
@@ -418,7 +464,6 @@ class _BuildFormState extends State<_BuildForm> {
       }
     }
 
-    // Also check in wilayah binaan bloc
     final wilayahBinaanBloc = context.read<RegisterWilayahBinaanBloc>();
     if (wilayahBinaanBloc.state.kecamatanList?.data != null) {
       for (var kec in wilayahBinaanBloc.state.kecamatanList!.data!) {
@@ -427,14 +472,11 @@ class _BuildFormState extends State<_BuildForm> {
         }
       }
     }
-
     return '';
   }
 
   String _getNamaDesa(int? desaId) {
     if (desaId == null) return '';
-
-    // Access the wilayah bloc to find the desa name
     final wilayahBloc = context.read<RegisterWilayahBloc>();
     if (wilayahBloc.state.desaList?.data != null) {
       for (var desa in wilayahBloc.state.desaList!.data!) {
@@ -444,7 +486,6 @@ class _BuildFormState extends State<_BuildForm> {
       }
     }
 
-    // Also check in wilayah binaan bloc
     final wilayahBinaanBloc = context.read<RegisterWilayahBinaanBloc>();
     if (wilayahBinaanBloc.state.desaList?.data != null) {
       for (var desa in wilayahBinaanBloc.state.desaList!.data!) {
@@ -453,38 +494,6 @@ class _BuildFormState extends State<_BuildForm> {
         }
       }
     }
-
     return '';
-  }
-
-  String _getNamaDesaList(List<int> desaIds) {
-    if (desaIds.isEmpty) return '';
-
-    final wilayahBinaanBloc = context.read<RegisterWilayahBinaanBloc>();
-    final desaNames = <String>[];
-
-    if (wilayahBinaanBloc.state.desaList?.data != null) {
-      for (int id in desaIds) {
-        bool found = false;
-        for (var desa in wilayahBinaanBloc.state.desaList!.data!) {
-          if (desa.id == id) {
-            desaNames.add(desa.nama ?? '');
-            found = true;
-            break;
-          }
-        }
-        if (!found) {
-          // Fallback if not found
-          desaNames.add('Desa $id');
-        }
-      }
-    } else {
-      // If the data is not loaded, just return the IDs as fallback
-      for (int id in desaIds) {
-        desaNames.add('Desa $id');
-      }
-    }
-
-    return desaNames.join(', ');
   }
 }

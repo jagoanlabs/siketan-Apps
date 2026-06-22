@@ -10,6 +10,10 @@ class ApiEndpoints {
   // Auth
   static const String login = '/auth/login';
   static const String register = '/auth/register-penyuluh';
+  static const String loginPetani = '/auth/petani-login';
+  static const String registerPetani = '/auth/petani-register';
+  static const String opsiPenyuluh = '/opsi-penyuluh';
+  static const String kelompokByDesa = '/kelompok-tani/desa/';
   static const String logout = '/auth/logout';
   static const String refreshToken = '/auth/refresh-token';
   static const String verifyToken = '/auth/verify-token';

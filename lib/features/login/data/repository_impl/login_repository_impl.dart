@@ -1,6 +1,7 @@
 import 'package:siketan/features/login/data/datasources/login_local_data_source.dart';
 import 'package:siketan/features/login/data/datasources/login_remote_data_source.dart';
 import 'package:siketan/features/login/domain/model/login_payload_model.dart';
+import 'package:siketan/features/login/domain/model/petani_login_payload_model.dart';
 import 'package:siketan/features/login/domain/model/login_response_model.dart';
 import 'package:siketan/features/login/domain/repository/login_repository.dart';
 
@@ -16,6 +17,11 @@ class LoginRepositoryImpl implements LoginRepository {
   @override
   Future<LoginResponseModel> login(LoginPayloadModel payload) async {
     return await remoteDataSource.login(payload);
+  }
+
+  @override
+  Future<LoginResponseModel> loginPetani(PetaniLoginPayloadModel payload) async {
+    return await remoteDataSource.loginPetani(payload);
   }
 
   Future<bool> clearAuthData() {

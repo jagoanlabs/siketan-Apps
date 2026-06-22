@@ -37,7 +37,7 @@ class MyRoute {
 
       case RoutesName.register:
         return PageTransition(
-          child: const RegisterPage(),
+          child: RegisterPage(isPenyuluh: settings.arguments as bool? ?? true),
           type: PageTransitionType.fade, // 🌈 efek fade khusus register
           settings: settings,
           duration: const Duration(milliseconds: 100),

@@ -1,9 +1,13 @@
+import 'dart:io' show File;
 import 'package:siketan/features/register/data/datasources/register_remote_data_source.dart';
 import 'package:siketan/features/register/domain/model/kelompok_all_response_model.dart';
 import 'package:siketan/features/register/domain/model/desa_response_model.dart';
 import 'package:siketan/features/register/domain/model/kecamatan_response_model.dart';
 import 'package:siketan/features/register/domain/model/register_payload_model.dart';
+import 'package:siketan/features/register/domain/model/register_petani_payload_model.dart';
 import 'package:siketan/features/register/domain/model/register_response_model.dart';
+import 'package:siketan/features/register/domain/model/opsi_penyuluh_response_model.dart';
+import 'package:siketan/features/register/domain/model/kelompok_tani_desa_response_model.dart';
 import 'package:siketan/features/register/domain/repository/register_repository.dart';
 
 class RegisterRepositoryImpl implements RegisterRepository {
@@ -45,10 +49,26 @@ class RegisterRepositoryImpl implements RegisterRepository {
     final dataDesa = remoteDataSource.getDesaByKecamatanId(kecamatanId);
     return dataDesa;
   }
+
+  @override
+  Future<OpsiPenyuluhResponseModel> getOpsiPenyuluh() {
+    return remoteDataSource.getOpsiPenyuluh();
+  }
+
+  @override
+  Future<KelompokTaniDesaResponseModel> getKelompokByDesaId(int desaId) {
+    return remoteDataSource.getKelompokByDesaId(desaId);
+  }
   
   @override
   Future<RegisterResponseModel> register(RegisterPaylaodModel payload) {
     final dataRegister = remoteDataSource.register(payload);
+    return dataRegister;
+  }
+
+  @override
+  Future<RegisterResponseModel> registerPetani(RegisterPetaniPayloadModel payload, File? fotoKtp) {
+    final dataRegister = remoteDataSource.registerPetani(payload, fotoKtp);
     return dataRegister;
   }
 }

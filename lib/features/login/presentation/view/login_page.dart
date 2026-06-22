@@ -8,6 +8,7 @@ import 'package:siketan/app/routes/route_name.dart';
 import 'package:siketan/core/constant/image/image_config.dart';
 import 'package:siketan/features/auth/presentation/bloc/authentication_bloc.dart';
 import 'package:siketan/features/login/domain/model/login_payload_model.dart';
+import 'package:siketan/features/login/domain/model/petani_login_payload_model.dart';
 import 'package:siketan/features/login/domain/repository/login_repository.dart';
 import 'package:siketan/features/login/presentation/bloc/login_bloc.dart';
 import 'package:siketan/shared/style/color.dart';
@@ -104,12 +105,15 @@ class _BuildForm extends StatefulWidget {
 class _BuildFormState extends State<_BuildForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController nikController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool _isLoading = false;
+  bool isPenyuluh = true;
 
   @override
   void dispose() {
     emailController.dispose();
+    nikController.dispose();
     passwordController.dispose();
     super.dispose();
   }
@@ -194,7 +198,11 @@ class _BuildFormState extends State<_BuildForm> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(context, RoutesName.register);
+                            Navigator.pushNamed(
+                              context,
+                              RoutesName.register,
+                              arguments: isPenyuluh,
+                            );
                           },
                           child: Text(
                             "Daftar",
@@ -230,7 +238,9 @@ class _BuildFormState extends State<_BuildForm> {
                           ),
                           SizedBox(height: 4.h),
                           Text(
-                            "Selamat datang kembali, Penyuluh!",
+                            isPenyuluh 
+                                ? "Selamat datang kembali, Penyuluh!" 
+                                : "Selamat datang kembali, Petani!",
                             style: TextStyle(
                               fontSize: 10.sp,
                               color: AppColors.gray400,
@@ -256,19 +266,94 @@ class _BuildFormState extends State<_BuildForm> {
 
                 SizedBox(height: 24.h),
 
-                // Email
-                TextFieldWidget(
-                  label: "Email",
-                  obscureText: false,
-                  isPasswordField: false,
-                  controller: emailController,
-                  hintText: "Email",
-                  keyboardType: TextInputType.emailAddress,
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(errorText: 'Wajib diisi'),
-                    FormBuilderValidators.email(errorText: 'Email tidak valid'),
-                  ]),
+                // Switcher Peran
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.gray100,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => isPenyuluh = true),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 8.h),
+                            decoration: BoxDecoration(
+                              color: isPenyuluh ? AppColors.green4 : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "Penyuluh",
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: isPenyuluh ? Colors.white : AppColors.gray600,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => setState(() => isPenyuluh = false),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 8.h),
+                            decoration: BoxDecoration(
+                              color: !isPenyuluh ? AppColors.green4 : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            child: Center(
+                              child: Text(
+                                "Petani",
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: !isPenyuluh ? Colors.white : AppColors.gray600,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+
+                SizedBox(height: 24.h),
+
+                if (isPenyuluh) ...[
+                  // Email
+                  TextFieldWidget(
+                    label: "Email",
+                    obscureText: false,
+                    isPasswordField: false,
+                    controller: emailController,
+                    hintText: "Email",
+                    keyboardType: TextInputType.emailAddress,
+                    validator: FormBuilderValidators.compose([
+                      FormBuilderValidators.required(errorText: 'Wajib diisi'),
+                      FormBuilderValidators.email(errorText: 'Email tidak valid'),
+                    ]),
+                  ),
+                ] else ...[
+                  // NIK
+                  TextFieldWidget(
+                    label: "NIK",
+                    obscureText: false,
+                    isPasswordField: false,
+                    controller: nikController,
+                    hintText: "NIK (16 digit)",
+                    keyboardType: TextInputType.number,
+                    validator: FormBuilderValidators.compose([
+                      FormBuilderValidators.required(errorText: 'Wajib diisi'),
+                      FormBuilderValidators.numeric(errorText: 'NIK harus berupa angka'),
+                      FormBuilderValidators.equalLength(16, errorText: 'NIK harus 16 digit'),
+                    ]),
+                  ),
+                ],
                 SizedBox(height: 16.h),
 
                 // Password
@@ -295,13 +380,23 @@ class _BuildFormState extends State<_BuildForm> {
                   mainButtonMessage: "Masuk",
                   mainButton: () {
                     if (_formKey.currentState!.validate()) {
-                      final payload = LoginPayloadModel(
-                        email: emailController.text,
-                        password: passwordController.text,
-                      );
-                      context.read<LoginBloc>().add(
-                        LoginProcessing(payload: payload),
-                      );
+                      if (isPenyuluh) {
+                        final payload = LoginPayloadModel(
+                          email: emailController.text,
+                          password: passwordController.text,
+                        );
+                        context.read<LoginBloc>().add(
+                          LoginProcessing(payload: payload),
+                        );
+                      } else {
+                        final payload = PetaniLoginPayloadModel(
+                          nik: nikController.text,
+                          password: passwordController.text,
+                        );
+                        context.read<LoginBloc>().add(
+                          LoginPetaniProcessing(payload: payload),
+                        );
+                      }
                     }
                   },
                   color: AppColors.blue4,

@@ -16,3 +16,12 @@ final class LoginProcessing extends LoginEvent {
   List<Object> get props => [payload];
 }
 
+final class LoginPetaniProcessing extends LoginEvent {
+  final PetaniLoginPayloadModel payload;
+
+  const LoginPetaniProcessing({required this.payload});
+
+  @override
+  List<Object> get props => [payload];
+}
+
